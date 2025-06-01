@@ -3,6 +3,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'dart:math';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
+import 'widgets/shuffle_song_widget.dart';
 
 // Dodaj klasę ThemeProvider
 class ThemeProvider with ChangeNotifier {
@@ -298,479 +299,19 @@ class RouletteHomePage extends StatefulWidget {
   State<RouletteHomePage> createState() => _RouletteHomePageState();
 }
 
-class _RouletteHomePageState extends State<RouletteHomePage> with SingleTickerProviderStateMixin {
-  final List<String> categories = ['Dzień', 'Jedzenie', 'Rozrywka', 'Muzyka', 'Podróż'];
-  final List<IconData> icons = [
-    Icons.calendar_today,
-    Icons.restaurant,
-    Icons.sports_esports,
-    Icons.music_note,
-    Icons.place,
+class _RouletteHomePageState extends State<RouletteHomePage> {
+  int _selectedIndex = 0;
+
+  final List<Widget> _pages = [
+    const RoulettePage(),
+    const MusicPage(),
+    const SettingsPage(),
   ];
-  final List<Color> pieColors = [
-    Color(0xFF7AD1D6),  // Light blue
-    Color(0xFF2B4263),  // Dark blue
-    Color(0xFFB6E2D3),  // Light green
-    Color(0xFFF7D6B3),  // Light orange
-    Color(0xFF7AD1D6),  // Light blue
-];
-  Map<String, List<String>> activities = {};
-  int selectedCategory = 0;
-  int? spinningResult;
-  double angle = 0;
-  late AnimationController _controller;
-  late Animation<double> _animation;
-  bool isSpinning = false;
-
-  // Dodana baza wyzwań
-  final Map<String, List<String>> wyzwania = {
-    'Dzień': [
-      'Wstań godzinę wcześniej niż zwykle.',
-      'Przejdź dziś minimum 10 000 kroków.',
-      'Zrób coś dobrego dla nieznajomej osoby.',
-      'Przeznacz 30 minut na porządki w dowolnym miejscu w domu.',
-      'Spędź 10 minut medytując lub wykonując ćwiczenia oddechowe.',
-      'Zrób listę swoich 5 największych celów na ten rok.',
-      'Znajdź 10 minut na czytanie książki lub artykułów.',
-      'Przypomnij sobie 3 rzeczy, za które jesteś wdzięczny/a.',
-      'Zrób przerwę na 10 minut w pracy i wyjdź na świeże powietrze.',
-      'Zaplanuj swój tydzień, zapisując kluczowe zadania.',
-      'Zrób coś, co sprawia Ci radość, ale zazwyczaj odkładasz na później.',
-      'Napisz listę rzeczy, które chcesz osiągnąć w ciągu najbliższego miesiąca.',
-      'Odetnij się na 30 minut od technologii (bez telefonu, komputera).',
-      'Spędź 15 minut na porozmawianiu z kimś, kogo długo nie widziałeś/aś.',
-    ],
-    'Jedzenie': [
-      'Ugotuj coś nowego z przepisu z internetu.',
-      'Zrób cały dzień bez słodyczy.',
-      'Zjedz dziś 5 porcji warzyw.',
-      'Przygotuj zdrowe śniadanie z owsianką lub smoothie.',
-      'Zrób domową pizzę od podstaw.',
-      'Przygotuj sałatkę z 5 różnych składników.',
-      'Zjedz dzisiaj pełnowartościowy posiłek na każdą z trzech głównych pór dnia.',
-      'Wprowadź do diety owoc, którego jeszcze nie jadłeś/aś.',
-      'Odwiedź lokalny targ i kup świeże produkty sezonowe.',
-      'Zjedz bez pośpiechu, koncentrując się na smaku jedzenia.',
-      'Zrób zdrowy deser bez cukru (np. jogurt z owocami).',
-      'Spróbuj gotować w kuchni z innej części świata (np. kuchnia japońska).',
-      'Przygotuj szybkie danie w mniej niż 30 minut.',
-      'Zrób dzień bez mięsa i spróbuj dań roślinnych.',
-      'Zjedz każdy posiłek powoli, starając się docenić smaki i tekstury.',
-    ],
-    'Rozrywka': [
-      'Zagraj w grę planszową lub karcianą.',
-      'Obejrzyj film z listy klasyków, których jeszcze nie widziałeś/aś.',
-      'Spędź godzinę grając w swoją ulubioną grę — bez poczucia winy.',
-      'Znajdź nową grę mobilną i przetestuj ją przez 15 minut.',
-      'Przejrzyj stare zdjęcia lub filmy i powspominaj dobre chwile.',
-      'Zorganizuj wieczór filmowy z przyjaciółmi lub rodziną.',
-      'Spróbuj swoich sił w grze, którą zawsze chciałeś/aś wypróbować.',
-      'Stwórz listę ulubionych filmów i obejrzyj jeden z nich.',
-      'Odwiedź lokalne muzeum lub galerię sztuki.',
-      'Zorganizuj maraton swojej ulubionej serii filmowej.',
-      'Przeczytaj książkę, która została Ci polecona przez znajomych.',
-      'Poświęć godzinę na naukę nowej gry online lub planszowej.',
-      'Zrób sobie przerwę i spędź czas na rozwiązywaniu łamigłówek lub krzyżówek.',
-      'Przypomnij sobie swoje ulubione gry z dzieciństwa i zagraj w nie ponownie.',
-      'Zorganizuj spontaniczny wieczór karaoke.',
-    ],
-    'Muzyka': [
-      'Posłuchaj przez 30 minut muzyki z innego gatunku niż zwykle.',
-      'Stwórz nową playlistę na konkretny nastrój (np. relaks, motywacja).',
-      'Naucz się słów jednej nowej piosenki i zaśpiewaj ją.',
-      'Odsłuchaj cały album wybranego artysty bez przerzucania utworów.',
-      'Znajdź nowego artystę na Spotify/YouTube i posłuchaj 3 jego utworów.',
-      'Posłuchaj muzyki z lat 80-90 i przypomnij sobie stare hity.',
-      'Zorganizuj wieczór muzyczny z przyjaciółmi, wymieniając się ulubionymi utworami.',
-      'Zrób playlistę na długi spacer lub bieganie.',
-      'Spędź godzinę grając na instrumencie, nawet jeśli dopiero zaczynasz.',
-      'Posłuchaj muzyki instrumentalnej, idealnej do koncentracji.',
-      'Odsłuchaj płytę, której nigdy wcześniej nie doceniłeś/aś.',
-      'Zrób research na temat swojego ulubionego gatunku muzycznego.',
-      'Zaśpiewaj karaoke do ulubionej piosenki.',
-      'Odsłuchaj koncert na żywo swojego ulubionego artysty online.',
-      'Spędź 30 minut na poznawaniu historii muzyki z danego okresu lub gatunku.',
-    ],
-    'Podróż': [
-      'Wybierz się dziś na spacer po nieznanej okolicy w Twoim mieście.',
-      'Zaplanuj weekendową wycieczkę (nawet jeśli tylko na mapie).',
-      'Przejdź się trasą, którą jeszcze nigdy nie chodziłeś/aś.',
-      'Odwiedź lokalne miejsce, którego wcześniej nie znałeś/aś.',
-      'Zrób zdjęcie jak z wakacji — nawet jeśli jesteś niedaleko domu.',
-      'Odwiedź park lub ogród botaniczny w Twoim mieście.',
-      'Zorganizuj jednodniową wycieczkę do pobliskiej miejscowości.',
-      'Zaplanuj podróż do miejsca, które zawsze chciałeś/aś odwiedzić.',
-      'Przejdź się do miejsca, gdzie nigdy wcześniej nie byłeś/aś.',
-      'Zrób zdjęcia najpiękniejszych miejsc w swojej okolicy.',
-      'Przypomnij sobie swoje najpiękniejsze wakacje i zaplanuj przyszłą podróż.',
-      'Wybierz się na rowerową wycieczkę do najbliższego parku.',
-      'Spędź dzień w innym mieście i spróbuj odkryć jego uroki.',
-      'Odwiedź miejsce związane z historią Twojego regionu.',
-      'Zrób spontaniczną wycieczkę na łono natury, np. do lasu.',
-    ],
-  };
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 2),
-    );
-    _animation = Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut))
-      ..addListener(() {
-        setState(() {});
-      })
-      ..addStatusListener((status) {
-        if (status == AnimationStatus.completed) {
-          setState(() {
-            isSpinning = false;
-            selectedCategory = spinningResult!;
-          });
-        }
-      });
-    _loadActivities();
-  }
-
-  Future<void> _loadActivities() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      for (var cat in categories) {
-        activities[cat] = prefs.getStringList('activities_$cat') ?? [];
-      }
-    });
-  }
-
-  Future<void> _saveActivities() async {
-    final prefs = await SharedPreferences.getInstance();
-    for (var cat in categories) {
-      await prefs.setStringList('activities_$cat', activities[cat] ?? []);
-    }
-  }
-
-  void _spinRoulette() {
-    if (isSpinning) return;
-    isSpinning = true;
-    spinningResult = Random().nextInt(categories.length);
-    double spins = 4 + spinningResult! / categories.length;
-    angle = spins * 2 * pi;
-    _controller.reset();
-    _controller.forward();
-  }
-
-  void _showAddActivityDialog() async {
-    String? newActivity;
-    int catIndex = selectedCategory;
-    await showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          backgroundColor: const Color(0xFF151C25),
-          title: const Text('Dodaj aktywność', style: TextStyle(color: Colors.white)),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              DropdownButton<int>(
-                value: catIndex,
-                dropdownColor: const Color(0xFF151C25),
-                style: const TextStyle(color: Colors.white),
-                items: List.generate(categories.length, (i) => DropdownMenuItem(
-                  value: i,
-                  child: Text(categories[i], style: const TextStyle(color: Colors.white)),
-                )),
-                onChanged: (v) {
-                  setState(() { catIndex = v!; });
-                  Navigator.of(context).pop();
-                  _showAddActivityDialog();
-                },
-              ),
-              TextField(
-                autofocus: true,
-                style: const TextStyle(color: Colors.white),
-                decoration: const InputDecoration(hintText: 'Aktywność', hintStyle: TextStyle(color: Colors.white54)),
-                onChanged: (v) => newActivity = v,
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Anuluj', style: TextStyle(color: Colors.white70)),
-            ),
-            TextButton(
-              onPressed: () {
-                if (newActivity != null && newActivity!.trim().isNotEmpty) {
-                  setState(() {
-                    activities[categories[catIndex]]!.add(newActivity!.trim());
-                  });
-                  _saveActivities();
-                }
-                Navigator.of(context).pop();
-              },
-              child: const Text('Dodaj', style: TextStyle(color: Colors.white)),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _showActivitiesDialog(int catIndex) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        final acts = activities[categories[catIndex]] ?? [];
-        return AlertDialog(
-          backgroundColor: const Color(0xFF151C25),
-          title: Text(categories[catIndex], style: const TextStyle(color: Colors.white)),
-          content: acts.isEmpty
-              ? const Text('Brak aktywności', style: TextStyle(color: Colors.white70))
-              : SizedBox(
-                  width: 250,
-                  child: ListView(
-                    shrinkWrap: true,
-                    children: acts.map((a) => ListTile(
-                      title: Text(a, style: const TextStyle(color: Colors.white)),
-                    )).toList(),
-                  ),
-                ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Zamknij', style: TextStyle(color: Colors.white)),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _openChallengeScreen(int catIndex) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => ChallengeScreen(
-          category: categories[catIndex],
-          challenges: wyzwania[categories[catIndex]] ?? [],
-          pieColors: pieColors,
-        ),
-      ),
-    );
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final themeProvider = Provider.of<ThemeProvider>(context);
-    final isDark = colorScheme.brightness == Brightness.dark;
-
     return Scaffold(
-      backgroundColor: colorScheme.background,
-      body: SafeArea(
-        child: Center(
-          child: Container(
-            width: 330,
-            margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 0),
-            padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-            decoration: BoxDecoration(
-              color: colorScheme.background,
-              borderRadius: BorderRadius.circular(32),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                const SizedBox(height: 24),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 18),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const SizedBox(width: 40),
-                      Text(
-                        'Roulette',
-                        style: TextStyle(
-                          fontSize: 36,
-                          fontWeight: FontWeight.bold,
-                          color: colorScheme.onBackground,
-                        ),
-                      ),
-                      Row(
-                        children: [
-                          IconButton(
-                            icon: Icon(
-                              themeProvider.themeMode == ThemeMode.dark
-                                  ? Icons.dark_mode
-                                  : Icons.light_mode,
-                              color: colorScheme.onBackground,
-                            ),
-                            onPressed: () => themeProvider.toggleTheme(),
-                      ),
-                      CircleAvatar(
-                            backgroundColor: colorScheme.surface,
-                        radius: 22,
-                            child: Icon(Icons.person, color: colorScheme.onSurface, size: 26),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 18),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: List.generate(categories.length, (i) => GestureDetector(
-                      onTap: () => _openChallengeScreen(i),
-                      child: _CategoryIcon(
-                        icon: icons[i],
-                        label: categories[i],
-                        highlighted: selectedCategory == i,
-                        colorScheme: colorScheme,
-                      ),
-                    )),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                // Pie Chart z animacją
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 18),
-                  child: AnimatedBuilder(
-                    animation: _controller,
-                    builder: (context, child) {
-                      return Transform.rotate(
-                        angle: _animation.value * angle,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: colorScheme.surface,
-                            shape: BoxShape.circle,
-                            boxShadow: isDark ? null : [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
-                                blurRadius: 10,
-                                offset: const Offset(0, 4),
-                              ),
-                            ],
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: SizedBox(
-                              height: 180,
-                              width: 180,
-                              child: PieChart(
-                                PieChartData(
-                                  sectionsSpace: 0,
-                                  centerSpaceRadius: 38,
-                                  borderData: FlBorderData(show: false),
-                                  sections: List.generate(categories.length, (i) => PieChartSectionData(
-                                    color: pieColors[i % pieColors.length],
-                                    value: 25,
-                                    showTitle: false,
-                                    radius: 80,
-                                  )),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-                // Zwiększony odstęp i pole na wynik
-                SizedBox(height: 16),
-                if (!isSpinning && spinningResult != null)
-                  Text(
-                    'Wylosowano: ${categories[selectedCategory]}',
-                    style: TextStyle(
-                      color: isDark ? Colors.white : Colors.black,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    textAlign: TextAlign.center,
-                  )
-                else
-                  const SizedBox(height: 24),
-                SizedBox(height: 8),
-                // Buttons
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 0),
-                  child: Column(
-                    children: [
-                      SizedBox(
-                        width: 240,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: isDark ? colorScheme.surface : Colors.white,
-                            foregroundColor: isDark ? Colors.white : Colors.black87,
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(28),
-                              side: BorderSide(
-                                color: isDark ? Colors.transparent : Colors.black26,
-                                width: 1,
-                              ),
-                            ),
-                            textStyle: const TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 1.2,
-                            ),
-                            elevation: isDark ? 0 : 2,
-                          ),
-                          onPressed: _spinRoulette,
-                          child: isSpinning
-                              ? const SizedBox(
-                                  width: 24,
-                                  height: 24,
-                                  child: CircularProgressIndicator(
-                                    color: Colors.teal,
-                                    strokeWidth: 3,
-                                  ),
-                                )
-                              : const Text('KRĘĆ'),
-                        ),
-                      ),
-                      const SizedBox(height: 18),
-                      SizedBox(
-                        width: 240,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: isDark ? colorScheme.surface : Colors.white,
-                            foregroundColor: isDark ? Colors.white : Colors.black87,
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(28),
-                              side: BorderSide(
-                                color: isDark ? Colors.transparent : Colors.black26,
-                                width: 1,
-                              ),
-                            ),
-                            textStyle: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
-                              letterSpacing: 1.1,
-                            ),
-                            elevation: isDark ? 0 : 2,
-                          ),
-                          onPressed: _showAddActivityDialog,
-                          child: const Text('DODAJ AKTYWNOŚĆ'),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const Spacer(),
-              ],
-            ),
-          ),
-        ),
-      ),
+      body: _pages[_selectedIndex],
     );
   }
 }
@@ -897,90 +438,647 @@ class _ChallengeScreenState extends State<ChallengeScreen> with TickerProviderSt
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: Text(
-          'Make My Day',
+          widget.category,
           style: TextStyle(color: colorScheme.onBackground, fontWeight: FontWeight.bold, fontSize: 22),
         ),
         iconTheme: IconThemeData(color: colorScheme.onBackground),
         automaticallyImplyLeading: true,
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            AnimatedBuilder(
-              animation: _spinController,
-              builder: (context, child) {
-                return Transform.rotate(
-                  angle: _spinAnimation.value,
-                  child: child,
-                );
-              },
-              child: Container(
-                width: 180,
-                height: 180,
-                margin: const EdgeInsets.only(bottom: 32),
-                decoration: BoxDecoration(
-                  color: colorScheme.surface,
-                  shape: BoxShape.circle,
-                  boxShadow: isDark ? null : [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: SizedBox(
-                    height: 180,
-                    width: 180,
-                    child: PieChart(
-                      PieChartData(
-                        sectionsSpace: 0,
-                        centerSpaceRadius: 38,
-                        borderData: FlBorderData(show: false),
-                        sections: List.generate(widget.challenges.length, (i) => PieChartSectionData(
-                          color: widget.pieColors[i % widget.pieColors.length],
-                          value: 1,
-                          showTitle: false,
-                          radius: 80,
-                        )),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              AnimatedBuilder(
+                animation: _spinController,
+                builder: (context, child) {
+                  return Transform.rotate(
+                    angle: _spinAnimation.value,
+                    child: child,
+                  );
+                },
+                child: Container(
+                  width: 180,
+                  height: 180,
+                  margin: const EdgeInsets.only(bottom: 32),
+                  decoration: BoxDecoration(
+                    color: colorScheme.surface,
+                    shape: BoxShape.circle,
+                    boxShadow: isDark ? null : [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: SizedBox(
+                      height: 180,
+                      width: 180,
+                      child: PieChart(
+                        PieChartData(
+                          sectionsSpace: 0,
+                          centerSpaceRadius: 38,
+                          borderData: FlBorderData(show: false),
+                          sections: List.generate(widget.challenges.length, (i) => PieChartSectionData(
+                            color: widget.pieColors[i % widget.pieColors.length],
+                            value: 1, // Equal size for each section
+                            showTitle: false,
+                            radius: 80,
+                          )),
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
-            ),
+              Container(
+                padding: const EdgeInsets.all(24),
+                margin: const EdgeInsets.only(bottom: 18),
+                decoration: BoxDecoration(
+                  color: colorScheme.surface,
+                  borderRadius: BorderRadius.circular(16),
+                  border: isDark ? null : Border.all(color: Colors.black12),
+                ),
+                child: Text(
+                  drawnChallenge ?? 'Naciśnij przycisk, aby wylosować wyzwanie',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: colorScheme.onSurface, fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: colorScheme.primary,
+                  foregroundColor: colorScheme.onPrimary,
+                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+                  textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  elevation: 2,
+                ),
+                onPressed: drawChallenge,
+                child: spinning
+                    ? const SizedBox(width: 28, height: 28, child: CircularProgressIndicator(color: Color(0xFF2196F3), strokeWidth: 3))
+                    : const Text('Losuj wyzwanie'),
+              ),
+              
+              if (widget.category == 'Muzyka') ...[
+                const SizedBox(height: 40),
+                 Container(
+                  padding: const EdgeInsets.all(24),
+                  margin: const EdgeInsets.symmetric(horizontal: 16),
+                  decoration: BoxDecoration(
+                    color: colorScheme.surface,
+                    borderRadius: BorderRadius.circular(16),
+                    border: isDark ? null : Border.all(color: Colors.black12),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                       Text(
+                        'Losuj piosenkę Spotify',
+                        style: TextStyle(
+                          color: colorScheme.onSurface,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      const ShuffleSongWidget(),
+                    ],
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class MusicPage extends StatelessWidget {
+  const MusicPage({super.key});
+
+  // Dodajemy mapę wyzwań muzycznych jako statyczną stałą
+  static const Map<String, List<String>> wyzwania = {
+    'Muzyka': [
+      'Posłuchaj przez 30 minut muzyki z innego gatunku niż zwykle.',
+      'Stwórz nową playlistę na konkretny nastrój (np. relaks, motywacja).',
+      'Naucz się słów jednej nowej piosenki i zaśpiewaj ją.',
+      'Odsłuchaj cały album wybranego artysty bez przerzucania utworów.',
+      'Znajdź nowego artystę na Spotify/YouTube i posłuchaj 3 jego utworów.',
+    ],
+  };
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDark = colorScheme.brightness == Brightness.dark;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Muzyka'),
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            // Spotify Widget
+            const ShuffleSongWidget(),
+            
+            const SizedBox(height: 24),
+            
+            // Music Challenges Section
             Container(
               padding: const EdgeInsets.all(24),
-              margin: const EdgeInsets.only(bottom: 18),
+              margin: const EdgeInsets.symmetric(horizontal: 16),
               decoration: BoxDecoration(
                 color: colorScheme.surface,
                 borderRadius: BorderRadius.circular(16),
                 border: isDark ? null : Border.all(color: Colors.black12),
               ),
-              child: Text(
-                drawnChallenge ?? 'Naciśnij przycisk, aby wylosować wyzwanie',
-                textAlign: TextAlign.center,
-                style: TextStyle(color: colorScheme.onSurface, fontSize: 18, fontWeight: FontWeight.bold),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Wyzwania muzyczne',
+                    style: TextStyle(
+                      color: colorScheme.onSurface,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  ...List.generate(
+                    wyzwania['Muzyka']?.length ?? 0,
+                    (index) => Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.music_note,
+                            color: colorScheme.primary,
+                            size: 20,
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              wyzwania['Muzyka']![index],
+                              style: TextStyle(
+                                color: colorScheme.onSurface,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: colorScheme.primary,
-                foregroundColor: colorScheme.onPrimary,
-                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-                textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                elevation: 2,
-              ),
-              onPressed: drawChallenge,
-              child: spinning
-                  ? const SizedBox(width: 28, height: 28, child: CircularProgressIndicator(color: Color(0xFF2196F3), strokeWidth: 3))
-                  : const Text('Losuj wyzwanie'),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class SettingsPage extends StatelessWidget {
+  const SettingsPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Ustawienia'),
+      ),
+      body: ListView(
+        children: [
+          ListTile(
+            leading: Icon(
+              themeProvider.themeMode == ThemeMode.dark
+                  ? Icons.dark_mode
+                  : Icons.light_mode,
+              color: colorScheme.onSurface,
+            ),
+            title: Text(
+              'Tryb ciemny',
+              style: TextStyle(color: colorScheme.onSurface),
+            ),
+            trailing: Switch(
+              value: themeProvider.themeMode == ThemeMode.dark,
+              onChanged: (value) {
+                themeProvider.toggleTheme();
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class RoulettePage extends StatefulWidget {
+  const RoulettePage({super.key});
+
+  @override
+  State<RoulettePage> createState() => _RoulettePageState();
+}
+
+class _RoulettePageState extends State<RoulettePage> with SingleTickerProviderStateMixin {
+  final List<String> categories = ['Dzień', 'Jedzenie', 'Rozrywka', 'Muzyka', 'Podróż'];
+  final List<IconData> icons = [
+    Icons.calendar_today,
+    Icons.restaurant,
+    Icons.sports_esports,
+    Icons.music_note,
+    Icons.place,
+  ];
+  final List<Color> pieColors = [
+    Color(0xFF7AD1D6),  // Light blue
+    Color(0xFF2B4263),  // Dark blue
+    Color(0xFFB6E2D3),  // Light green
+    Color(0xFFF7D6B3),  // Light orange
+    Color(0xFF7AD1D6),  // Light blue
+  ];
+  Map<String, List<String>> activities = {};
+  int selectedCategory = 0;
+  int? spinningResult;
+  double angle = 0;
+  late AnimationController _controller;
+  late Animation<double> _animation;
+  bool isSpinning = false;
+
+  // Dodana baza wyzwań
+  final Map<String, List<String>> wyzwania = {
+    'Dzień': [
+      'Wstań godzinę wcześniej niż zwykle.',
+      'Przejdź dziś minimum 10 000 kroków.',
+      'Zrób coś dobrego dla nieznajomej osoby.',
+      'Przeznacz 30 minut na porządki w dowolnym miejscu w domu.',
+      'Spędź 10 minut medytując lub wykonując ćwiczenia oddechowe.',
+    ],
+    'Jedzenie': [
+      'Ugotuj coś nowego z przepisu z internetu.',
+      'Zrób cały dzień bez słodyczy.',
+      'Zjedz dziś 5 porcji warzyw.',
+      'Przygotuj zdrowe śniadanie z owsianką lub smoothie.',
+      'Zrób domową pizzę od podstaw.',
+    ],
+    'Rozrywka': [
+      'Zagraj w grę planszową lub karcianą.',
+      'Obejrzyj film z listy klasyków, których jeszcze nie widziałeś/aś.',
+      'Spędź godzinę grając w swoją ulubioną grę — bez poczucia winy.',
+      'Znajdź nową grę mobilną i przetestuj ją przez 15 minut.',
+      'Przejrzyj stare zdjęcia lub filmy i powspominaj dobre chwile.',
+    ],
+    'Muzyka': [
+      'Posłuchaj przez 30 minut muzyki z innego gatunku niż zwykle.',
+      'Stwórz nową playlistę na konkretny nastrój (np. relaks, motywacja).',
+      'Naucz się słów jednej nowej piosenki i zaśpiewaj ją.',
+      'Odsłuchaj cały album wybranego artysty bez przerzucania utworów.',
+      'Znajdź nowego artystę na Spotify/YouTube i posłuchaj 3 jego utworów.',
+    ],
+    'Podróż': [
+      'Wybierz się dziś na spacer po nieznanej okolicy w Twoim mieście.',
+      'Zaplanuj weekendową wycieczkę (nawet jeśli tylko na mapie).',
+      'Przejdź się trasą, którą jeszcze nigdy nie chodziłeś/aś.',
+      'Odwiedź lokalne miejsce, którego wcześniej nie znałeś/aś.',
+      'Zrób zdjęcie jak z wakacji — nawet jeśli jesteś niedaleko domu.',
+    ],
+  };
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 2),
+    );
+    _animation = Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut))
+      ..addListener(() {
+        setState(() {});
+      })
+      ..addStatusListener((status) {
+        if (status == AnimationStatus.completed) {
+          setState(() {
+            isSpinning = false;
+            selectedCategory = spinningResult!;
+          });
+        }
+      });
+    _loadActivities();
+  }
+
+  Future<void> _loadActivities() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      for (var cat in categories) {
+        activities[cat] = prefs.getStringList('activities_$cat') ?? [];
+      }
+    });
+  }
+
+  Future<void> _saveActivities() async {
+    final prefs = await SharedPreferences.getInstance();
+    for (var cat in categories) {
+      await prefs.setStringList('activities_$cat', activities[cat] ?? []);
+    }
+  }
+
+  void _spinRoulette() {
+    if (isSpinning) return;
+    isSpinning = true;
+    spinningResult = Random().nextInt(categories.length);
+    double spins = 4 + spinningResult! / categories.length;
+    angle = spins * 2 * pi;
+    _controller.reset();
+    _controller.forward();
+  }
+
+  void _showAddActivityDialog() async {
+    String? newActivity;
+    int catIndex = selectedCategory;
+    await showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: const Color(0xFF151C25),
+          title: const Text('Dodaj aktywność', style: TextStyle(color: Colors.white)),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              DropdownButton<int>(
+                value: catIndex,
+                dropdownColor: const Color(0xFF151C25),
+                style: const TextStyle(color: Colors.white),
+                items: List.generate(categories.length, (i) => DropdownMenuItem(
+                  value: i,
+                  child: Text(categories[i], style: const TextStyle(color: Colors.white)),
+                )),
+                onChanged: (v) {
+                  setState(() { catIndex = v!; });
+                  Navigator.of(context).pop();
+                  _showAddActivityDialog();
+                },
+              ),
+              TextField(
+                autofocus: true,
+                style: const TextStyle(color: Colors.white),
+                decoration: const InputDecoration(hintText: 'Aktywność', hintStyle: TextStyle(color: Colors.white54)),
+                onChanged: (v) => newActivity = v,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Anuluj', style: TextStyle(color: Colors.white70)),
+            ),
+            TextButton(
+              onPressed: () {
+                if (newActivity != null && newActivity!.trim().isNotEmpty) {
+                  setState(() {
+                    activities[categories[catIndex]]!.add(newActivity!.trim());
+                  });
+                  _saveActivities();
+                }
+                Navigator.of(context).pop();
+              },
+              child: const Text('Dodaj', style: TextStyle(color: Colors.white)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _openChallengeScreen(int catIndex) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => ChallengeScreen(
+          category: categories[catIndex],
+          challenges: wyzwania[categories[catIndex]] ?? [],
+          pieColors: pieColors,
+        ),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDark = colorScheme.brightness == Brightness.dark;
+
+    return Scaffold(
+      backgroundColor: colorScheme.background,
+      body: SafeArea(
+        child: Center(
+          child: Container(
+            width: 330,
+            margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 0),
+            padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+            decoration: BoxDecoration(
+              color: colorScheme.background,
+              borderRadius: BorderRadius.circular(32),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                const SizedBox(height: 24),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 18),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const SizedBox(width: 40),
+                      Text(
+                        'Roulette',
+                        style: TextStyle(
+                          fontSize: 36,
+                          fontWeight: FontWeight.bold,
+                          color: colorScheme.onBackground,
+                        ),
+                      ),
+                      Row(
+                        children: [
+                          IconButton(
+                            icon: Icon(
+                              themeProvider.themeMode == ThemeMode.dark
+                                  ? Icons.dark_mode
+                                  : Icons.light_mode,
+                              color: colorScheme.onBackground,
+                            ),
+                            onPressed: () => themeProvider.toggleTheme(),
+                          ),
+                          CircleAvatar(
+                            backgroundColor: colorScheme.surface,
+                            radius: 22,
+                            child: Icon(Icons.person, color: colorScheme.onSurface, size: 26),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 18),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: List.generate(categories.length, (i) => GestureDetector(
+                      onTap: () => _openChallengeScreen(i),
+                      child: _CategoryIcon(
+                        icon: icons[i],
+                        label: categories[i],
+                        highlighted: selectedCategory == i,
+                        colorScheme: colorScheme,
+                      ),
+                    )),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 18),
+                  child: AnimatedBuilder(
+                    animation: _controller,
+                    builder: (context, child) {
+                      return Transform.rotate(
+                        angle: _animation.value * angle,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: colorScheme.surface,
+                            shape: BoxShape.circle,
+                            boxShadow: isDark ? null : [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 10,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: SizedBox(
+                              height: 180,
+                              width: 180,
+                              child: PieChart(
+                                PieChartData(
+                                  sectionsSpace: 0,
+                                  centerSpaceRadius: 38,
+                                  borderData: FlBorderData(show: false),
+                                  sections: List.generate(categories.length, (i) => PieChartSectionData(
+                                    color: pieColors[i % pieColors.length],
+                                    value: 25,
+                                    showTitle: false,
+                                    radius: 80,
+                                  )),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                SizedBox(height: 16),
+                if (!isSpinning && spinningResult != null)
+                  Text(
+                    'Wylosowano: ${categories[selectedCategory]}',
+                    style: TextStyle(
+                      color: isDark ? Colors.white : Colors.black,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
+                  )
+                else
+                  const SizedBox(height: 24),
+                SizedBox(height: 8),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 0),
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        width: 240,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: isDark ? colorScheme.surface : Colors.white,
+                            foregroundColor: isDark ? Colors.white : Colors.black87,
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(28),
+                              side: BorderSide(
+                                color: isDark ? Colors.transparent : Colors.black26,
+                                width: 1,
+                              ),
+                            ),
+                            textStyle: const TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 1.2,
+                            ),
+                            elevation: isDark ? 0 : 2,
+                          ),
+                          onPressed: _spinRoulette,
+                          child: isSpinning
+                              ? const SizedBox(
+                                  width: 24,
+                                  height: 24,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.teal,
+                                    strokeWidth: 3,
+                                  ),
+                                )
+                              : const Text('KRĘĆ'),
+                        ),
+                      ),
+                      const SizedBox(height: 18),
+                      SizedBox(
+                        width: 240,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: isDark ? colorScheme.surface : Colors.white,
+                            foregroundColor: isDark ? Colors.white : Colors.black87,
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(28),
+                              side: BorderSide(
+                                color: isDark ? Colors.transparent : Colors.black26,
+                                width: 1,
+                              ),
+                            ),
+                            textStyle: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 1.1,
+                            ),
+                            elevation: isDark ? 0 : 2,
+                          ),
+                          onPressed: _showAddActivityDialog,
+                          child: const Text('DODAJ AKTYWNOŚĆ'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Spacer(),
+              ],
+            ),
+          ),
         ),
       ),
     );
