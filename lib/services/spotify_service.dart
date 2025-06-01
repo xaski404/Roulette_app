@@ -5,8 +5,9 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class SpotifyService {
-  static const String _clientId = '638d0a83144d4a47bc60810d226fca8e';
-  static const String _clientSecret = '7a6bc9dd8384434ca720bef89f0f9df7';
+  // TODO: Store these securely, e.g., using environment variables or a config file not committed to Git.
+  static const String _clientId = 'YOUR_SPOTIFY_CLIENT_ID'; // Replace with your actual Client ID
+  static const String _clientSecret = 'YOUR_SPOTIFY_CLIENT_SECRET'; // Replace with your actual Client Secret
   static const String _redirectUri = 'http://127.0.0.1:54321/callback';
   
   bool _isInitialized = false;
