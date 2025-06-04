@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
 import '../services/food_service.dart';
+import 'package:fl_chart/fl_chart.dart';
 
 class FoodCategoryDetailScreen extends StatefulWidget {
   final String category;
@@ -14,22 +15,44 @@ class FoodCategoryDetailScreen extends StatefulWidget {
   State<FoodCategoryDetailScreen> createState() => _FoodCategoryDetailScreenState();
 }
 
-class _FoodCategoryDetailScreenState extends State<FoodCategoryDetailScreen> {
+class _FoodCategoryDetailScreenState extends State<FoodCategoryDetailScreen> with SingleTickerProviderStateMixin {
   final FoodService _foodService = FoodService();
   List<String> _meals = [];
   String? _selectedMeal;
   bool _isLoading = true;
-  final TextEditingController _newMealController = TextEditingController();
+  bool _isSpinning = false;
+  late AnimationController _spinController;
+  late Animation<double> _spinAnimation;
+  final List<Color> pieColors = [
+    Color(0xFF7AD1D6),  // Light blue
+    Color(0xFF2B4263),  // Dark blue
+    Color(0xFFB6E2D3),  // Light green
+    Color(0xFFF7D6B3),  // Light orange
+    Color(0xFF7AD1D6),  // Light blue
+  ];
 
   @override
   void initState() {
     super.initState();
+    _spinController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 2),
+    );
+    _spinAnimation = Tween<double>(begin: 0, end: 1).animate(
+      CurvedAnimation(parent: _spinController, curve: Curves.easeOut),
+    )..addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        setState(() {
+          _isSpinning = false;
+        });
+      }
+    });
     _loadMeals();
   }
 
   @override
   void dispose() {
-    _newMealController.dispose();
+    _spinController.dispose();
     super.dispose();
   }
 
@@ -52,85 +75,29 @@ class _FoodCategoryDetailScreenState extends State<FoodCategoryDetailScreen> {
   }
 
   void _selectRandomMeal() {
-    if (_meals.isEmpty) return;
+    if (_meals.isEmpty || _isSpinning) return;
     
     setState(() {
+      _isSpinning = true;
       final random = Random();
       String newMeal;
       do {
         newMeal = _meals[random.nextInt(_meals.length)];
       } while (_meals.length > 1 && newMeal == _selectedMeal);
       _selectedMeal = newMeal;
+
+      // Calculate random spins (4-6 full rotations plus partial)
+      final spins = 4 + random.nextDouble() * 2;
+      final targetAngle = spins * 2 * pi;
+      
+      _spinAnimation = Tween<double>(
+        begin: 0,
+        end: targetAngle,
+      ).animate(CurvedAnimation(parent: _spinController, curve: Curves.easeOut));
     });
-  }
 
-  Future<void> _showAddMealDialog() async {
-    return showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Dodaj nowy posiłek'),
-          content: TextField(
-            controller: _newMealController,
-            decoration: const InputDecoration(
-              hintText: 'Nazwa posiłku',
-              border: OutlineInputBorder(),
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Anuluj'),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                final newMeal = _newMealController.text.trim();
-                if (newMeal.isNotEmpty) {
-                  await _foodService.addMealToCategory(widget.category, newMeal);
-                  _newMealController.clear();
-                  Navigator.pop(context);
-                  _loadMeals();
-                }
-              },
-              child: const Text('Dodaj'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Future<void> _showDeleteConfirmation(String meal) async {
-    return showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Usuń posiłek'),
-          content: Text('Czy na pewno chcesz usunąć "$meal"?'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Anuluj'),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                await _foodService.removeMealFromCategory(widget.category, meal);
-                Navigator.pop(context);
-                _loadMeals();
-                if (_selectedMeal == meal) {
-                  setState(() => _selectedMeal = null);
-                }
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
-                foregroundColor: Colors.white,
-              ),
-              child: const Text('Usuń'),
-            ),
-          ],
-        );
-      },
-    );
+    _spinController.reset();
+    _spinController.forward();
   }
 
   @override
@@ -144,35 +111,73 @@ class _FoodCategoryDetailScreenState extends State<FoodCategoryDetailScreen> {
         title: Text(widget.category),
         backgroundColor: Colors.transparent,
         elevation: 0,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: _showAddMealDialog,
-          ),
-        ],
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                // Roulette wheel
+                AnimatedBuilder(
+                  animation: _spinController,
+                  builder: (context, child) {
+                    return Transform.rotate(
+                      angle: _spinAnimation.value,
+                      child: Container(
+                        width: 250,
+                        height: 250,
+                        decoration: BoxDecoration(
+                          color: colorScheme.surface,
+                          shape: BoxShape.circle,
+                          boxShadow: isDark ? null : [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: PieChart(
+                            PieChartData(
+                              sectionsSpace: 0,
+                              centerSpaceRadius: 50,
+                              sections: List.generate(
+                                8,
+                                (i) => PieChartSectionData(
+                                  color: pieColors[i % pieColors.length],
+                                  value: 1,
+                                  title: '',
+                                  radius: 90,
+                                ),
+                              ),
+                              borderData: FlBorderData(show: false),
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+                const SizedBox(height: 40),
+
                 // Selected meal display
                 if (_selectedMeal != null)
                   Container(
                     width: double.infinity,
-                    margin: const EdgeInsets.all(16),
-                    padding: const EdgeInsets.all(20),
+                    margin: const EdgeInsets.symmetric(horizontal: 32),
+                    padding: const EdgeInsets.all(24),
                     decoration: BoxDecoration(
                       color: colorScheme.primary,
                       borderRadius: BorderRadius.circular(16),
-                      boxShadow: isDark
-                          ? null
-                          : [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
-                                blurRadius: 8,
-                                offset: const Offset(0, 2),
-                              ),
-                            ],
+                      boxShadow: isDark ? null : [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
                     ),
                     child: Column(
                       children: [
@@ -183,7 +188,7 @@ class _FoodCategoryDetailScreenState extends State<FoodCategoryDetailScreen> {
                             fontSize: 16,
                           ),
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: 12),
                         Text(
                           _selectedMeal!,
                           style: const TextStyle(
@@ -197,50 +202,39 @@ class _FoodCategoryDetailScreenState extends State<FoodCategoryDetailScreen> {
                     ),
                   ),
 
+                const SizedBox(height: 40),
+
                 // Random selection button
                 Padding(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.symmetric(horizontal: 32),
                   child: ElevatedButton(
-                    onPressed: _meals.isEmpty ? null : _selectRandomMeal,
+                    onPressed: _meals.isEmpty || _isSpinning ? null : _selectRandomMeal,
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 32,
+                        horizontal: 48,
                         vertical: 16,
                       ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(24),
                       ),
                     ),
-                    child: const Text('Wylosuj posiłek'),
-                  ),
-                ),
-
-                // Meals list
-                Expanded(
-                  child: _meals.isEmpty
-                      ? Center(
-                          child: Text(
-                            'Brak posiłków w tej kategorii',
-                            style: TextStyle(color: colorScheme.onSurface),
+                    child: _isSpinning
+                        ? const SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
+                            ),
+                          )
+                        : const Text(
+                            'LOSUJ',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        )
-                      : ListView.builder(
-                          padding: const EdgeInsets.all(16),
-                          itemCount: _meals.length,
-                          itemBuilder: (context, index) {
-                            final meal = _meals[index];
-                            return Card(
-                              margin: const EdgeInsets.only(bottom: 8),
-                              child: ListTile(
-                                title: Text(meal),
-                                trailing: IconButton(
-                                  icon: const Icon(Icons.delete),
-                                  onPressed: () => _showDeleteConfirmation(meal),
-                                ),
-                              ),
-                            );
-                          },
-                        ),
+                  ),
                 ),
               ],
             ),
