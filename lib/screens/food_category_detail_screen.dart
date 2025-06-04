@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'dart:math';
 import '../services/food_service.dart';
 import '../services/recipe_service.dart';
+import '../services/places_service.dart';
+import 'restaurant_results_screen.dart';
 import 'package:fl_chart/fl_chart.dart';
 
 class FoodCategoryDetailScreen extends StatefulWidget {
@@ -386,8 +388,30 @@ class _FoodCategoryDetailScreenState extends State<FoodCategoryDetailScreen> wit
                                 const SizedBox(width: 12),
                                 Expanded(
                                   child: ElevatedButton(
-                                    onPressed: () {
-                                      // To be implemented in future phase
+                                    onPressed: () async {
+                                      final location = await PlacesService.getCurrentLocation();
+                                      if (location == null) {
+                                        if (mounted) {
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            const SnackBar(
+                                              content: Text('Nie udało się uzyskać lokalizacji. Sprawdź uprawnienia.'),
+                                            ),
+                                          );
+                                        }
+                                        return;
+                                      }
+
+                                      if (mounted) {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => RestaurantResultsScreen(
+                                              meal: _selectedMeal!,
+                                              userLocation: location,
+                                            ),
+                                          ),
+                                        );
+                                      }
                                     },
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: colorScheme.tertiary.withOpacity(0.8),
