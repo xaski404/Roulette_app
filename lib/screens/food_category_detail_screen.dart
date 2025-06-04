@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
 import '../services/food_service.dart';
+import '../services/recipe_service.dart';
 import 'package:fl_chart/fl_chart.dart';
 
 class FoodCategoryDetailScreen extends StatefulWidget {
@@ -22,6 +23,7 @@ class _FoodCategoryDetailScreenState extends State<FoodCategoryDetailScreen> wit
   String? _currentPassingMeal;
   bool _isLoading = true;
   bool _isSpinning = false;
+  String? _selectedRecipe;
   
   // Controllers for different animation aspects
   late AnimationController _spinController;
@@ -298,15 +300,120 @@ class _FoodCategoryDetailScreenState extends State<FoodCategoryDetailScreen> wit
                       ),
                     ),
 
-                    // Selected meal display
+                    // Selected meal display with action buttons
                     if (_selectedMeal != null && !_isSpinning)
+                      Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 32),
+                            child: Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.all(24),
+                              decoration: BoxDecoration(
+                                color: colorScheme.primary,
+                                borderRadius: BorderRadius.circular(16),
+                                boxShadow: isDark ? null : [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.1),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],
+                              ),
+                              child: Column(
+                                children: [
+                                  const Text(
+                                    'Wylosowany posiłek:',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 12),
+                                  Text(
+                                    _selectedMeal!,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          // Action buttons
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 32),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      final recipe = RecipeService.getRecipe(_selectedMeal!);
+                                      setState(() {
+                                        _selectedRecipe = recipe;
+                                      });
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: colorScheme.secondary,
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 12,
+                                      ),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                    ),
+                                    child: const Text(
+                                      'Zjem w domu',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      // To be implemented in future phase
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: colorScheme.tertiary,
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 12,
+                                      ),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                    ),
+                                    child: const Text(
+                                      'Zjem na mieście',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+
+                    // Recipe display
+                    if (_selectedRecipe != null)
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 32),
+                        padding: const EdgeInsets.fromLTRB(32, 24, 32, 0),
                         child: Container(
                           width: double.infinity,
-                          padding: const EdgeInsets.all(24),
+                          padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
-                            color: colorScheme.primary,
+                            color: colorScheme.surface,
                             borderRadius: BorderRadius.circular(16),
                             boxShadow: isDark ? null : [
                               BoxShadow(
@@ -317,23 +424,36 @@ class _FoodCategoryDetailScreenState extends State<FoodCategoryDetailScreen> wit
                             ],
                           ),
                           child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text(
-                                'Wylosowany posiłek:',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    'Przepis',
+                                    style: TextStyle(
+                                      color: colorScheme.onSurface,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  IconButton(
+                                    icon: const Icon(Icons.close),
+                                    onPressed: () {
+                                      setState(() {
+                                        _selectedRecipe = null;
+                                      });
+                                    },
+                                  ),
+                                ],
                               ),
                               const SizedBox(height: 12),
                               Text(
-                                _selectedMeal!,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold,
+                                _selectedRecipe!,
+                                style: TextStyle(
+                                  color: colorScheme.onSurface,
+                                  fontSize: 16,
                                 ),
-                                textAlign: TextAlign.center,
                               ),
                             ],
                           ),
