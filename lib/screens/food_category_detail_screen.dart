@@ -15,45 +15,109 @@ class FoodCategoryDetailScreen extends StatefulWidget {
   State<FoodCategoryDetailScreen> createState() => _FoodCategoryDetailScreenState();
 }
 
-class _FoodCategoryDetailScreenState extends State<FoodCategoryDetailScreen> with SingleTickerProviderStateMixin {
+class _FoodCategoryDetailScreenState extends State<FoodCategoryDetailScreen> with TickerProviderStateMixin {
   final FoodService _foodService = FoodService();
   List<String> _meals = [];
   String? _selectedMeal;
+  String? _currentPassingMeal;
   bool _isLoading = true;
   bool _isSpinning = false;
+  
+  // Controllers for different animation aspects
   late AnimationController _spinController;
+  late AnimationController _bounceController;
   late Animation<double> _spinAnimation;
+  late Animation<double> _bounceAnimation;
+  
+  // Constants for animation
+  static const int numSegments = 12;
+  static const double segmentAngle = 2 * pi / numSegments;
   final List<Color> pieColors = [
     Color(0xFF7AD1D6),  // Light blue
     Color(0xFF2B4263),  // Dark blue
     Color(0xFFB6E2D3),  // Light green
     Color(0xFFF7D6B3),  // Light orange
-    Color(0xFF7AD1D6),  // Light blue
   ];
 
   @override
   void initState() {
     super.initState();
+    
+    // Main spin animation controller
     _spinController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 2),
+      duration: const Duration(milliseconds: 1500),
     );
+
+    // Bounce effect controller
+    _bounceController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 100),
+    );
+
+    // Bounce animation
+    _bounceAnimation = Tween<double>(
+      begin: 0,
+      end: segmentAngle / 4,
+    ).animate(CurvedAnimation(
+      parent: _bounceController,
+      curve: Curves.easeOut,
+      reverseCurve: Curves.easeIn,
+    ));
+
+    // Initialize spin animation
     _spinAnimation = Tween<double>(begin: 0, end: 1).animate(
-      CurvedAnimation(parent: _spinController, curve: Curves.easeOut),
-    )..addStatusListener((status) {
-      if (status == AnimationStatus.completed) {
-        setState(() {
-          _isSpinning = false;
-        });
-      }
-    });
+      CurvedAnimation(
+        parent: _spinController,
+        curve: const Interval(0, 1, curve: Curves.easeOutCubic),
+      ),
+    );
+
+    // Add listeners for animation updates
+    _spinAnimation.addListener(_updatePassingMeal);
+    _spinAnimation.addStatusListener(_handleSpinStatus);
+
     _loadMeals();
   }
 
   @override
   void dispose() {
     _spinController.dispose();
+    _bounceController.dispose();
     super.dispose();
+  }
+
+  void _updatePassingMeal() {
+    if (!_isSpinning || _meals.isEmpty) return;
+
+    // Calculate current angle and segment
+    final currentAngle = _spinAnimation.value * (2 * pi * 5); // 5 full rotations
+    final normalizedAngle = currentAngle % (2 * pi);
+    final currentSegment = (normalizedAngle / segmentAngle).floor() % _meals.length;
+
+    // Update passing meal with smooth transitions
+    setState(() {
+      _currentPassingMeal = _meals[currentSegment];
+    });
+
+    // Add bounce effect near the end of the animation
+    if (_spinAnimation.value > 0.8) {
+      final progress = (_spinAnimation.value - 0.8) / 0.2;
+      final shouldBounce = (normalizedAngle / (segmentAngle / 2)).floor() % 2 == 0;
+      
+      if (shouldBounce && !_bounceController.isAnimating) {
+        _bounceController.forward().then((_) => _bounceController.reverse());
+      }
+    }
+  }
+
+  void _handleSpinStatus(AnimationStatus status) {
+    if (status == AnimationStatus.completed) {
+      setState(() {
+        _isSpinning = false;
+        _currentPassingMeal = null;
+      });
+    }
   }
 
   Future<void> _loadMeals() async {
@@ -86,18 +150,10 @@ class _FoodCategoryDetailScreenState extends State<FoodCategoryDetailScreen> wit
       } while (_meals.length > 1 && newMeal == _selectedMeal);
       _selectedMeal = newMeal;
 
-      // Calculate random spins (4-6 full rotations plus partial)
-      final spins = 4 + random.nextDouble() * 2;
-      final targetAngle = spins * 2 * pi;
-      
-      _spinAnimation = Tween<double>(
-        begin: 0,
-        end: targetAngle,
-      ).animate(CurvedAnimation(parent: _spinController, curve: Curves.easeOut));
+      // Reset and start animations
+      _spinController.reset();
+      _spinController.forward();
     });
-
-    _spinController.reset();
-    _spinController.forward();
   }
 
   @override
@@ -114,129 +170,192 @@ class _FoodCategoryDetailScreenState extends State<FoodCategoryDetailScreen> wit
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
-          : Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // Roulette wheel
-                AnimatedBuilder(
-                  animation: _spinController,
-                  builder: (context, child) {
-                    return Transform.rotate(
-                      angle: _spinAnimation.value,
-                      child: Container(
-                        width: 250,
-                        height: 250,
-                        decoration: BoxDecoration(
-                          color: colorScheme.surface,
-                          shape: BoxShape.circle,
-                          boxShadow: isDark ? null : [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
-                              blurRadius: 10,
-                              offset: const Offset(0, 4),
+          : Center(
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // Roulette wheel with selector
+                    SizedBox(
+                      width: 250,
+                      height: 270,
+                      child: Stack(
+                        clipBehavior: Clip.none,
+                        alignment: Alignment.center,
+                        children: [
+                          // Spinning wheel
+                          AnimatedBuilder(
+                            animation: Listenable.merge([_spinAnimation, _bounceAnimation]),
+                            builder: (context, child) {
+                              return Transform.rotate(
+                                angle: _spinAnimation.value * (2 * pi * 5) + _bounceAnimation.value,
+                                child: Container(
+                                  width: 250,
+                                  height: 250,
+                                  decoration: BoxDecoration(
+                                    color: colorScheme.surface,
+                                    shape: BoxShape.circle,
+                                    boxShadow: isDark ? null : [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.1),
+                                        blurRadius: 10,
+                                        offset: const Offset(0, 4),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(10.0),
+                                    child: PieChart(
+                                      PieChartData(
+                                        sectionsSpace: 2,
+                                        centerSpaceRadius: 50,
+                                        sections: List.generate(
+                                          numSegments,
+                                          (i) => PieChartSectionData(
+                                            color: pieColors[i % pieColors.length],
+                                            value: 1,
+                                            title: '',
+                                            radius: 90,
+                                            showTitle: false,
+                                          ),
+                                        ),
+                                        borderData: FlBorderData(show: false),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                          // Selector triangle
+                          Positioned(
+                            top: -10,
+                            child: Container(
+                              width: 20,
+                              height: 20,
+                              decoration: BoxDecoration(
+                                color: colorScheme.primary,
+                                shape: BoxShape.circle,
+                                boxShadow: isDark ? null : [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.1),
+                                    blurRadius: 4,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],
+                              ),
                             ),
-                          ],
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: PieChart(
-                            PieChartData(
-                              sectionsSpace: 0,
-                              centerSpaceRadius: 50,
-                              sections: List.generate(
-                                8,
-                                (i) => PieChartSectionData(
-                                  color: pieColors[i % pieColors.length],
-                                  value: 1,
-                                  title: '',
-                                  radius: 90,
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 32),
+
+                    // Passing meals display
+                    SizedBox(
+                      height: 40,
+                      child: AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 200),
+                        child: _isSpinning && _currentPassingMeal != null
+                            ? Container(
+                                key: ValueKey(_currentPassingMeal),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 8,
+                                  horizontal: 32,
+                                ),
+                                child: Text(
+                                  _currentPassingMeal!,
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    color: colorScheme.onBackground.withOpacity(0.7),
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              )
+                            : const SizedBox.shrink(),
+                      ),
+                    ),
+
+                    // Selected meal display
+                    if (_selectedMeal != null && !_isSpinning)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 32),
+                        child: Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(24),
+                          decoration: BoxDecoration(
+                            color: colorScheme.primary,
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: isDark ? null : [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 8,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            children: [
+                              const Text(
+                                'Wylosowany posiłek:',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
                                 ),
                               ),
-                              borderData: FlBorderData(show: false),
-                            ),
+                              const SizedBox(height: 12),
+                              Text(
+                                _selectedMeal!,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
                           ),
                         ),
                       ),
-                    );
-                  },
+
+                    const SizedBox(height: 40),
+
+                    // Random selection button
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 32),
+                      child: ElevatedButton(
+                        onPressed: _meals.isEmpty || _isSpinning ? null : _selectRandomMeal,
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 48,
+                            vertical: 16,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(24),
+                          ),
+                        ),
+                        child: _isSpinning
+                            ? const SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : const Text(
+                                'LOSUJ',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 40),
-
-                // Selected meal display
-                if (_selectedMeal != null)
-                  Container(
-                    width: double.infinity,
-                    margin: const EdgeInsets.symmetric(horizontal: 32),
-                    padding: const EdgeInsets.all(24),
-                    decoration: BoxDecoration(
-                      color: colorScheme.primary,
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: isDark ? null : [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      children: [
-                        const Text(
-                          'Wylosowany posiłek:',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        Text(
-                          _selectedMeal!,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
-                    ),
-                  ),
-
-                const SizedBox(height: 40),
-
-                // Random selection button
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 32),
-                  child: ElevatedButton(
-                    onPressed: _meals.isEmpty || _isSpinning ? null : _selectRandomMeal,
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 48,
-                        vertical: 16,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(24),
-                      ),
-                    ),
-                    child: _isSpinning
-                        ? const SizedBox(
-                            width: 24,
-                            height: 24,
-                            child: CircularProgressIndicator(
-                              color: Colors.white,
-                              strokeWidth: 2,
-                            ),
-                          )
-                        : const Text(
-                            'LOSUJ',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                  ),
-                ),
-              ],
+              ),
             ),
     );
   }
