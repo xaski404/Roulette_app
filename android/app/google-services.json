@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "735106227800",
+    "project_id": "spinroulette-41cea",
+    "storage_bucket": "spinroulette-41cea.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:735106227800:android:7e6dc7c753d00372f0342d",
+        "android_client_info": {
+          "package_name": "com.example.roulette_new"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCTAT9cQGsBZOxZAfQ55GcA1AStJk4edG8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

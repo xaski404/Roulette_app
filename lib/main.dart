@@ -4,6 +4,9 @@ import 'dart:math';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
 import 'widgets/shuffle_song_widget.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+import 'services/auth_service.dart';
 
 // Dodaj klasę ThemeProvider
 class ThemeProvider with ChangeNotifier {
@@ -36,7 +39,11 @@ class ThemeProvider with ChangeNotifier {
   }
 }
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(
     ChangeNotifierProvider(
       create: (_) => ThemeProvider(),
@@ -67,7 +74,7 @@ class MyApp extends StatelessWidget {
               onBackground: Colors.black87,
             ),
         useMaterial3: true,
-            cardTheme: CardTheme(
+            cardTheme: CardThemeData(
               color: Colors.white,
               elevation: 2,
               shape: RoundedRectangleBorder(
@@ -114,7 +121,7 @@ class MyApp extends StatelessWidget {
               onBackground: Colors.white,
             ),
         useMaterial3: true,
-            cardTheme: CardTheme(
+            cardTheme: CardThemeData(
               color: const Color(0xFF151C25),
               elevation: 2,
               shape: RoundedRectangleBorder(
@@ -163,19 +170,60 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final AuthService _authService = AuthService();
   String _errorMessage = '';
+  bool _isLoading = false;
+  bool _isRegistering = false;
 
-  void _login() {
-    if (_usernameController.text == 'admin' && _passwordController.text == '1234') {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const RouletteHomePage()),
-      );
-    } else {
+  Future<void> _handleAuth() async {
+    if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
       setState(() {
-        _errorMessage = 'Nieprawidłowa nazwa użytkownika lub hasło';
+        _errorMessage = 'Proszę wypełnić wszystkie pola';
       });
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+      _errorMessage = '';
+    });
+
+    try {
+      if (_isRegistering) {
+        await _authService.registerWithEmailAndPassword(
+          _emailController.text,
+          _passwordController.text,
+        );
+      } else {
+        await _authService.signInWithEmailAndPassword(
+          _emailController.text,
+          _passwordController.text,
+        );
+      }
+      
+      if (mounted) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const RouletteHomePage()),
+        );
+      }
+    } catch (e) {
+      setState(() {
+        _errorMessage = e.toString().contains('user-not-found') 
+            ? 'Użytkownik nie istnieje'
+            : e.toString().contains('wrong-password')
+                ? 'Nieprawidłowe hasło'
+                : e.toString().contains('email-already-in-use')
+                    ? 'Email jest już używany'
+                    : 'Wystąpił błąd podczas logowania';
+      });
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
@@ -221,7 +269,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ],
               ),
               Text(
-                'Logowanie',
+                _isRegistering ? 'Rejestracja' : 'Logowanie',
                 style: TextStyle(
                   color: colorScheme.onSurface,
                   fontSize: 24,
@@ -230,10 +278,10 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               const SizedBox(height: 20),
               TextField(
-                controller: _usernameController,
+                controller: _emailController,
                 style: TextStyle(color: colorScheme.onSurface),
                 decoration: InputDecoration(
-                  hintText: 'Nazwa użytkownika',
+                  hintText: 'Email',
                   hintStyle: TextStyle(color: colorScheme.onSurface.withOpacity(0.6)),
                   enabledBorder: UnderlineInputBorder(
                     borderSide: BorderSide(color: colorScheme.onSurface.withOpacity(0.2)),
@@ -281,8 +329,34 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                 ),
-                onPressed: _login,
-                child: const Text('Zaloguj się'),
+                onPressed: _isLoading ? null : _handleAuth,
+                child: _isLoading
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                        ),
+                      )
+                    : Text(_isRegistering ? 'Zarejestruj się' : 'Zaloguj się'),
+              ),
+              const SizedBox(height: 10),
+              TextButton(
+                onPressed: _isLoading
+                    ? null
+                    : () {
+                        setState(() {
+                          _isRegistering = !_isRegistering;
+                          _errorMessage = '';
+                        });
+                      },
+                child: Text(
+                  _isRegistering
+                      ? 'Masz już konto? Zaloguj się'
+                      : 'Nie masz konta? Zarejestruj się',
+                  style: TextStyle(color: colorScheme.primary),
+                ),
               ),
             ],
           ),
@@ -652,6 +726,7 @@ class SettingsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final colorScheme = Theme.of(context).colorScheme;
+    final authService = AuthService();
 
     return Scaffold(
       appBar: AppBar(
@@ -676,6 +751,24 @@ class SettingsPage extends StatelessWidget {
                 themeProvider.toggleTheme();
               },
             ),
+          ),
+          ListTile(
+            leading: Icon(
+              Icons.logout,
+              color: colorScheme.error,
+            ),
+            title: Text(
+              'Wyloguj się',
+              style: TextStyle(color: colorScheme.error),
+            ),
+            onTap: () async {
+              await authService.signOut();
+              if (context.mounted) {
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (_) => const LoginScreen()),
+                );
+              }
+            },
           ),
         ],
       ),
