@@ -4,6 +4,9 @@ import 'dart:math';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
 import 'widgets/shuffle_song_widget.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+import 'services/auth_service.dart';
 
 // Dodaj klasę ThemeProvider
 class ThemeProvider with ChangeNotifier {
@@ -36,7 +39,11 @@ class ThemeProvider with ChangeNotifier {
   }
 }
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(
     ChangeNotifierProvider(
       create: (_) => ThemeProvider(),
@@ -67,7 +74,7 @@ class MyApp extends StatelessWidget {
               onBackground: Colors.black87,
             ),
         useMaterial3: true,
-            cardTheme: CardTheme(
+            cardTheme: CardThemeData(
               color: Colors.white,
               elevation: 2,
               shape: RoundedRectangleBorder(
@@ -114,7 +121,7 @@ class MyApp extends StatelessWidget {
               onBackground: Colors.white,
             ),
         useMaterial3: true,
-            cardTheme: CardTheme(
+            cardTheme: CardThemeData(
               color: const Color(0xFF151C25),
               elevation: 2,
               shape: RoundedRectangleBorder(
@@ -163,20 +170,157 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _resetEmailController = TextEditingController();
+  final AuthService _authService = AuthService();
   String _errorMessage = '';
+  bool _isLoading = false;
+  bool _isRegistering = false;
 
-  void _login() {
-    if (_usernameController.text == 'admin' && _passwordController.text == '1234') {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const RouletteHomePage()),
-      );
-    } else {
+  Future<void> _handleAuth() async {
+    if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
       setState(() {
-        _errorMessage = 'Nieprawidłowa nazwa użytkownika lub hasło';
+        _errorMessage = 'Proszę wypełnić wszystkie pola';
       });
+      return;
     }
+
+    setState(() {
+      _isLoading = true;
+      _errorMessage = '';
+    });
+
+    try {
+      if (_isRegistering) {
+        await _authService.registerWithEmailAndPassword(
+          _emailController.text,
+          _passwordController.text,
+        );
+      } else {
+        await _authService.signInWithEmailAndPassword(
+          _emailController.text,
+          _passwordController.text,
+        );
+      }
+      
+      if (mounted) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const RouletteHomePage()),
+        );
+      }
+    } catch (e) {
+      setState(() {
+        _errorMessage = e.toString().contains('user-not-found') 
+            ? 'Użytkownik nie istnieje'
+            : e.toString().contains('wrong-password')
+                ? 'Nieprawidłowe hasło'
+                : e.toString().contains('email-already-in-use')
+                    ? 'Email jest już używany'
+                    : 'Wystąpił błąd podczas logowania';
+      });
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _handleGoogleSignIn() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = '';
+    });
+
+    try {
+      await _authService.signInWithGoogle();
+      if (mounted) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const RouletteHomePage()),
+        );
+      }
+    } catch (e) {
+      setState(() {
+        _errorMessage = e.toString();
+      });
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _showResetPasswordDialog() async {
+    _resetEmailController.text = _emailController.text; // Pre-fill with current email if any
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Resetowanie hasła'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'Wprowadź swój adres email, a wyślemy Ci link do resetowania hasła.',
+                style: TextStyle(fontSize: 14),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: _resetEmailController,
+                decoration: const InputDecoration(
+                  hintText: 'Email',
+                  border: OutlineInputBorder(),
+                ),
+                keyboardType: TextInputType.emailAddress,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Anuluj'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                if (_resetEmailController.text.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Proszę wprowadzić adres email')),
+                  );
+                  return;
+                }
+
+                try {
+                  await _authService.resetPassword(_resetEmailController.text);
+                  if (context.mounted) {
+                    Navigator.of(context).pop();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Link do resetowania hasła został wysłany na podany adres email'),
+                        backgroundColor: Colors.green,
+                      ),
+                    );
+                  }
+                } catch (e) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Błąd: ${e.toString()}'),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
+                }
+              },
+              child: const Text('Wyślij'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -221,7 +365,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ],
               ),
               Text(
-                'Logowanie',
+                _isRegistering ? 'Rejestracja' : 'Logowanie',
                 style: TextStyle(
                   color: colorScheme.onSurface,
                   fontSize: 24,
@@ -230,10 +374,10 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               const SizedBox(height: 20),
               TextField(
-                controller: _usernameController,
+                controller: _emailController,
                 style: TextStyle(color: colorScheme.onSurface),
                 decoration: InputDecoration(
-                  hintText: 'Nazwa użytkownika',
+                  hintText: 'Email',
                   hintStyle: TextStyle(color: colorScheme.onSurface.withOpacity(0.6)),
                   enabledBorder: UnderlineInputBorder(
                     borderSide: BorderSide(color: colorScheme.onSurface.withOpacity(0.2)),
@@ -259,6 +403,17 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
               ),
+              if (!_isRegistering) // Show only on login screen
+                TextButton(
+                  onPressed: _isLoading ? null : _showResetPasswordDialog,
+                  child: Text(
+                    'Zapomniałeś hasła?',
+                    style: TextStyle(
+                      color: colorScheme.primary,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
               if (_errorMessage.isNotEmpty)
                 Padding(
                   padding: const EdgeInsets.only(top: 10),
@@ -281,8 +436,60 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                 ),
-                onPressed: _login,
-                child: const Text('Zaloguj się'),
+                onPressed: _isLoading ? null : _handleAuth,
+                child: _isLoading
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                        ),
+                      )
+                    : Text(_isRegistering ? 'Zarejestruj się' : 'Zaloguj się'),
+              ),
+              const SizedBox(height: 10),
+              TextButton(
+                onPressed: _isLoading
+                    ? null
+                    : () {
+                        setState(() {
+                          _isRegistering = !_isRegistering;
+                          _errorMessage = '';
+                        });
+                      },
+                child: Text(
+                  _isRegistering
+                      ? 'Masz już konto? Zaloguj się'
+                      : 'Nie masz konta? Zarejestruj się',
+                  style: TextStyle(color: colorScheme.primary),
+                ),
+              ),
+              const SizedBox(height: 20),
+              const Text(
+                'lub',
+                style: TextStyle(color: Colors.grey),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton.icon(
+                icon: Image.network(
+                  'https://www.google.com/favicon.ico',
+                  height: 24,
+                ),
+                label: const Text('Zaloguj się przez Google'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: isDark ? colorScheme.surface : Colors.white,
+                  foregroundColor: isDark ? Colors.white : Colors.black87,
+                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(24),
+                    side: BorderSide(
+                      color: isDark ? Colors.transparent : Colors.black12,
+                      width: 1,
+                    ),
+                  ),
+                ),
+                onPressed: _isLoading ? null : _handleGoogleSignIn,
               ),
             ],
           ),
@@ -652,6 +859,7 @@ class SettingsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final colorScheme = Theme.of(context).colorScheme;
+    final authService = AuthService();
 
     return Scaffold(
       appBar: AppBar(
@@ -676,6 +884,24 @@ class SettingsPage extends StatelessWidget {
                 themeProvider.toggleTheme();
               },
             ),
+          ),
+          ListTile(
+            leading: Icon(
+              Icons.logout,
+              color: colorScheme.error,
+            ),
+            title: Text(
+              'Wyloguj się',
+              style: TextStyle(color: colorScheme.error),
+            ),
+            onTap: () async {
+              await authService.signOut();
+              if (context.mounted) {
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (_) => const LoginScreen()),
+                );
+              }
+            },
           ),
         ],
       ),
