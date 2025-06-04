@@ -356,9 +356,17 @@ class _FoodCategoryDetailScreenState extends State<FoodCategoryDetailScreen> wit
                                       setState(() {
                                         _selectedRecipe = recipe;
                                       });
+                                      if (recipe == null) {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          const SnackBar(
+                                            content: Text('Przepis nie jest jeszcze dostępny'),
+                                            duration: Duration(seconds: 2),
+                                          ),
+                                        );
+                                      }
                                     },
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: colorScheme.secondary,
+                                      backgroundColor: colorScheme.secondary.withOpacity(0.8),
                                       padding: const EdgeInsets.symmetric(
                                         vertical: 12,
                                       ),
@@ -382,7 +390,7 @@ class _FoodCategoryDetailScreenState extends State<FoodCategoryDetailScreen> wit
                                       // To be implemented in future phase
                                     },
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: colorScheme.tertiary,
+                                      backgroundColor: colorScheme.tertiary.withOpacity(0.8),
                                       padding: const EdgeInsets.symmetric(
                                         vertical: 12,
                                       ),

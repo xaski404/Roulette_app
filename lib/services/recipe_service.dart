@@ -35,6 +35,39 @@ Przygotowanie:
 5. Dopraw solą i pieprzem
 6. Posyp posiekanym szczypiorkiem''',
 
+    'Kanapki z awokado': '''
+Składniki:
+- 1 dojrzałe awokado
+- 2-3 kromki chleba
+- Sok z cytryny
+- Sól i pieprz
+- Kiełki lub rukola (opcjonalnie)
+- Pomidor (opcjonalnie)
+
+Przygotowanie:
+1. Przekrój i obierz awokado
+2. Rozgnieć miąższ widelcem
+3. Skrop sokiem z cytryny
+4. Dopraw solą i pieprzem
+5. Opiecz chleb
+6. Nałóż pastę i dodatki''',
+
+    'Jogurt z granolą': '''
+Składniki:
+- Jogurt naturalny
+- Granola domowa lub kupna
+- Miód
+- Owoce sezonowe
+- Orzechy (opcjonalnie)
+
+Przygotowanie:
+1. Przełóż jogurt do miski
+2. Posyp granolą
+3. Dodaj pokrojone owoce
+4. Polej miodem
+5. Posyp orzechami
+6. Podawaj od razu''',
+
     // Lunch recipes
     'Sałatka z grillowanym kurczakiem': '''
 Składniki:
@@ -71,6 +104,42 @@ Przygotowanie:
 5. Dopraw bazylią i przyprawami
 6. Połącz z makaronem''',
 
+    'Wrap z hummusem i warzywami': '''
+Składniki:
+- Tortille pszenne
+- Hummus
+- Sałata
+- Pomidor
+- Ogórek
+- Papryka
+- Czerwona cebula
+
+Przygotowanie:
+1. Podgrzej tortillę
+2. Posmaruj hummusem
+3. Pokrój warzywa w paski
+4. Ułóż warzywa na tortilli
+5. Zwiń ciasno wrap
+6. Przekrój po skosie''',
+
+    'Bowl z quinoa i warzywami': '''
+Składniki:
+- Quinoa
+- Ciecierzyca
+- Brokuł
+- Marchewka
+- Szpinak
+- Awokado
+- Sos tahini
+
+Przygotowanie:
+1. Ugotuj quinoa
+2. Upiecz warzywa w piekarniku
+3. Podgrzej ciecierzycę
+4. Przygotuj sos tahini
+5. Ułóż składniki w misce
+6. Polej sosem''',
+
     // Dinner recipes
     'Łosoś z pieczonymi warzywami': '''
 Składniki:
@@ -105,6 +174,76 @@ Przygotowanie:
 4. Smaż z obu stron na złoty kolor
 5. Odsącz na ręczniku papierowym
 6. Podawaj z ziemniakami i surówką''',
+
+    'Curry z ciecierzycą': '''
+Składniki:
+- Ciecierzyca
+- Mleko kokosowe
+- Cebula
+- Czosnek
+- Przyprawy curry
+- Pomidory
+- Ryż do podania
+
+Przygotowanie:
+1. Podsmaż cebulę i czosnek
+2. Dodaj przyprawy curry
+3. Wlej mleko kokosowe
+4. Dodaj ciecierzycę i pomidory
+5. Gotuj 15-20 minut
+6. Podawaj z ryżem''',
+
+    'Pizza domowa': '''
+Składniki:
+- Ciasto do pizzy
+- Sos pomidorowy
+- Ser mozzarella
+- Ulubione dodatki
+- Oliwa
+- Oregano
+
+Przygotowanie:
+1. Rozwałkuj ciasto
+2. Posmaruj sosem
+3. Dodaj ser i dodatki
+4. Skrop oliwą
+5. Piecz w 220°C przez 12-15 minut
+6. Posyp oregano przed podaniem''',
+
+    // Sweet treats
+    'Brownie': '''
+Składniki:
+- Czekolada gorzka
+- Masło
+- Jajka
+- Cukier
+- Mąka
+- Proszek do pieczenia
+
+Przygotowanie:
+1. Rozpuść czekoladę z masłem
+2. Ubij jajka z cukrem
+3. Połącz składniki
+4. Przełóż do formy
+5. Piecz w 180°C przez 25 minut
+6. Studź przed krojeniem''',
+
+    'Szarlotka': '''
+Składniki:
+- Mąka
+- Masło
+- Jajka
+- Jabłka
+- Cynamon
+- Cukier
+
+Przygotowanie:
+1. Zagnieć ciasto
+2. Przygotuj jabłka z cynamonem
+3. Wyłóż ciasto do formy
+4. Dodaj jabłka
+5. Przykryj kratką z ciasta
+6. Piecz w 180°C przez 45 minut''',
   };
 
   // Get recipe for a specific meal
