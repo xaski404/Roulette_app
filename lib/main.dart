@@ -172,6 +172,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _resetEmailController = TextEditingController();
   final AuthService _authService = AuthService();
   String _errorMessage = '';
   bool _isLoading = false;
@@ -251,6 +252,75 @@ class _LoginScreenState extends State<LoginScreen> {
         });
       }
     }
+  }
+
+  Future<void> _showResetPasswordDialog() async {
+    _resetEmailController.text = _emailController.text; // Pre-fill with current email if any
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Resetowanie hasła'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'Wprowadź swój adres email, a wyślemy Ci link do resetowania hasła.',
+                style: TextStyle(fontSize: 14),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: _resetEmailController,
+                decoration: const InputDecoration(
+                  hintText: 'Email',
+                  border: OutlineInputBorder(),
+                ),
+                keyboardType: TextInputType.emailAddress,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Anuluj'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                if (_resetEmailController.text.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Proszę wprowadzić adres email')),
+                  );
+                  return;
+                }
+
+                try {
+                  await _authService.resetPassword(_resetEmailController.text);
+                  if (context.mounted) {
+                    Navigator.of(context).pop();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Link do resetowania hasła został wysłany na podany adres email'),
+                        backgroundColor: Colors.green,
+                      ),
+                    );
+                  }
+                } catch (e) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Błąd: ${e.toString()}'),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
+                }
+              },
+              child: const Text('Wyślij'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -333,6 +403,17 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
               ),
+              if (!_isRegistering) // Show only on login screen
+                TextButton(
+                  onPressed: _isLoading ? null : _showResetPasswordDialog,
+                  child: Text(
+                    'Zapomniałeś hasła?',
+                    style: TextStyle(
+                      color: colorScheme.primary,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
               if (_errorMessage.isNotEmpty)
                 Padding(
                   padding: const EdgeInsets.only(top: 10),

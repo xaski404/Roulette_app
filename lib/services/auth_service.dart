@@ -13,6 +13,15 @@ class AuthService {
   // Stream of auth changes
   Stream<User?> get authStateChanges => _auth.authStateChanges();
 
+  // Reset password
+  Future<void> resetPassword(String email) async {
+    try {
+      await _auth.sendPasswordResetEmail(email: email);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   // Sign in with email and password
   Future<UserCredential> signInWithEmailAndPassword(String email, String password) async {
     try {
