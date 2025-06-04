@@ -7,6 +7,7 @@ import 'widgets/shuffle_song_widget.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'services/auth_service.dart';
+import 'screens/food_categories_screen.dart';
 
 // Dodaj klasę ThemeProvider
 class ThemeProvider with ChangeNotifier {
@@ -949,13 +950,7 @@ class _RoulettePageState extends State<RoulettePage> with SingleTickerProviderSt
       'Przeznacz 30 minut na porządki w dowolnym miejscu w domu.',
       'Spędź 10 minut medytując lub wykonując ćwiczenia oddechowe.',
     ],
-    'Jedzenie': [
-      'Ugotuj coś nowego z przepisu z internetu.',
-      'Zrób cały dzień bez słodyczy.',
-      'Zjedz dziś 5 porcji warzyw.',
-      'Przygotuj zdrowe śniadanie z owsianką lub smoothie.',
-      'Zrób domową pizzę od podstaw.',
-    ],
+    'Jedzenie': [], // Empty list as we'll handle food differently
     'Rozrywka': [
       'Zagraj w grę planszową lub karcianą.',
       'Obejrzyj film z listy klasyków, których jeszcze nie widziałeś/aś.',
@@ -1085,15 +1080,23 @@ class _RoulettePageState extends State<RoulettePage> with SingleTickerProviderSt
   }
 
   void _openChallengeScreen(int catIndex) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => ChallengeScreen(
-          category: categories[catIndex],
-          challenges: wyzwania[categories[catIndex]] ?? [],
-          pieColors: pieColors,
+    if (categories[catIndex] == 'Jedzenie') {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => const FoodCategoriesScreen(),
         ),
-      ),
-    );
+      );
+    } else {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => ChallengeScreen(
+            category: categories[catIndex],
+            challenges: wyzwania[categories[catIndex]] ?? [],
+            pieColors: pieColors,
+          ),
+        ),
+      );
+    }
   }
 
   @override
