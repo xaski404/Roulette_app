@@ -84,11 +84,18 @@ class _FoodCategoryDetailScreenState extends State<FoodCategoryDetailScreen> wit
   void dispose() {
     _spinController.dispose();
     _bounceController.dispose();
+    // Ensure we clean up the passing meal state
+    _currentPassingMeal = null;
     super.dispose();
   }
 
   void _updatePassingMeal() {
-    if (!_isSpinning || _meals.isEmpty) return;
+    if (!_isSpinning || _meals.isEmpty) {
+      setState(() {
+        _currentPassingMeal = null;
+      });
+      return;
+    }
 
     // Calculate current angle and segment
     final currentAngle = _spinAnimation.value * (2 * pi * 5); // 5 full rotations
@@ -96,23 +103,28 @@ class _FoodCategoryDetailScreenState extends State<FoodCategoryDetailScreen> wit
     final currentSegment = (normalizedAngle / segmentAngle).floor() % _meals.length;
 
     // Update passing meal with smooth transitions
-    setState(() {
-      _currentPassingMeal = _meals[currentSegment];
-    });
+    if (mounted) {
+      setState(() {
+        _currentPassingMeal = _meals[currentSegment];
+      });
+    }
 
     // Add bounce effect near the end of the animation
     if (_spinAnimation.value > 0.8) {
-      final progress = (_spinAnimation.value - 0.8) / 0.2;
       final shouldBounce = (normalizedAngle / (segmentAngle / 2)).floor() % 2 == 0;
       
       if (shouldBounce && !_bounceController.isAnimating) {
-        _bounceController.forward().then((_) => _bounceController.reverse());
+        _bounceController.forward().then((_) {
+          if (mounted) {
+            _bounceController.reverse();
+          }
+        });
       }
     }
   }
 
   void _handleSpinStatus(AnimationStatus status) {
-    if (status == AnimationStatus.completed) {
+    if (status == AnimationStatus.completed && mounted) {
       setState(() {
         _isSpinning = false;
         _currentPassingMeal = null;
@@ -257,6 +269,12 @@ class _FoodCategoryDetailScreenState extends State<FoodCategoryDetailScreen> wit
                       height: 40,
                       child: AnimatedSwitcher(
                         duration: const Duration(milliseconds: 200),
+                        transitionBuilder: (Widget child, Animation<double> animation) {
+                          return FadeTransition(
+                            opacity: animation,
+                            child: child,
+                          );
+                        },
                         child: _isSpinning && _currentPassingMeal != null
                             ? Container(
                                 key: ValueKey(_currentPassingMeal),
@@ -273,7 +291,10 @@ class _FoodCategoryDetailScreenState extends State<FoodCategoryDetailScreen> wit
                                   textAlign: TextAlign.center,
                                 ),
                               )
-                            : const SizedBox.shrink(),
+                            : Container(
+                                key: const ValueKey('empty'),
+                                height: 40,
+                              ),
                       ),
                     ),
 
