@@ -227,6 +227,32 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  Future<void> _handleGoogleSignIn() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = '';
+    });
+
+    try {
+      await _authService.signInWithGoogle();
+      if (mounted) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const RouletteHomePage()),
+        );
+      }
+    } catch (e) {
+      setState(() {
+        _errorMessage = e.toString();
+      });
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -357,6 +383,32 @@ class _LoginScreenState extends State<LoginScreen> {
                       : 'Nie masz konta? Zarejestruj się',
                   style: TextStyle(color: colorScheme.primary),
                 ),
+              ),
+              const SizedBox(height: 20),
+              const Text(
+                'lub',
+                style: TextStyle(color: Colors.grey),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton.icon(
+                icon: Image.network(
+                  'https://www.google.com/favicon.ico',
+                  height: 24,
+                ),
+                label: const Text('Zaloguj się przez Google'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: isDark ? colorScheme.surface : Colors.white,
+                  foregroundColor: isDark ? Colors.white : Colors.black87,
+                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(24),
+                    side: BorderSide(
+                      color: isDark ? Colors.transparent : Colors.black12,
+                      width: 1,
+                    ),
+                  ),
+                ),
+                onPressed: _isLoading ? null : _handleGoogleSignIn,
               ),
             ],
           ),
