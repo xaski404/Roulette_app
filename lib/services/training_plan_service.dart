@@ -467,6 +467,192 @@ class TrainingPlanService {
         ),
       ],
     },
+    'Cardio': {
+      'HIIT cardio': [
+        TrainingPlan(
+          name: 'High Intensity Intervals',
+          exercises: [
+            Exercise(name: 'Dynamic Warm-up (full body)', sets: 1, reps: 8, restBetweenSets: 0), // minutes
+            Exercise(name: 'Burpee Intervals (85-90% max HR)', sets: 8, reps: 45, restBetweenSets: 30), // seconds
+            Exercise(name: 'Mountain Climbers (fast pace)', sets: 8, reps: 45, restBetweenSets: 30), // seconds
+            Exercise(name: 'Jump Rope Double Unders', sets: 6, reps: 30, restBetweenSets: 30), // seconds
+            Exercise(name: 'High Knees Sprint', sets: 6, reps: 30, restBetweenSets: 30), // seconds
+            Exercise(name: 'Jumping Jacks (power)', sets: 6, reps: 30, restBetweenSets: 30), // seconds
+            Exercise(name: 'Plank to Downward Dog', sets: 3, reps: 45, restBetweenSets: 30), // seconds
+            Exercise(name: 'Cool Down Walk', sets: 1, reps: 5, restBetweenSets: 0), // minutes
+          ],
+          restBetweenExercises: 60,
+        ),
+      ],
+      'Steady state cardio': [
+        TrainingPlan(
+          name: 'Endurance Builder',
+          exercises: [
+            Exercise(name: 'Light Dynamic Stretching', sets: 1, reps: 5, restBetweenSets: 0), // minutes
+            Exercise(name: 'Steady Pace Walk (Zone 2)', sets: 1, reps: 5, restBetweenSets: 0), // minutes
+            Exercise(name: 'Light Jog (65-70% max HR)', sets: 1, reps: 20, restBetweenSets: 0), // minutes
+            Exercise(name: 'Power Walking Intervals', sets: 4, reps: 3, restBetweenSets: 60), // minutes
+            Exercise(name: 'Steady Run (70-75% max HR)', sets: 1, reps: 15, restBetweenSets: 0), // minutes
+            Exercise(name: 'Incline Walking', sets: 3, reps: 5, restBetweenSets: 60), // minutes
+            Exercise(name: 'Light Cool Down Jog', sets: 1, reps: 5, restBetweenSets: 0), // minutes
+            Exercise(name: 'Stretching', sets: 1, reps: 5, restBetweenSets: 0), // minutes
+          ],
+          restBetweenExercises: 30,
+        ),
+      ],
+      'Rowing': [
+        TrainingPlan(
+          name: 'Rowing Power & Endurance',
+          exercises: [
+            Exercise(name: 'Dynamic Rowing Warm-up', sets: 1, reps: 500, restBetweenSets: 0), // meters
+            Exercise(name: 'Technique Drills (legs-core-arms)', sets: 3, reps: 250, restBetweenSets: 60), // meters
+            Exercise(name: 'Power Strokes (26-28 spm)', sets: 4, reps: 250, restBetweenSets: 90), // meters
+            Exercise(name: 'Steady State (22-24 spm)', sets: 1, reps: 1000, restBetweenSets: 0), // meters
+            Exercise(name: 'Sprint Intervals (30+ spm)', sets: 6, reps: 200, restBetweenSets: 60), // meters
+            Exercise(name: 'Pyramid (20-24-28-24-20 spm)', sets: 1, reps: 1000, restBetweenSets: 0), // meters
+            Exercise(name: 'Cool Down Row', sets: 1, reps: 500, restBetweenSets: 0), // meters
+            Exercise(name: 'Upper Body Stretching', sets: 1, reps: 5, restBetweenSets: 0), // minutes
+          ],
+          restBetweenExercises: 120,
+        ),
+      ],
+    },
+    'Swimming': {
+      'Freestyle technique': [
+        TrainingPlan(
+          name: 'Freestyle Mastery',
+          exercises: [
+            Exercise(name: 'Pool Deck Mobility', sets: 1, reps: 5, restBetweenSets: 0), // minutes
+            Exercise(name: 'Kick Board Drills', sets: 4, reps: 50, restBetweenSets: 30), // meters
+            Exercise(name: 'Pull Buoy Technique', sets: 4, reps: 50, restBetweenSets: 30), // meters
+            Exercise(name: 'Catch Phase Practice', sets: 4, reps: 25, restBetweenSets: 20), // meters
+            Exercise(name: 'Breathing Pattern (3-5-7)', sets: 3, reps: 50, restBetweenSets: 30), // meters
+            Exercise(name: 'Sprint Form', sets: 6, reps: 25, restBetweenSets: 30), // meters
+            Exercise(name: 'Distance Form', sets: 2, reps: 100, restBetweenSets: 60), // meters
+            Exercise(name: 'Cool Down Easy Swim', sets: 1, reps: 200, restBetweenSets: 0), // meters
+          ],
+          restBetweenExercises: 90,
+        ),
+      ],
+      'Endurance swimming': [
+        TrainingPlan(
+          name: 'Distance Swimming',
+          exercises: [
+            Exercise(name: 'Warm-up Mixed Strokes', sets: 1, reps: 400, restBetweenSets: 0), // meters
+            Exercise(name: 'Pyramid Sets (50-100-150-200)', sets: 1, reps: 500, restBetweenSets: 60), // meters
+            Exercise(name: 'Tempo Intervals', sets: 5, reps: 200, restBetweenSets: 45), // meters
+            Exercise(name: 'Pull Sets (no kicks)', sets: 4, reps: 100, restBetweenSets: 30), // meters
+            Exercise(name: 'Kick Sets (no arms)', sets: 4, reps: 50, restBetweenSets: 30), // meters
+            Exercise(name: 'Distance Pace Work', sets: 1, reps: 400, restBetweenSets: 0), // meters
+            Exercise(name: 'Sprint-Recovery Mix', sets: 4, reps: 100, restBetweenSets: 45), // meters
+            Exercise(name: 'Cool Down Choice Stroke', sets: 1, reps: 200, restBetweenSets: 0), // meters
+          ],
+          restBetweenExercises: 120,
+        ),
+      ],
+    },
+    'Cycling': {
+      'Road cycling': [
+        TrainingPlan(
+          name: 'Road Endurance',
+          exercises: [
+            Exercise(name: 'Dynamic Stretching', sets: 1, reps: 8, restBetweenSets: 0), // minutes
+            Exercise(name: 'Warm-up Spin (60-70% FTP)', sets: 1, reps: 15, restBetweenSets: 0), // minutes
+            Exercise(name: 'Tempo Intervals (75-85% FTP)', sets: 4, reps: 10, restBetweenSets: 180), // minutes
+            Exercise(name: 'Hill Climbs (85-95% FTP)', sets: 3, reps: 5, restBetweenSets: 180), // minutes
+            Exercise(name: 'Sprint Bursts (>100% FTP)', sets: 5, reps: 30, restBetweenSets: 90), // seconds
+            Exercise(name: 'Steady State (70-75% FTP)', sets: 1, reps: 20, restBetweenSets: 0), // minutes
+            Exercise(name: 'Cool Down Spin', sets: 1, reps: 10, restBetweenSets: 0), // minutes
+            Exercise(name: 'Post-Ride Stretching', sets: 1, reps: 8, restBetweenSets: 0), // minutes
+          ],
+          restBetweenExercises: 120,
+        ),
+      ],
+      'Mountain biking': [
+        TrainingPlan(
+          name: 'Trail Skills & Power',
+          exercises: [
+            Exercise(name: 'Bike Check & Warm-up', sets: 1, reps: 10, restBetweenSets: 0), // minutes
+            Exercise(name: 'Technical Skills Course', sets: 3, reps: 10, restBetweenSets: 120), // minutes
+            Exercise(name: 'Hill Climb Intervals', sets: 4, reps: 5, restBetweenSets: 180), // minutes
+            Exercise(name: 'Descent Practice', sets: 4, reps: 3, restBetweenSets: 120), // minutes
+            Exercise(name: 'Power Output Bursts', sets: 6, reps: 30, restBetweenSets: 60), // seconds
+            Exercise(name: 'Balance & Control Drills', sets: 3, reps: 5, restBetweenSets: 60), // minutes
+            Exercise(name: 'Trail Endurance Loop', sets: 1, reps: 15, restBetweenSets: 0), // minutes
+            Exercise(name: 'Cool Down & Review', sets: 1, reps: 10, restBetweenSets: 0), // minutes
+          ],
+          restBetweenExercises: 180,
+        ),
+      ],
+    },
+    'Martial arts': {
+      'Boxing': [
+        TrainingPlan(
+          name: 'Boxing Fundamentals',
+          exercises: [
+            Exercise(name: 'Dynamic Boxing Warm-up', sets: 1, reps: 10, restBetweenSets: 0), // minutes
+            Exercise(name: 'Jump Rope Footwork', sets: 3, reps: 3, restBetweenSets: 60), // minutes
+            Exercise(name: 'Shadow Boxing Rounds', sets: 4, reps: 3, restBetweenSets: 60), // minutes
+            Exercise(name: 'Heavy Bag Combinations', sets: 5, reps: 3, restBetweenSets: 60), // minutes
+            Exercise(name: 'Speed Bag Technique', sets: 3, reps: 2, restBetweenSets: 45), // minutes
+            Exercise(name: 'Defensive Movement Drills', sets: 3, reps: 3, restBetweenSets: 60), // minutes
+            Exercise(name: 'Core Boxing Circuit', sets: 3, reps: 3, restBetweenSets: 60), // minutes
+            Exercise(name: 'Cool Down & Stretching', sets: 1, reps: 10, restBetweenSets: 0), // minutes
+          ],
+          restBetweenExercises: 120,
+        ),
+      ],
+      'Kickboxing': [
+        TrainingPlan(
+          name: 'Kickboxing Power',
+          exercises: [
+            Exercise(name: 'Dynamic Kick Warm-up', sets: 1, reps: 12, restBetweenSets: 0), // minutes
+            Exercise(name: 'Technical Kick Practice', sets: 4, reps: 20, restBetweenSets: 60), // kicks per side
+            Exercise(name: 'Punch-Kick Combinations', sets: 5, reps: 3, restBetweenSets: 60), // minutes
+            Exercise(name: 'Pad Work Rounds', sets: 4, reps: 3, restBetweenSets: 60), // minutes
+            Exercise(name: 'Power Kick Drills', sets: 3, reps: 10, restBetweenSets: 45), // kicks per side
+            Exercise(name: 'Defensive Movement', sets: 3, reps: 3, restBetweenSets: 60), // minutes
+            Exercise(name: 'Cardio Kick Intervals', sets: 3, reps: 3, restBetweenSets: 60), // minutes
+            Exercise(name: 'Flexibility & Cool Down', sets: 1, reps: 10, restBetweenSets: 0), // minutes
+          ],
+          restBetweenExercises: 120,
+        ),
+      ],
+    },
+    'Yoga and stretching': {
+      'Power yoga': [
+        TrainingPlan(
+          name: 'Dynamic Flow',
+          exercises: [
+            Exercise(name: 'Sun Salutation A', sets: 3, reps: 5, restBetweenSets: 0), // flows
+            Exercise(name: 'Standing Power Sequence', sets: 1, reps: 10, restBetweenSets: 0), // minutes
+            Exercise(name: 'Warrior Flow Series', sets: 1, reps: 12, restBetweenSets: 0), // minutes
+            Exercise(name: 'Balance Pose Series', sets: 1, reps: 8, restBetweenSets: 0), // minutes
+            Exercise(name: 'Core Power Sequence', sets: 1, reps: 10, restBetweenSets: 0), // minutes
+            Exercise(name: 'Inversion Practice', sets: 1, reps: 8, restBetweenSets: 0), // minutes
+            Exercise(name: 'Back Bending Series', sets: 1, reps: 8, restBetweenSets: 0), // minutes
+            Exercise(name: 'Savasana', sets: 1, reps: 5, restBetweenSets: 0), // minutes
+          ],
+          restBetweenExercises: 30,
+        ),
+      ],
+      'Flexibility training': [
+        TrainingPlan(
+          name: 'Full Body Flexibility',
+          exercises: [
+            Exercise(name: 'Joint Mobility Warm-up', sets: 1, reps: 8, restBetweenSets: 0), // minutes
+            Exercise(name: 'Dynamic Stretching Flow', sets: 1, reps: 10, restBetweenSets: 0), // minutes
+            Exercise(name: 'Lower Body Focus', sets: 3, reps: 45, restBetweenSets: 15), // seconds per stretch
+            Exercise(name: 'Upper Body Series', sets: 3, reps: 45, restBetweenSets: 15), // seconds per stretch
+            Exercise(name: 'Spine Mobility Work', sets: 3, reps: 45, restBetweenSets: 15), // seconds per movement
+            Exercise(name: 'Split Training', sets: 4, reps: 60, restBetweenSets: 30), // seconds per side
+            Exercise(name: 'Advanced Stretches', sets: 2, reps: 45, restBetweenSets: 15), // seconds per stretch
+            Exercise(name: 'Relaxation Poses', sets: 1, reps: 5, restBetweenSets: 0), // minutes
+          ],
+          restBetweenExercises: 60,
+        ),
+      ],
+    },
   };
 
   // Initialize default training plans for a user
