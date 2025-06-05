@@ -6,7 +6,12 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class TravelScreen extends StatefulWidget {
-  const TravelScreen({super.key});
+  final String initialCategory;
+
+  const TravelScreen({
+    super.key,
+    required this.initialCategory,
+  });
 
   @override
   State<TravelScreen> createState() => _TravelScreenState();
@@ -16,7 +21,7 @@ class _TravelScreenState extends State<TravelScreen> with TickerProviderStateMix
   String? _selectedDestination;
   String? _currentPassingDestination;
   bool _isSpinning = false;
-  String _selectedCategory = TravelService.QUICK_TRIP;
+  late String _selectedCategory;
   
   // Controllers for different animation aspects
   late AnimationController _spinController;
@@ -37,6 +42,7 @@ class _TravelScreenState extends State<TravelScreen> with TickerProviderStateMix
   @override
   void initState() {
     super.initState();
+    _selectedCategory = widget.initialCategory;
     
     // Main spin animation controller
     _spinController = AnimationController(
@@ -233,51 +239,17 @@ class _TravelScreenState extends State<TravelScreen> with TickerProviderStateMix
     final destinations = TravelService.destinations[_selectedCategory] ?? [];
 
     return Scaffold(
+      backgroundColor: colorScheme.background,
+      appBar: AppBar(
+        title: Text(_selectedCategory),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
       body: Center(
         child: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Category selection
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: DropdownButtonFormField<String>(
-                  value: _selectedCategory,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 12,
-                    ),
-                  ),
-                  items: [
-                    TravelService.QUICK_TRIP,
-                    TravelService.TRIP_300,
-                    TravelService.TRIP_500,
-                    TravelService.TRIP_POLAND,
-                    TravelService.TRIP_EUROPE,
-                    TravelService.TRIP_WORLDWIDE,
-                  ].map((String category) {
-                    return DropdownMenuItem<String>(
-                      value: category,
-                      child: Text(category),
-                    );
-                  }).toList(),
-                  onChanged: (String? newValue) {
-                    if (newValue != null && newValue != _selectedCategory) {
-                      setState(() {
-                        _selectedCategory = newValue;
-                        _selectedDestination = null;
-                        _currentPassingDestination = null;
-                      });
-                    }
-                  },
-                ),
-              ),
-              const SizedBox(height: 32),
-
               // Roulette wheel with selector
               SizedBox(
                 width: 250,
