@@ -83,6 +83,14 @@ class _MusicCategoryDetailScreenState extends State<MusicCategoryDetailScreen> w
       setState(() {
         _isSpinning = false;
         _currentPassingOption = null;
+        if (_musicOptions.isNotEmpty) {
+          final random = Random();
+          String newOption;
+          do {
+            newOption = _musicOptions[random.nextInt(_musicOptions.length)];
+          } while (_musicOptions.length > 1 && newOption == _selectedOption);
+          _selectedOption = newOption;
+        }
       });
     }
   }
@@ -110,13 +118,8 @@ class _MusicCategoryDetailScreenState extends State<MusicCategoryDetailScreen> w
     
     setState(() {
       _isSpinning = true;
-      final random = Random();
-      String newOption;
-      do {
-        newOption = _musicOptions[random.nextInt(_musicOptions.length)];
-      } while (_musicOptions.length > 1 && newOption == _selectedOption);
-      _selectedOption = newOption;
-
+      _selectedOption = null;
+      
       // Reset and start animations
       _spinController.reset();
       _spinController.forward();
@@ -250,8 +253,8 @@ class _MusicCategoryDetailScreenState extends State<MusicCategoryDetailScreen> w
                       ),
                     ),
                     const SizedBox(height: 32),
-                    // Selected option display
-                    if (_selectedOption != null) ...[
+                    // Show selected option only after spinning completes
+                    if (!_isSpinning && _selectedOption != null) ...[
                       Container(
                         padding: const EdgeInsets.all(24),
                         margin: const EdgeInsets.symmetric(horizontal: 16),
