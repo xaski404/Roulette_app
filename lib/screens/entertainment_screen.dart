@@ -397,48 +397,92 @@ class _EntertainmentScreenState extends State<EntertainmentScreen>
 
                   // Wheel
                   Center(
-                    child: AnimatedBuilder(
-                      animation: Listenable.merge([_spinAnimation, _bounceAnimation]),
-                      builder: (context, child) {
-                        return Transform.rotate(
-                          angle: _spinAnimation.value * (2 * pi * 5) + _bounceAnimation.value,
-                          child: Container(
-                            width: 250,
-                            height: 250,
+                    child: SizedBox(
+                      width: 250,
+                      height: 270,
+                      child: Stack(
+                        alignment: Alignment.center,
+                        clipBehavior: Clip.none,
+                        children: [
+                          AnimatedBuilder(
+                            animation: Listenable.merge([_spinAnimation, _bounceAnimation]),
+                            builder: (context, child) {
+                              return Transform.rotate(
+                                angle: _spinAnimation.value * (2 * pi * 5) + _bounceAnimation.value,
+                                child: Container(
+                                  width: 250,
+                                  height: 250,
+                                  decoration: BoxDecoration(
+                                    color: colorScheme.surface,
+                                    shape: BoxShape.circle,
+                                    boxShadow: isDark ? null : [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.1),
+                                        blurRadius: 10,
+                                        offset: const Offset(0, 4),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(10.0),
+                                    child: PieChart(
+                                      PieChartData(
+                                        sectionsSpace: 2,
+                                        centerSpaceRadius: 50,
+                                        sections: List.generate(
+                                          numSegments,
+                                          (i) => PieChartSectionData(
+                                            color: pieColors[i % pieColors.length],
+                                            value: 1,
+                                            title: '',
+                                            radius: 90,
+                                            showTitle: false,
+                                          ),
+                                        ),
+                                        borderData: FlBorderData(show: false),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                          // Center circle
+                          Container(
+                            width: 80,
+                            height: 80,
                             decoration: BoxDecoration(
                               color: colorScheme.surface,
                               shape: BoxShape.circle,
-                              boxShadow: isDark ? null : [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
-                                  blurRadius: 10,
-                                  offset: const Offset(0, 4),
-                                ),
-                              ],
+                              border: Border.all(
+                                color: isDark ? Colors.white24 : Colors.black12,
+                                width: 2,
+                              ),
                             ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(10.0),
-                              child: PieChart(
-                                PieChartData(
-                                  sectionsSpace: 0,
-                                  centerSpaceRadius: 50,
-                                  sections: List.generate(
-                                    numSegments,
-                                    (i) => PieChartSectionData(
-                                      color: pieColors[i % pieColors.length],
-                                      value: 1,
-                                      title: '',
-                                      radius: 90,
-                                      showTitle: false,
-                                    ),
-                                  ),
-                                  borderData: FlBorderData(show: false),
-                                ),
+                            child: Center(
+                              child: Icon(
+                                widget.category == EntertainmentService.GAME ? Icons.sports_esports :
+                                widget.category == EntertainmentService.MOVIE ? Icons.movie :
+                                Icons.tv,  // TV Series
+                                color: colorScheme.primary,
+                                size: 32,
                               ),
                             ),
                           ),
-                        );
-                      },
+                          // Selector triangle
+                          Positioned(
+                            top: -10,
+                            child: Transform.rotate(
+                              angle: pi,
+                              child: Icon(
+                                Icons.play_arrow,
+                                color: colorScheme.primary,
+                                size: 32,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
 

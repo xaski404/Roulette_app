@@ -266,6 +266,7 @@ class _TravelScreenState extends State<TravelScreen> with TickerProviderStateMix
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final isDark = colorScheme.brightness == Brightness.dark;
     final destinations = TravelService.destinations[_selectedCategory] ?? [];
 
     return Scaffold(
@@ -317,7 +318,26 @@ class _TravelScreenState extends State<TravelScreen> with TickerProviderStateMix
                         );
                       },
                     ),
-
+                    // Center circle
+                    Container(
+                      width: 80,
+                      height: 80,
+                      decoration: BoxDecoration(
+                        color: colorScheme.surface,
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: isDark ? Colors.white24 : Colors.black12,
+                          width: 2,
+                        ),
+                      ),
+                      child: Center(
+                        child: Icon(
+                          Icons.place,
+                          color: colorScheme.primary,
+                          size: 32,
+                        ),
+                      ),
+                    ),
                     // Selector triangle
                     Positioned(
                       top: -10,

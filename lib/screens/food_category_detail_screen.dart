@@ -243,6 +243,26 @@ class _FoodCategoryDetailScreenState extends State<FoodCategoryDetailScreen> wit
                               );
                             },
                           ),
+                          // Center circle
+                          Container(
+                            width: 80,
+                            height: 80,
+                            decoration: BoxDecoration(
+                              color: colorScheme.surface,
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: isDark ? Colors.white24 : Colors.black12,
+                                width: 2,
+                              ),
+                            ),
+                            child: Center(
+                              child: Icon(
+                                Icons.restaurant,
+                                color: colorScheme.primary,
+                                size: 32,
+                              ),
+                            ),
+                          ),
                           // Selector triangle
                           Positioned(
                             top: -10,
