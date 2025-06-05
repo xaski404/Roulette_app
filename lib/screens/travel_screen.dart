@@ -125,7 +125,13 @@ class _TravelScreenState extends State<TravelScreen> with TickerProviderStateMix
     if (status == AnimationStatus.completed) {
       setState(() {
         _isSpinning = false;
-        _selectedDestination = _currentPassingDestination;
+        final destinations = TravelService.destinations[_selectedCategory] ?? [];
+        final random = Random();
+        String newDestination;
+        do {
+          newDestination = destinations[random.nextInt(destinations.length)].name;
+        } while (destinations.length > 1 && newDestination == _selectedDestination);
+        _selectedDestination = newDestination;
       });
     }
   }
@@ -133,10 +139,33 @@ class _TravelScreenState extends State<TravelScreen> with TickerProviderStateMix
   void _spinWheel() {
     if (_isSpinning) return;
 
+    final destinations = TravelService.destinations[_selectedCategory] ?? [];
+    if (destinations.isEmpty) return;
+
     setState(() {
       _isSpinning = true;
       _selectedDestination = null;
     });
+
+    // Generate a random number of full rotations (between 3 and 5)
+    final random = Random();
+    final fullRotations = 3 + random.nextInt(3);
+    
+    // Generate a random final position
+    final randomIndex = random.nextInt(destinations.length);
+    final segmentAngle = 2 * pi / destinations.length;
+    final targetAngle = randomIndex * segmentAngle + (segmentAngle / 2);
+    
+    // Calculate the total rotation needed
+    final totalRotation = (fullRotations * 2 * pi) + targetAngle;
+    
+    // Create a new animation with the random target
+    _spinAnimation = Tween<double>(begin: 0, end: totalRotation).animate(
+      CurvedAnimation(
+        parent: _spinController,
+        curve: Curves.easeOutCubic,
+      ),
+    );
 
     _spinController.forward(from: 0);
   }

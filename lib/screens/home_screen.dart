@@ -9,6 +9,10 @@ import 'music_categories_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:provider/provider.dart';
 import '../main.dart';  // For ThemeProvider
+import '../services/auth_service.dart';
+import '../widgets/streak_calendar.dart';
+import '../services/streak_service.dart';
+import '../widgets/user_menu_panel.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -42,6 +46,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     Color(0xFFF7D6B3),  // Light orange
   ];
 
+  final AuthService _authService = AuthService();
+  final StreakService _streakService = StreakService();
+
   @override
   void initState() {
     super.initState();
@@ -74,6 +81,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
     _spinAnimation.addListener(_updatePassingActivity);
     _spinAnimation.addStatusListener(_handleSpinStatus);
+    _recordDailyActivity();
   }
 
   void _updatePassingActivity() {
@@ -100,8 +108,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     if (status == AnimationStatus.completed) {
       setState(() {
         _isSpinning = false;
-        final currentAngle = _spinAnimation.value * (2 * pi * 5);
+        final currentAngle = _spinAnimation.value;
         final normalizedAngle = currentAngle % (2 * pi);
+        final segmentAngle = 2 * pi / dailyActivities.length;
         final selectedIndex = (normalizedAngle / segmentAngle).floor() % dailyActivities.length;
         _selectedActivity = dailyActivities[selectedIndex];
       });
@@ -110,11 +119,84 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   void _spinWheel() {
     if (_isSpinning) return;
+    
     setState(() {
       _isSpinning = true;
       _selectedActivity = null;
     });
+
+    // Generate a random number of full rotations (between 3 and 5)
+    final random = Random();
+    final fullRotations = 3 + random.nextInt(3);
+    
+    // Generate a random final position
+    final randomIndex = random.nextInt(dailyActivities.length);
+    final segmentAngle = 2 * pi / dailyActivities.length;
+    final targetAngle = randomIndex * segmentAngle + (segmentAngle / 2);
+    
+    // Calculate the total rotation needed
+    final totalRotation = (fullRotations * 2 * pi) + targetAngle;
+    
+    // Create a new animation with the random target
+    _spinAnimation = Tween<double>(begin: 0, end: totalRotation).animate(
+      CurvedAnimation(
+        parent: _spinController,
+        curve: Curves.easeOutCubic,
+      ),
+    );
+
     _spinController.forward(from: 0);
+  }
+
+  Future<void> _handleLogout() async {
+    try {
+      await _authService.signOut();
+      if (mounted) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const LoginScreen()),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error logging out: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _recordDailyActivity() async {
+    await _streakService.recordActivity();
+  }
+
+  void _showStreakCalendar() {
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: const StreakCalendar(),
+      ),
+    );
+  }
+
+  void _showUserMenu() {
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      barrierColor: Colors.transparent,
+      builder: (context) => UserMenuPanel(
+        onLogout: () {
+          Navigator.of(context).pop();
+          _handleLogout();
+        },
+        onClose: () => Navigator.of(context).pop(),
+      ),
+    );
   }
 
   @override
@@ -181,7 +263,17 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const SizedBox(width: 40),  // Balance for right side icons
+                  // Theme toggle button
+                  IconButton(
+                    icon: Icon(
+                      themeProvider.themeMode == ThemeMode.dark
+                          ? Icons.dark_mode
+                          : Icons.light_mode,
+                      color: colorScheme.onBackground,
+                    ),
+                    onPressed: () => themeProvider.toggleTheme(),
+                  ),
+                  // App title
                   Text(
                     'Roulette',
                     style: TextStyle(
@@ -190,29 +282,18 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       color: colorScheme.onBackground,
                     ),
                   ),
-                  Row(
-                    children: [
-                      // Theme toggle button
-                      IconButton(
-                        icon: Icon(
-                          themeProvider.themeMode == ThemeMode.dark
-                              ? Icons.dark_mode
-                              : Icons.light_mode,
-                          color: colorScheme.onBackground,
-                        ),
-                        onPressed: () => themeProvider.toggleTheme(),
+                  // Profile avatar
+                  GestureDetector(
+                    onTap: _showUserMenu,
+                    child: CircleAvatar(
+                      backgroundColor: colorScheme.surface,
+                      radius: 22,
+                      child: Icon(
+                        Icons.person,
+                        color: colorScheme.onSurface,
+                        size: 26,
                       ),
-                      // Profile avatar
-                      CircleAvatar(
-                        backgroundColor: colorScheme.surface,
-                        radius: 22,
-                        child: Icon(
-                          Icons.person,
-                          color: colorScheme.onSurface,
-                          size: 26,
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                 ],
               ),
@@ -302,7 +383,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     animation: Listenable.merge([_spinAnimation, _bounceAnimation]),
                     builder: (context, child) {
                       return Transform.rotate(
-                        angle: _spinAnimation.value * (2 * pi * 5) + _bounceAnimation.value,
+                        angle: _spinAnimation.value,
                         child: Container(
                           width: 250,
                           height: 250,
