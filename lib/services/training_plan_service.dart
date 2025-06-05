@@ -688,6 +688,54 @@ class TrainingPlanService {
       ],
     },
     'Athletics': {
+      'Discus throw': [
+        TrainingPlan(
+          name: 'Discus Power',
+          exercises: [
+            Exercise(name: 'Dynamic Throws Warm-up', sets: 1, reps: 15, restBetweenSets: 0), // minutes
+            Exercise(name: 'Standing Throw Technique', sets: 4, reps: 8, restBetweenSets: 90),
+            Exercise(name: 'Half Turn Practice', sets: 4, reps: 6, restBetweenSets: 90),
+            Exercise(name: 'Full Spin Technique', sets: 4, reps: 6, restBetweenSets: 120),
+            Exercise(name: 'Power Position Work', sets: 3, reps: 8, restBetweenSets: 90),
+            Exercise(name: 'Release Drills', sets: 3, reps: 10, restBetweenSets: 60),
+            Exercise(name: 'Full Throw Practice', sets: 3, reps: 5, restBetweenSets: 120),
+            Exercise(name: 'Cool Down & Stretch', sets: 1, reps: 10, restBetweenSets: 0), // minutes
+          ],
+          restBetweenExercises: 180,
+        ),
+      ],
+      'Javelin throw': [
+        TrainingPlan(
+          name: 'Javelin Power',
+          exercises: [
+            Exercise(name: 'Throwing Warm-up', sets: 1, reps: 15, restBetweenSets: 0), // minutes
+            Exercise(name: 'Standing Throws', sets: 4, reps: 8, restBetweenSets: 90),
+            Exercise(name: 'Cross-Step Practice', sets: 4, reps: 6, restBetweenSets: 120),
+            Exercise(name: 'Run-up Technique', sets: 4, reps: 6, restBetweenSets: 120),
+            Exercise(name: 'Block Position Work', sets: 3, reps: 8, restBetweenSets: 90),
+            Exercise(name: 'Full Approach Throws', sets: 3, reps: 4, restBetweenSets: 180),
+            Exercise(name: 'Competition Practice', sets: 2, reps: 3, restBetweenSets: 240),
+            Exercise(name: 'Recovery Protocol', sets: 1, reps: 10, restBetweenSets: 0), // minutes
+          ],
+          restBetweenExercises: 180,
+        ),
+      ],
+      'Hurdles': [
+        TrainingPlan(
+          name: 'Hurdle Technique',
+          exercises: [
+            Exercise(name: 'Sprint & Hurdle Warm-up', sets: 1, reps: 15, restBetweenSets: 0), // minutes
+            Exercise(name: 'Lead Leg Drills', sets: 4, reps: 8, restBetweenSets: 90),
+            Exercise(name: 'Trail Leg Technique', sets: 4, reps: 8, restBetweenSets: 90),
+            Exercise(name: 'Three-Step Rhythm', sets: 4, reps: 4, restBetweenSets: 120), // hurdles
+            Exercise(name: 'Single Hurdle Sprints', sets: 6, reps: 1, restBetweenSets: 120), // hurdle
+            Exercise(name: 'Multi-Hurdle Practice', sets: 4, reps: 3, restBetweenSets: 180), // hurdles
+            Exercise(name: 'Race Pace Series', sets: 3, reps: 4, restBetweenSets: 240), // hurdles
+            Exercise(name: 'Cool Down & Mobility', sets: 1, reps: 10, restBetweenSets: 0), // minutes
+          ],
+          restBetweenExercises: 180,
+        ),
+      ],
       'Track and field': [
         TrainingPlan(
           name: 'Track Performance',
@@ -718,22 +766,6 @@ class TrainingPlanService {
             Exercise(name: 'Cool Down & Recovery', sets: 1, reps: 10, restBetweenSets: 0), // minutes
           ],
           restBetweenExercises: 120,
-        ),
-      ],
-      'Discus': [
-        TrainingPlan(
-          name: 'Discus Power',
-          exercises: [
-            Exercise(name: 'Dynamic Throws Warm-up', sets: 1, reps: 15, restBetweenSets: 0), // minutes
-            Exercise(name: 'Standing Throw Technique', sets: 4, reps: 8, restBetweenSets: 90),
-            Exercise(name: 'Half Turn Practice', sets: 4, reps: 6, restBetweenSets: 90),
-            Exercise(name: 'Full Spin Technique', sets: 4, reps: 6, restBetweenSets: 120),
-            Exercise(name: 'Power Position Work', sets: 3, reps: 8, restBetweenSets: 90),
-            Exercise(name: 'Release Drills', sets: 3, reps: 10, restBetweenSets: 60),
-            Exercise(name: 'Full Throw Practice', sets: 3, reps: 5, restBetweenSets: 120),
-            Exercise(name: 'Cool Down & Stretch', sets: 1, reps: 10, restBetweenSets: 0), // minutes
-          ],
-          restBetweenExercises: 180,
         ),
       ],
       'Relay races': [
@@ -796,22 +828,6 @@ class TrainingPlanService {
             Exercise(name: 'Height Progression', sets: 3, reps: 3, restBetweenSets: 240),
             Exercise(name: 'Technical Review', sets: 1, reps: 8, restBetweenSets: 0), // minutes
             Exercise(name: 'Cool Down Protocol', sets: 1, reps: 10, restBetweenSets: 0), // minutes
-          ],
-          restBetweenExercises: 180,
-        ),
-      ],
-      'Javelin': [
-        TrainingPlan(
-          name: 'Javelin Power',
-          exercises: [
-            Exercise(name: 'Throwing Warm-up', sets: 1, reps: 15, restBetweenSets: 0), // minutes
-            Exercise(name: 'Standing Throws', sets: 4, reps: 8, restBetweenSets: 90),
-            Exercise(name: 'Cross-Step Practice', sets: 4, reps: 6, restBetweenSets: 120),
-            Exercise(name: 'Run-up Technique', sets: 4, reps: 6, restBetweenSets: 120),
-            Exercise(name: 'Block Position Work', sets: 3, reps: 8, restBetweenSets: 90),
-            Exercise(name: 'Full Approach Throws', sets: 3, reps: 4, restBetweenSets: 180),
-            Exercise(name: 'Competition Practice', sets: 2, reps: 3, restBetweenSets: 240),
-            Exercise(name: 'Recovery Protocol', sets: 1, reps: 10, restBetweenSets: 0), // minutes
           ],
           restBetweenExercises: 180,
         ),
