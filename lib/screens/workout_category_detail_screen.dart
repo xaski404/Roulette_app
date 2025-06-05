@@ -83,6 +83,14 @@ class _WorkoutCategoryDetailScreenState extends State<WorkoutCategoryDetailScree
       setState(() {
         _isSpinning = false;
         _currentPassingWorkout = null;
+        if (_workouts.isNotEmpty) {
+          final random = Random();
+          String newWorkout;
+          do {
+            newWorkout = _workouts[random.nextInt(_workouts.length)];
+          } while (_workouts.length > 1 && newWorkout == _selectedWorkout);
+          _selectedWorkout = newWorkout;
+        }
       });
     }
   }
@@ -110,13 +118,8 @@ class _WorkoutCategoryDetailScreenState extends State<WorkoutCategoryDetailScree
     
     setState(() {
       _isSpinning = true;
-      final random = Random();
-      String newWorkout;
-      do {
-        newWorkout = _workouts[random.nextInt(_workouts.length)];
-      } while (_workouts.length > 1 && newWorkout == _selectedWorkout);
-      _selectedWorkout = newWorkout;
-
+      _selectedWorkout = null;
+      
       // Reset and start animations
       _spinController.reset();
       _spinController.forward();
@@ -235,8 +238,8 @@ class _WorkoutCategoryDetailScreenState extends State<WorkoutCategoryDetailScree
                       ),
                     ),
                     const SizedBox(height: 32),
-                    // Selected workout display
-                    if (_selectedWorkout != null) ...[
+                    // Show selected workout only after spinning completes
+                    if (!_isSpinning && _selectedWorkout != null) ...[
                       Container(
                         padding: const EdgeInsets.all(24),
                         margin: const EdgeInsets.symmetric(horizontal: 16),
