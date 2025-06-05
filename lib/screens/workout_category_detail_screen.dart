@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:math';
 import '../services/workout_service.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'training_plan_screen.dart';
 
 class WorkoutCategoryDetailScreen extends StatefulWidget {
   final String category;
@@ -141,6 +142,36 @@ class _WorkoutCategoryDetailScreenState extends State<WorkoutCategoryDetailScree
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    // Training Plan button
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => TrainingPlanScreen(
+                                category: widget.category,
+                              ),
+                            ),
+                          );
+                        },
+                        icon: const Icon(Icons.format_list_bulleted),
+                        label: const Text('Training Plan'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: colorScheme.primaryContainer,
+                          foregroundColor: colorScheme.onPrimaryContainer,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 24,
+                            vertical: 12,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
                     // Roulette wheel with selector
                     SizedBox(
                       width: 250,
