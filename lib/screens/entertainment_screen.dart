@@ -128,21 +128,48 @@ class _EntertainmentScreenState extends State<EntertainmentScreen>
     if (status == AnimationStatus.completed) {
       setState(() {
         _isSpinning = false;
-        final currentAngle = _spinAnimation.value * (2 * pi * 5);
-        final normalizedAngle = currentAngle % (2 * pi);
         final options = _currentOptions;
-        final selectedIndex = (normalizedAngle / segmentAngle).floor() % options.length;
-        _selectedActivity = options[selectedIndex];
+        final random = Random();
+        String newActivity;
+        do {
+          newActivity = options[random.nextInt(options.length)];
+        } while (options.length > 1 && newActivity == _selectedActivity);
+        _selectedActivity = newActivity;
       });
     }
   }
 
   void _spinWheel() {
     if (_isSpinning) return;
+    
+    final options = _currentOptions;
+    if (options.isEmpty) return;
+
     setState(() {
       _isSpinning = true;
       _selectedActivity = null;
     });
+
+    // Generate a random number of full rotations (between 3 and 5)
+    final random = Random();
+    final fullRotations = 3 + random.nextInt(3);
+    
+    // Generate a random final position
+    final randomIndex = random.nextInt(options.length);
+    final segmentAngle = 2 * pi / options.length;
+    final targetAngle = randomIndex * segmentAngle + (segmentAngle / 2);
+    
+    // Calculate the total rotation needed
+    final totalRotation = (fullRotations * 2 * pi) + targetAngle;
+    
+    // Create a new animation with the random target
+    _spinAnimation = Tween<double>(begin: 0, end: totalRotation).animate(
+      CurvedAnimation(
+        parent: _spinController,
+        curve: Curves.easeOutCubic,
+      ),
+    );
+
     _spinController.forward(from: 0);
   }
 
