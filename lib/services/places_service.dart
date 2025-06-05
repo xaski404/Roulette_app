@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class PlacesService {
   static const String _baseUrl = 'https://maps.googleapis.com/maps/api/place';
@@ -103,5 +104,27 @@ class PlacesService {
   // Get place photo
   static String getPhotoUrl(String photoReference) {
     return '$_baseUrl/photo?maxwidth=400&photo_reference=$photoReference&key=$apiKey';
+  }
+
+  // Search for attractions near a location
+  static Future<List<Map<String, dynamic>>> searchAttractions(LatLng location) async {
+    try {
+      final response = await http.get(
+        Uri.parse(
+          '$_baseUrl/nearbysearch/json?location=${location.latitude},${location.longitude}&radius=5000&type=tourist_attraction|point_of_interest|museum|park|church|landmark&language=en&key=$apiKey',
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['status'] == 'OK') {
+          return List<Map<String, dynamic>>.from(data['results']);
+        }
+      }
+      return [];
+    } catch (e) {
+      print('Error searching attractions: $e');
+      return [];
+    }
   }
 } 

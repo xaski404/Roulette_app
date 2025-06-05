@@ -4,6 +4,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../services/travel_service.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'attractions_screen.dart';
 
 class TravelScreen extends StatefulWidget {
   final String initialCategory;
@@ -386,21 +387,54 @@ class _TravelScreenState extends State<TravelScreen> with TickerProviderStateMix
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 16),
-                      ElevatedButton.icon(
-                        onPressed: () {
-                          final destination = destinations.firstWhere(
-                            (d) => d.name == _selectedDestination,
-                          );
-                          _showDestinationDetails(destination);
-                        },
-                        icon: const Icon(Icons.info_outline),
-                        label: const Text('View Details'),
-                        style: ElevatedButton.styleFrom(
-                          minimumSize: const Size.fromHeight(50),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: ElevatedButton.icon(
+                              onPressed: () {
+                                final destination = destinations.firstWhere(
+                                  (d) => d.name == _selectedDestination,
+                                );
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => AttractionsScreen(
+                                      destinationName: destination.name,
+                                      location: destination.location,
+                                    ),
+                                  ),
+                                );
+                              },
+                              icon: const Icon(Icons.attractions),
+                              label: const Text('Attractions'),
+                              style: ElevatedButton.styleFrom(
+                                minimumSize: const Size(0, 50),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                            ),
                           ),
-                        ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: ElevatedButton.icon(
+                              onPressed: () {
+                                final destination = destinations.firstWhere(
+                                  (d) => d.name == _selectedDestination,
+                                );
+                                _showDestinationDetails(destination);
+                              },
+                              icon: const Icon(Icons.navigation),
+                              label: const Text('Navigate'),
+                              style: ElevatedButton.styleFrom(
+                                minimumSize: const Size(0, 50),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
