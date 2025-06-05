@@ -5,6 +5,7 @@ import 'food_categories_screen.dart';
 import 'travel_categories_screen.dart';
 import 'entertainment_categories_screen.dart';
 import 'workout_categories_screen.dart';
+import 'music_categories_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:provider/provider.dart';
 import '../main.dart';  // For ThemeProvider
@@ -258,9 +259,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   _buildCategoryButton(
                     icon: Icons.music_note,
                     label: 'Music',
-                    onTap: () {
-                      // TODO: Navigate to Music screen
-                    },
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const MusicCategoriesScreen()),
+                    ),
                   ),
                 ],
               ),
