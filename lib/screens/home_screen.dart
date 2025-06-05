@@ -9,6 +9,7 @@ import 'music_categories_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:provider/provider.dart';
 import '../main.dart';  // For ThemeProvider
+import '../services/auth_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -41,6 +42,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     Color(0xFFB6E2D3),  // Light green
     Color(0xFFF7D6B3),  // Light orange
   ];
+
+  final AuthService _authService = AuthService();
 
   @override
   void initState() {
@@ -117,6 +120,26 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     _spinController.forward(from: 0);
   }
 
+  Future<void> _handleLogout() async {
+    try {
+      await _authService.signOut();
+      if (mounted) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const LoginScreen()),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error logging out: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
   @override
   void dispose() {
     _spinController.dispose();
@@ -181,7 +204,17 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const SizedBox(width: 40),  // Balance for right side icons
+                  // Theme toggle button
+                  IconButton(
+                    icon: Icon(
+                      themeProvider.themeMode == ThemeMode.dark
+                          ? Icons.dark_mode
+                          : Icons.light_mode,
+                      color: colorScheme.onBackground,
+                    ),
+                    onPressed: () => themeProvider.toggleTheme(),
+                  ),
+                  // App title
                   Text(
                     'Roulette',
                     style: TextStyle(
@@ -190,26 +223,40 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       color: colorScheme.onBackground,
                     ),
                   ),
-                  Row(
-                    children: [
-                      // Theme toggle button
-                      IconButton(
-                        icon: Icon(
-                          themeProvider.themeMode == ThemeMode.dark
-                              ? Icons.dark_mode
-                              : Icons.light_mode,
-                          color: colorScheme.onBackground,
-                        ),
-                        onPressed: () => themeProvider.toggleTheme(),
+                  // Profile avatar with popup menu
+                  PopupMenuButton<String>(
+                    icon: CircleAvatar(
+                      backgroundColor: colorScheme.surface,
+                      radius: 22,
+                      child: Icon(
+                        Icons.person,
+                        color: colorScheme.onSurface,
+                        size: 26,
                       ),
-                      // Profile avatar
-                      CircleAvatar(
-                        backgroundColor: colorScheme.surface,
-                        radius: 22,
-                        child: Icon(
-                          Icons.person,
-                          color: colorScheme.onSurface,
-                          size: 26,
+                    ),
+                    onSelected: (value) {
+                      if (value == 'logout') {
+                        _handleLogout();
+                      }
+                    },
+                    itemBuilder: (context) => [
+                      PopupMenuItem(
+                        value: 'logout',
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.logout,
+                              color: colorScheme.error,
+                              size: 20,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              'Logout',
+                              style: TextStyle(
+                                color: colorScheme.error,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
