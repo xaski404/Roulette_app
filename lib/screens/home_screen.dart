@@ -4,6 +4,7 @@ import 'dart:math';
 import 'food_categories_screen.dart';
 import 'travel_categories_screen.dart';
 import 'entertainment_categories_screen.dart';
+import 'workout_categories_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:provider/provider.dart';
 import '../main.dart';  // For ThemeProvider
@@ -244,6 +245,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(builder: (_) => const EntertainmentCategoriesScreen()),
+                    ),
+                  ),
+                  _buildCategoryButton(
+                    icon: Icons.fitness_center,
+                    label: 'Workouts',
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const WorkoutCategoriesScreen()),
                     ),
                   ),
                   _buildCategoryButton(
