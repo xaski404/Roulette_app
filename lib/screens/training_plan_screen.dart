@@ -3,10 +3,12 @@ import '../services/training_plan_service.dart';
 
 class TrainingPlanScreen extends StatefulWidget {
   final String category;
+  final String workoutName;
 
   const TrainingPlanScreen({
     super.key,
     required this.category,
+    required this.workoutName,
   });
 
   @override
@@ -29,7 +31,10 @@ class _TrainingPlanScreenState extends State<TrainingPlanScreen> {
     setState(() => _isLoading = true);
     try {
       await _trainingPlanService.initializeDefaultTrainingPlans();
-      final plans = await _trainingPlanService.getTrainingPlansForCategory(widget.category);
+      final plans = await _trainingPlanService.getTrainingPlansForWorkout(
+        category: widget.category,
+        workoutName: widget.workoutName,
+      );
       setState(() {
         _trainingPlans = plans;
         _isLoading = false;
