@@ -9,6 +9,7 @@ import 'firebase_options.dart';
 import 'services/auth_service.dart';
 import 'screens/food_categories_screen.dart';
 import 'screens/travel_categories_screen.dart';
+import 'screens/home_screen.dart';
 
 // Dodaj klasę ThemeProvider
 class ThemeProvider with ChangeNotifier {
@@ -501,27 +502,12 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 }
 
-class RouletteHomePage extends StatefulWidget {
+class RouletteHomePage extends StatelessWidget {
   const RouletteHomePage({super.key});
 
   @override
-  State<RouletteHomePage> createState() => _RouletteHomePageState();
-}
-
-class _RouletteHomePageState extends State<RouletteHomePage> {
-  int _selectedIndex = 0;
-
-  final List<Widget> _pages = [
-    const RoulettePage(),
-    const MusicPage(),
-    const SettingsPage(),
-  ];
-
-  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: _pages[_selectedIndex],
-    );
+    return const HomeScreen();
   }
 }
 
