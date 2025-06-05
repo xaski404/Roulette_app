@@ -272,14 +272,14 @@ class TrainingPlanService {
         TrainingPlan(
           name: 'Endurance Builder',
           exercises: [
-            Exercise(name: 'Dynamic Warm-up', sets: 1, reps: 10, restBetweenSets: 0), // reps in minutes
-            Exercise(name: 'Easy Pace Run', sets: 1, reps: 5000, restBetweenSets: 0), // reps in meters
-            Exercise(name: 'Tempo Run', sets: 1, reps: 3000, restBetweenSets: 180), // reps in meters
-            Exercise(name: 'Easy Pace Run', sets: 1, reps: 2000, restBetweenSets: 0), // reps in meters
-            Exercise(name: 'Strides', sets: 4, reps: 100, restBetweenSets: 60), // reps in meters
-            Exercise(name: 'Cool Down Jog', sets: 1, reps: 1000, restBetweenSets: 0), // reps in meters
-            Exercise(name: 'Walking', sets: 1, reps: 500, restBetweenSets: 0), // reps in meters
-            Exercise(name: 'Static Stretching', sets: 1, reps: 10, restBetweenSets: 0), // reps in minutes
+            Exercise(name: 'Dynamic Warm-up (leg swings, lunges, skips)', sets: 1, reps: 10, restBetweenSets: 0), // minutes
+            Exercise(name: 'Easy Pace Run (Zone 2, 60-70% max HR)', sets: 1, reps: 5000, restBetweenSets: 0), // meters
+            Exercise(name: 'Tempo Run (Zone 3, 70-80% max HR)', sets: 1, reps: 3000, restBetweenSets: 180), // meters
+            Exercise(name: 'Easy Pace Run (Zone 2)', sets: 1, reps: 2000, restBetweenSets: 0), // meters
+            Exercise(name: 'Strides (90% effort)', sets: 4, reps: 100, restBetweenSets: 60), // meters
+            Exercise(name: 'Cool Down Jog (Zone 1, <60% max HR)', sets: 1, reps: 1000, restBetweenSets: 0), // meters
+            Exercise(name: 'Walking', sets: 1, reps: 500, restBetweenSets: 0), // meters
+            Exercise(name: 'Static Stretching', sets: 1, reps: 10, restBetweenSets: 0), // minutes
           ],
           restBetweenExercises: 120,
         ),
@@ -288,16 +288,48 @@ class TrainingPlanService {
         TrainingPlan(
           name: 'Speed Development',
           exercises: [
-            Exercise(name: 'Dynamic Warm-up', sets: 1, reps: 10, restBetweenSets: 0), // reps in minutes
-            Exercise(name: 'Light Jog', sets: 1, reps: 800, restBetweenSets: 0), // reps in meters
-            Exercise(name: '100m Sprints', sets: 6, reps: 100, restBetweenSets: 90), // reps in meters
-            Exercise(name: '200m Sprints', sets: 4, reps: 200, restBetweenSets: 120), // reps in meters
-            Exercise(name: '400m Sprints', sets: 2, reps: 400, restBetweenSets: 180), // reps in meters
-            Exercise(name: 'Recovery Jog', sets: 1, reps: 400, restBetweenSets: 0), // reps in meters
-            Exercise(name: 'Walking', sets: 1, reps: 400, restBetweenSets: 0), // reps in meters
-            Exercise(name: 'Cool Down Stretching', sets: 1, reps: 10, restBetweenSets: 0), // reps in minutes
+            Exercise(name: 'Dynamic Warm-up (high knees, butt kicks, leg swings)', sets: 1, reps: 10, restBetweenSets: 0), // minutes
+            Exercise(name: 'Light Jog (Zone 2)', sets: 1, reps: 800, restBetweenSets: 0), // meters
+            Exercise(name: '100m Sprints (95% max effort)', sets: 6, reps: 100, restBetweenSets: 90), // meters
+            Exercise(name: '200m Sprints (90% max effort)', sets: 4, reps: 200, restBetweenSets: 120), // meters
+            Exercise(name: '400m Sprints (85% max effort)', sets: 2, reps: 400, restBetweenSets: 180), // meters
+            Exercise(name: 'Recovery Jog (Zone 1)', sets: 1, reps: 400, restBetweenSets: 0), // meters
+            Exercise(name: 'Walking Cool Down', sets: 1, reps: 400, restBetweenSets: 0), // meters
+            Exercise(name: 'Cool Down Stretching', sets: 1, reps: 10, restBetweenSets: 0), // minutes
           ],
           restBetweenExercises: 180,
+        ),
+      ],
+      'Hill repeats': [
+        TrainingPlan(
+          name: 'Hill Power',
+          exercises: [
+            Exercise(name: 'Dynamic Warm-up (mobility work)', sets: 1, reps: 10, restBetweenSets: 0), // minutes
+            Exercise(name: 'Easy Jog to Hills (Zone 2)', sets: 1, reps: 1000, restBetweenSets: 0), // meters
+            Exercise(name: 'Short Hill Sprints (30-45° incline, 90% effort)', sets: 6, reps: 60, restBetweenSets: 120), // meters
+            Exercise(name: 'Medium Hill Climbs (85% effort)', sets: 4, reps: 100, restBetweenSets: 150), // meters
+            Exercise(name: 'Long Hill Climbs (80% effort)', sets: 3, reps: 200, restBetweenSets: 180), // meters
+            Exercise(name: 'Jog Down Recovery', sets: 13, reps: 1, restBetweenSets: 0), // per climb
+            Exercise(name: 'Flat Ground Cool Down Jog', sets: 1, reps: 800, restBetweenSets: 0), // meters
+            Exercise(name: 'Recovery Stretching', sets: 1, reps: 10, restBetweenSets: 0), // minutes
+          ],
+          restBetweenExercises: 120,
+        ),
+      ],
+      'Fartlek training': [
+        TrainingPlan(
+          name: 'Speed Play',
+          exercises: [
+            Exercise(name: 'Dynamic Warm-up', sets: 1, reps: 10, restBetweenSets: 0), // minutes
+            Exercise(name: 'Easy Pace Warm-up (Zone 2)', sets: 1, reps: 1000, restBetweenSets: 0), // meters
+            Exercise(name: 'Hard Effort (85-90% max HR)', sets: 8, reps: 2, restBetweenSets: 0), // minutes
+            Exercise(name: 'Easy Effort Recovery (Zone 2)', sets: 8, reps: 1, restBetweenSets: 0), // minutes
+            Exercise(name: 'Medium Effort (75-80% max HR)', sets: 4, reps: 3, restBetweenSets: 0), // minutes
+            Exercise(name: 'Easy Recovery (Zone 2)', sets: 4, reps: 2, restBetweenSets: 0), // minutes
+            Exercise(name: 'Cool Down Jog', sets: 1, reps: 800, restBetweenSets: 0), // meters
+            Exercise(name: 'Recovery Stretching', sets: 1, reps: 10, restBetweenSets: 0), // minutes
+          ],
+          restBetweenExercises: 60,
         ),
       ],
     },
@@ -306,36 +338,135 @@ class TrainingPlanService {
         TrainingPlan(
           name: 'Basketball Conditioning',
           exercises: [
-            Exercise(name: 'Dynamic Warm-up', sets: 1, reps: 10, restBetweenSets: 0), // reps in minutes
-            Exercise(name: 'Defensive Slides', sets: 4, reps: 30, restBetweenSets: 45), // reps in seconds
-            Exercise(name: 'Sprint-Backpedal Combo', sets: 4, reps: 40, restBetweenSets: 45), // reps in seconds
-            Exercise(name: 'Box Jumps', sets: 3, reps: 10, restBetweenSets: 60),
-            Exercise(name: 'Ladder Drills', sets: 3, reps: 30, restBetweenSets: 45), // reps in seconds
-            Exercise(name: 'Suicide Runs', sets: 4, reps: 1, restBetweenSets: 90),
-            Exercise(name: 'Jump Rope', sets: 3, reps: 60, restBetweenSets: 45), // reps in seconds
-            Exercise(name: 'Cool Down Stretching', sets: 1, reps: 10, restBetweenSets: 0), // reps in minutes
+            Exercise(name: 'Dynamic Warm-up (ankle mobility, hip flexors)', sets: 1, reps: 10, restBetweenSets: 0), // minutes
+            Exercise(name: 'Defensive Slides (both directions)', sets: 4, reps: 30, restBetweenSets: 45), // seconds
+            Exercise(name: 'Sprint-Backpedal-Sprint (baseline to baseline)', sets: 4, reps: 40, restBetweenSets: 45), // seconds
+            Exercise(name: 'Box Jumps (explosive power)', sets: 3, reps: 10, restBetweenSets: 60),
+            Exercise(name: 'Ladder Drills (footwork)', sets: 3, reps: 30, restBetweenSets: 45), // seconds
+            Exercise(name: 'Suicide Runs (full court)', sets: 4, reps: 1, restBetweenSets: 90),
+            Exercise(name: 'Jump Rope (active recovery)', sets: 3, reps: 60, restBetweenSets: 45), // seconds
+            Exercise(name: 'Cool Down Stretching', sets: 1, reps: 10, restBetweenSets: 0), // minutes
           ],
           restBetweenExercises: 120,
         ),
       ],
-      'Football': [
+      'Volleyball': [
         TrainingPlan(
-          name: 'Football Agility',
+          name: 'Volleyball Power & Agility',
           exercises: [
-            Exercise(name: 'Dynamic Stretching', sets: 1, reps: 10, restBetweenSets: 0), // reps in minutes
-            Exercise(name: 'Cone Drills', sets: 4, reps: 30, restBetweenSets: 45), // reps in seconds
-            Exercise(name: 'Shuttle Runs', sets: 4, reps: 40, restBetweenSets: 60), // reps in meters
-            Exercise(name: 'Plyometric Bounds', sets: 3, reps: 8, restBetweenSets: 60),
-            Exercise(name: 'T-Drill', sets: 4, reps: 1, restBetweenSets: 60),
-            Exercise(name: 'Sprint-Backpedal', sets: 4, reps: 20, restBetweenSets: 45), // reps in meters
-            Exercise(name: 'Lateral Bounds', sets: 3, reps: 10, restBetweenSets: 45),
-            Exercise(name: 'Cool Down Jog', sets: 1, reps: 800, restBetweenSets: 0), // reps in meters
+            Exercise(name: 'Dynamic Warm-up (shoulder mobility focus)', sets: 1, reps: 10, restBetweenSets: 0), // minutes
+            Exercise(name: 'Jump Training (block jumps)', sets: 4, reps: 10, restBetweenSets: 60),
+            Exercise(name: 'Approach Jump Practice', sets: 4, reps: 8, restBetweenSets: 60),
+            Exercise(name: 'Lateral Shuffle with Ball Control', sets: 3, reps: 30, restBetweenSets: 45), // seconds
+            Exercise(name: 'Quick Direction Changes', sets: 4, reps: 20, restBetweenSets: 45), // seconds
+            Exercise(name: 'Diving Practice (both sides)', sets: 3, reps: 6, restBetweenSets: 60),
+            Exercise(name: 'Service Line Sprints', sets: 4, reps: 6, restBetweenSets: 45),
+            Exercise(name: 'Cool Down & Stretching', sets: 1, reps: 10, restBetweenSets: 0), // minutes
+          ],
+          restBetweenExercises: 90,
+        ),
+      ],
+      'Soccer': [
+        TrainingPlan(
+          name: 'Soccer Endurance & Skills',
+          exercises: [
+            Exercise(name: 'Dynamic Warm-up (leg focus)', sets: 1, reps: 10, restBetweenSets: 0), // minutes
+            Exercise(name: 'Cone Dribbling (figure 8s)', sets: 4, reps: 45, restBetweenSets: 30), // seconds
+            Exercise(name: 'Sprint-Dribble-Pass Drill', sets: 4, reps: 30, restBetweenSets: 45), // seconds
+            Exercise(name: 'Box-to-Box Runs (with ball)', sets: 6, reps: 50, restBetweenSets: 45), // meters
+            Exercise(name: 'Shooting Practice (after sprint)', sets: 3, reps: 8, restBetweenSets: 60),
+            Exercise(name: 'Small Area Speed Work', sets: 4, reps: 30, restBetweenSets: 45), // seconds
+            Exercise(name: 'Agility Course with Ball', sets: 3, reps: 60, restBetweenSets: 60), // seconds
+            Exercise(name: 'Cool Down Jog & Stretching', sets: 1, reps: 10, restBetweenSets: 0), // minutes
+          ],
+          restBetweenExercises: 90,
+        ),
+      ],
+      'Tennis': [
+        TrainingPlan(
+          name: 'Tennis Agility & Power',
+          exercises: [
+            Exercise(name: 'Dynamic Warm-up (upper & lower body)', sets: 1, reps: 10, restBetweenSets: 0), // minutes
+            Exercise(name: 'Spider Drill (court corners)', sets: 4, reps: 45, restBetweenSets: 45), // seconds
+            Exercise(name: 'Lateral Shuffle with Shadow Swings', sets: 4, reps: 30, restBetweenSets: 30), // seconds
+            Exercise(name: 'Split-Step Practice', sets: 3, reps: 20, restBetweenSets: 30),
+            Exercise(name: 'Service Line Sprints', sets: 4, reps: 8, restBetweenSets: 45),
+            Exercise(name: 'Cross-Court Movement', sets: 3, reps: 40, restBetweenSets: 45), // seconds
+            Exercise(name: 'Medicine Ball Rotations', sets: 3, reps: 12, restBetweenSets: 45),
+            Exercise(name: 'Cool Down & Flexibility', sets: 1, reps: 10, restBetweenSets: 0), // minutes
+          ],
+          restBetweenExercises: 90,
+        ),
+      ],
+    },
+    'Athletics': {
+      'Track and field': [
+        TrainingPlan(
+          name: 'Track Performance',
+          exercises: [
+            Exercise(name: 'Dynamic Warm-up (track specific)', sets: 1, reps: 15, restBetweenSets: 0), // minutes
+            Exercise(name: 'Sprint Technique Drills (A-skips, B-skips)', sets: 3, reps: 50, restBetweenSets: 60), // meters
+            Exercise(name: 'Block Start Practice', sets: 6, reps: 20, restBetweenSets: 90), // meters
+            Exercise(name: 'Flying 30m Sprints', sets: 4, reps: 30, restBetweenSets: 120), // meters
+            Exercise(name: 'Acceleration Development', sets: 4, reps: 40, restBetweenSets: 120), // meters
+            Exercise(name: 'Speed Endurance Runs', sets: 3, reps: 150, restBetweenSets: 180), // meters
+            Exercise(name: 'Form Running', sets: 2, reps: 100, restBetweenSets: 90), // meters
+            Exercise(name: 'Cool Down Protocol', sets: 1, reps: 10, restBetweenSets: 0), // minutes
+          ],
+          restBetweenExercises: 120,
+        ),
+      ],
+      'Long jump': [
+        TrainingPlan(
+          name: 'Jump Power Development',
+          exercises: [
+            Exercise(name: 'Dynamic Flexibility Routine', sets: 1, reps: 12, restBetweenSets: 0), // minutes
+            Exercise(name: 'Approach Run Practice', sets: 5, reps: 40, restBetweenSets: 90), // meters
+            Exercise(name: 'Bounding Exercises', sets: 4, reps: 30, restBetweenSets: 60), // meters
+            Exercise(name: 'Box Jumps (increasing height)', sets: 4, reps: 6, restBetweenSets: 90),
+            Exercise(name: 'Single Leg Hops', sets: 3, reps: 10, restBetweenSets: 60),
+            Exercise(name: 'Take-off Practice', sets: 6, reps: 1, restBetweenSets: 120),
+            Exercise(name: 'Landing Technique', sets: 4, reps: 5, restBetweenSets: 90),
+            Exercise(name: 'Cool Down & Recovery', sets: 1, reps: 10, restBetweenSets: 0), // minutes
           ],
           restBetweenExercises: 120,
         ),
       ],
     },
-    // ... continue with more categories and workouts as needed ...
+    'Strength training outdoors': {
+      'Park workout': [
+        TrainingPlan(
+          name: 'Outdoor Total Body',
+          exercises: [
+            Exercise(name: 'Dynamic Movement Prep', sets: 1, reps: 10, restBetweenSets: 0), // minutes
+            Exercise(name: 'Pull-ups on Bar', sets: 4, reps: 8, restBetweenSets: 90),
+            Exercise(name: 'Step-ups on Bench', sets: 3, reps: 12, restBetweenSets: 60),
+            Exercise(name: 'Parallel Bar Dips', sets: 3, reps: 10, restBetweenSets: 60),
+            Exercise(name: 'Incline Push-ups on Bench', sets: 3, reps: 12, restBetweenSets: 60),
+            Exercise(name: 'Box Jumps', sets: 3, reps: 10, restBetweenSets: 60),
+            Exercise(name: 'Hanging Leg Raises', sets: 3, reps: 12, restBetweenSets: 60),
+            Exercise(name: 'Sprint Intervals', sets: 4, reps: 30, restBetweenSets: 60), // meters
+          ],
+          restBetweenExercises: 90,
+        ),
+      ],
+      'Calisthenics': [
+        TrainingPlan(
+          name: 'Advanced Bodyweight',
+          exercises: [
+            Exercise(name: 'Joint Mobility Warm-up', sets: 1, reps: 8, restBetweenSets: 0), // minutes
+            Exercise(name: 'Muscle-ups', sets: 4, reps: 5, restBetweenSets: 120),
+            Exercise(name: 'Handstand Push-ups', sets: 3, reps: 6, restBetweenSets: 90),
+            Exercise(name: 'Front Lever Progressions', sets: 4, reps: 15, restBetweenSets: 90), // seconds
+            Exercise(name: 'Pistol Squats', sets: 3, reps: 8, restBetweenSets: 60),
+            Exercise(name: 'L-Sit Holds', sets: 3, reps: 20, restBetweenSets: 60), // seconds
+            Exercise(name: 'Planche Progressions', sets: 3, reps: 15, restBetweenSets: 90), // seconds
+            Exercise(name: 'Human Flag Attempts', sets: 4, reps: 10, restBetweenSets: 120), // seconds
+          ],
+          restBetweenExercises: 120,
+        ),
+      ],
+    },
   };
 
   // Initialize default training plans for a user
