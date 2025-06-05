@@ -251,6 +251,74 @@ class _EntertainmentScreenState extends State<EntertainmentScreen>
     );
   }
 
+  void _showNearbyLocations(String locationType) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.6,
+        minChildSize: 0.3,
+        maxChildSize: 0.9,
+        builder: (context, scrollController) {
+          return Container(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  locationType == 'cinema' ? 'Nearby Cinemas' : 'Nearby Arcades',
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Expanded(
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: GoogleMap(
+                      initialCameraPosition: CameraPosition(
+                        target: EntertainmentService.KATOWICE_LOCATION,
+                        zoom: 11,
+                      ),
+                      circles: {
+                        Circle(
+                          circleId: const CircleId('searchRadius'),
+                          center: EntertainmentService.KATOWICE_LOCATION,
+                          radius: 30000, // 30 km in meters
+                          fillColor: Colors.blue.withOpacity(0.1),
+                          strokeColor: Colors.blue,
+                          strokeWidth: 1,
+                        ),
+                      },
+                      markers: {
+                        Marker(
+                          markerId: const MarkerId('katowice'),
+                          position: EntertainmentService.KATOWICE_LOCATION,
+                          infoWindow: const InfoWindow(
+                            title: 'Katowice',
+                          ),
+                        ),
+                      },
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'Showing locations within 30 km of Katowice',
+                  style: const TextStyle(
+                    fontSize: 16,
+                    color: Colors.grey,
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
   @override
   void dispose() {
     _spinController.dispose();
@@ -301,48 +369,50 @@ class _EntertainmentScreenState extends State<EntertainmentScreen>
                   const SizedBox(height: 24),
 
                   // Wheel
-                  AnimatedBuilder(
-                    animation: Listenable.merge([_spinAnimation, _bounceAnimation]),
-                    builder: (context, child) {
-                      return Transform.rotate(
-                        angle: _spinAnimation.value * (2 * pi * 5) + _bounceAnimation.value,
-                        child: Container(
-                          width: 250,
-                          height: 250,
-                          decoration: BoxDecoration(
-                            color: colorScheme.surface,
-                            shape: BoxShape.circle,
-                            boxShadow: isDark ? null : [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
-                                blurRadius: 10,
-                                offset: const Offset(0, 4),
-                              ),
-                            ],
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: PieChart(
-                              PieChartData(
-                                sectionsSpace: 0,
-                                centerSpaceRadius: 50,
-                                sections: List.generate(
-                                  numSegments,
-                                  (i) => PieChartSectionData(
-                                    color: pieColors[i % pieColors.length],
-                                    value: 1,
-                                    title: '',
-                                    radius: 90,
-                                    showTitle: false,
-                                  ),
+                  Center(
+                    child: AnimatedBuilder(
+                      animation: Listenable.merge([_spinAnimation, _bounceAnimation]),
+                      builder: (context, child) {
+                        return Transform.rotate(
+                          angle: _spinAnimation.value * (2 * pi * 5) + _bounceAnimation.value,
+                          child: Container(
+                            width: 250,
+                            height: 250,
+                            decoration: BoxDecoration(
+                              color: colorScheme.surface,
+                              shape: BoxShape.circle,
+                              boxShadow: isDark ? null : [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.1),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 4),
                                 ),
-                                borderData: FlBorderData(show: false),
+                              ],
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: PieChart(
+                                PieChartData(
+                                  sectionsSpace: 0,
+                                  centerSpaceRadius: 50,
+                                  sections: List.generate(
+                                    numSegments,
+                                    (i) => PieChartSectionData(
+                                      color: pieColors[i % pieColors.length],
+                                      value: 1,
+                                      title: '',
+                                      radius: 90,
+                                      showTitle: false,
+                                    ),
+                                  ),
+                                  borderData: FlBorderData(show: false),
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      );
-                    },
+                        );
+                      },
+                    ),
                   ),
 
                   const SizedBox(height: 32),
@@ -373,6 +443,33 @@ class _EntertainmentScreenState extends State<EntertainmentScreen>
                               },
                               icon: const Icon(Icons.info_outline),
                               label: const Text('View Details'),
+                              style: ElevatedButton.styleFrom(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                            ),
+                          ],
+                          // Add location buttons for Movie and Game categories
+                          if (widget.category == EntertainmentService.MOVIE) ...[
+                            const SizedBox(height: 16),
+                            ElevatedButton.icon(
+                              onPressed: () => _showNearbyLocations('cinema'),
+                              icon: const Icon(Icons.movie_outlined),
+                              label: const Text('Watch in Cinema'),
+                              style: ElevatedButton.styleFrom(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                            ),
+                          ],
+                          if (widget.category == EntertainmentService.GAME) ...[
+                            const SizedBox(height: 16),
+                            ElevatedButton.icon(
+                              onPressed: () => _showNearbyLocations('arcade'),
+                              icon: const Icon(Icons.gamepad_outlined),
+                              label: const Text('Play at an Arcade'),
                               style: ElevatedButton.styleFrom(
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
