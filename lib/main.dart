@@ -8,6 +8,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'services/auth_service.dart';
 import 'screens/food_categories_screen.dart';
+import 'screens/travel_screen.dart';
 
 // Dodaj klasę ThemeProvider
 class ThemeProvider with ChangeNotifier {
@@ -1084,6 +1085,12 @@ class _RoulettePageState extends State<RoulettePage> with SingleTickerProviderSt
       Navigator.of(context).push(
         MaterialPageRoute(
           builder: (_) => const FoodCategoriesScreen(),
+        ),
+      );
+    } else if (categories[catIndex] == 'Podróż') {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => const TravelScreen(),
         ),
       );
     } else {
