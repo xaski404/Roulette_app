@@ -469,7 +469,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                         sections: List.generate(
                                           numSegments,
                                           (i) => PieChartSectionData(
-                                            color: pieColors[i % pieColors.length],
+                                            color: !_canSpin 
+                                              ? pieColors[i % pieColors.length].withOpacity(0.3)
+                                              : pieColors[i % pieColors.length],
                                             value: 1,
                                             title: '',
                                             radius: 90,
@@ -501,12 +503,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               children: [
                                 Icon(
                                   Icons.auto_awesome_motion,
-                                  color: colorScheme.primary.withOpacity(0.3),
+                                  color: (_canSpin ? colorScheme.primary : colorScheme.onSurface)
+                                      .withOpacity(0.3),
                                   size: 42,
                                 ),
                                 Icon(
                                   Icons.casino,
-                                  color: colorScheme.primary,
+                                  color: _canSpin ? colorScheme.primary : colorScheme.onSurface.withOpacity(0.5),
                                   size: 32,
                                 ),
                               ],
@@ -519,7 +522,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               width: 20,
                               height: 20,
                               decoration: BoxDecoration(
-                                color: colorScheme.primary,
+                                color: _canSpin ? colorScheme.primary : colorScheme.onSurface.withOpacity(0.5),
                                 shape: BoxShape.circle,
                                 boxShadow: isDark ? null : [
                                   BoxShadow(
@@ -531,6 +534,50 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               ),
                             ),
                           ),
+                          // Overlay message when spin is not available
+                          if (!_canSpin)
+                            Container(
+                              width: 250,
+                              height: 250,
+                              decoration: BoxDecoration(
+                                color: colorScheme.surface.withOpacity(0.9),
+                                shape: BoxShape.circle,
+                              ),
+                              child: Center(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        Icons.check_circle_outline,
+                                        color: colorScheme.primary,
+                                        size: 40,
+                                      ),
+                                      const SizedBox(height: 16),
+                                      Text(
+                                        "We've already made your day!",
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          color: colorScheme.onSurface,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Text(
+                                        "Feel free to explore other activities using the buttons above.",
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          color: colorScheme.onSurface.withOpacity(0.7),
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
                         ],
                       ),
                     ),
