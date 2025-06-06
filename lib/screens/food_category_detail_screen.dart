@@ -77,10 +77,7 @@ class _FoodCategoryDetailScreenState extends State<FoodCategoryDetailScreen> wit
       ),
     );
 
-    // Add listeners for animation updates
-    _spinAnimation.addListener(_updatePassingMeal);
-    _spinAnimation.addStatusListener(_handleSpinStatus);
-
+    _spinController.addStatusListener(_handleSpinStatus);
     _loadMeals();
   }
 
@@ -290,40 +287,6 @@ class _FoodCategoryDetailScreenState extends State<FoodCategoryDetailScreen> wit
                     ),
 
                     const SizedBox(height: 32),
-
-                    // Passing meals display
-                    SizedBox(
-                      height: 40,
-                      child: AnimatedSwitcher(
-                        duration: const Duration(milliseconds: 200),
-                        transitionBuilder: (Widget child, Animation<double> animation) {
-                          return FadeTransition(
-                            opacity: animation,
-                            child: child,
-                          );
-                        },
-                        child: _isSpinning && _currentPassingMeal != null
-                            ? Container(
-                                key: ValueKey(_currentPassingMeal),
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 8,
-                                  horizontal: 32,
-                                ),
-                                child: Text(
-                                  _currentPassingMeal!,
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    color: colorScheme.onBackground.withOpacity(0.7),
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                              )
-                            : Container(
-                                key: const ValueKey('empty'),
-                                height: 40,
-                              ),
-                      ),
-                    ),
 
                     // Selected meal display with action buttons
                     if (_selectedMeal != null && !_isSpinning)

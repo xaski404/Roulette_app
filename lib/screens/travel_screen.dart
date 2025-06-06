@@ -75,9 +75,7 @@ class _TravelScreenState extends State<TravelScreen> with TickerProviderStateMix
       ),
     );
 
-    // Add listeners for animation updates
-    _spinAnimation.addListener(_updatePassingDestination);
-    _spinAnimation.addStatusListener(_handleSpinStatus);
+    _spinController.addStatusListener(_handleSpinStatus);
   }
 
   @override
@@ -337,41 +335,6 @@ class _TravelScreenState extends State<TravelScreen> with TickerProviderStateMix
                 ),
               ),
               const SizedBox(height: 16),
-
-              // Passing destinations display
-              SizedBox(
-                height: 40,
-                child: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 200),
-                  transitionBuilder: (Widget child, Animation<double> animation) {
-                    return FadeTransition(
-                      opacity: animation,
-                      child: child,
-                    );
-                  },
-                  child: _isSpinning && _currentPassingDestination != null
-                      ? Container(
-                          key: ValueKey(_currentPassingDestination),
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 8,
-                            horizontal: 32,
-                          ),
-                          child: Text(
-                            _currentPassingDestination!,
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: colorScheme.onBackground.withOpacity(0.7),
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        )
-                      : Container(
-                          key: const ValueKey('empty'),
-                          height: 40,
-                        ),
-                ),
-              ),
-              const SizedBox(height: 32),
 
               // Selected destination display and details button
               if (_selectedDestination != null && !_isSpinning)
