@@ -24,11 +24,11 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   final List<String> dailyActivities = [
-    'Wstań godzinę wcześniej niż zwykle',
-    'Przejdź dziś minimum 10 000 kroków',
-    'Zrób coś dobrego dla nieznajomej osoby',
-    'Przeznacz 30 minut na porządki w dowolnym miejscu w domu',
-    'Spędź 10 minut medytując lub wykonując ćwiczenia oddechowe',
+    'Wake up an hour earlier than usual',
+    'Walk at least 10,000 steps today',
+    'Do something good for a stranger',
+    'Spend 30 minutes cleaning any area of your home',
+    'Spend 10 minutes meditating or doing breathing exercises',
   ];
 
   String? _selectedActivity;

@@ -285,7 +285,7 @@ class _LoginScreenState extends State<LoginScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Anuluj'),
+              child: const Text('Cancel', style: TextStyle(color: Colors.white70)),
             ),
             ElevatedButton(
               onPressed: () async {
@@ -797,7 +797,7 @@ class MusicPage extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Wyzwania muzyczne',
+                    'Music Challenges',
                     style: TextStyle(
                       color: colorScheme.onSurface,
                       fontSize: 20,
@@ -931,11 +931,11 @@ class _RoulettePageState extends State<RoulettePage> with SingleTickerProviderSt
   // Dodana baza wyzwań
   final Map<String, List<String>> wyzwania = {
     'Dzień': [
-      'Wstań godzinę wcześniej niż zwykle.',
-      'Przejdź dziś minimum 10 000 kroków.',
-      'Zrób coś dobrego dla nieznajomej osoby.',
-      'Przeznacz 30 minut na porządki w dowolnym miejscu w domu.',
-      'Spędź 10 minut medytując lub wykonując ćwiczenia oddechowe.',
+      'Wake up an hour earlier than usual.',
+      'Walk at least 10,000 steps today.',
+      'Do something good for a stranger.',
+      'Spend 30 minutes cleaning any area of your home.',
+      'Spend 10 minutes meditating or doing breathing exercises.',
     ],
     'Jedzenie': [], // Empty list as we'll handle food differently
     'Rozrywka': [
@@ -1017,7 +1017,7 @@ class _RoulettePageState extends State<RoulettePage> with SingleTickerProviderSt
       builder: (context) {
         return AlertDialog(
           backgroundColor: const Color(0xFF151C25),
-          title: const Text('Dodaj aktywność', style: TextStyle(color: Colors.white)),
+          title: const Text('Add Activity', style: TextStyle(color: Colors.white)),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -1038,7 +1038,7 @@ class _RoulettePageState extends State<RoulettePage> with SingleTickerProviderSt
               TextField(
                 autofocus: true,
                 style: const TextStyle(color: Colors.white),
-                decoration: const InputDecoration(hintText: 'Aktywność', hintStyle: TextStyle(color: Colors.white54)),
+                decoration: const InputDecoration(hintText: 'Activity', hintStyle: TextStyle(color: Colors.white54)),
                 onChanged: (v) => newActivity = v,
               ),
             ],
@@ -1046,7 +1046,7 @@ class _RoulettePageState extends State<RoulettePage> with SingleTickerProviderSt
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Anuluj', style: TextStyle(color: Colors.white70)),
+              child: const Text('Cancel', style: TextStyle(color: Colors.white70)),
             ),
             TextButton(
               onPressed: () {
@@ -1058,7 +1058,7 @@ class _RoulettePageState extends State<RoulettePage> with SingleTickerProviderSt
                 }
                 Navigator.of(context).pop();
               },
-              child: const Text('Dodaj', style: TextStyle(color: Colors.white)),
+              child: const Text('Add', style: TextStyle(color: Colors.white)),
             ),
           ],
         );
@@ -1219,7 +1219,7 @@ class _RoulettePageState extends State<RoulettePage> with SingleTickerProviderSt
                 SizedBox(height: 16),
                 if (!isSpinning && spinningResult != null)
                   Text(
-                    'Wylosowano: ${categories[selectedCategory]}',
+                    'Selected: ${categories[selectedCategory]}',
                     style: TextStyle(
                       color: isDark ? Colors.white : Colors.black,
                       fontSize: 18,
@@ -1265,7 +1265,7 @@ class _RoulettePageState extends State<RoulettePage> with SingleTickerProviderSt
                                     strokeWidth: 3,
                                   ),
                                 )
-                              : const Text('KRĘĆ'),
+                              : const Text('SPIN'),
                         ),
                       ),
                       const SizedBox(height: 18),
@@ -1291,7 +1291,7 @@ class _RoulettePageState extends State<RoulettePage> with SingleTickerProviderSt
                             elevation: isDark ? 0 : 2,
                           ),
                           onPressed: _showAddActivityDialog,
-                          child: const Text('DODAJ AKTYWNOŚĆ'),
+                          child: const Text('ADD ACTIVITY'),
                         ),
                       ),
                     ],

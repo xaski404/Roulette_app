@@ -153,7 +153,7 @@ class _FoodCategoryDetailScreenState extends State<FoodCategoryDetailScreen> wit
       setState(() => _isLoading = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Błąd podczas ładowania posiłków: $e')),
+          SnackBar(content: Text('Error while loading meals: $e')),
         );
       }
     }
@@ -428,7 +428,7 @@ class _FoodCategoryDetailScreenState extends State<FoodCategoryDetailScreen> wit
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    'Przepis',
+                                    'Recipe',
                                     style: TextStyle(
                                       color: colorScheme.onSurface,
                                       fontSize: 20,

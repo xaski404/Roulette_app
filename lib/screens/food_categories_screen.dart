@@ -56,7 +56,7 @@ class _FoodCategoriesScreenState extends State<FoodCategoriesScreen> {
     return Scaffold(
       backgroundColor: colorScheme.background,
       appBar: AppBar(
-        title: const Text('Kategorie posiłków'),
+        title: const Text('Meal Categories'),
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
