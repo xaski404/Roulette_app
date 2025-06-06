@@ -349,198 +349,206 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               ),
             ),
 
-            const SizedBox(height: 24),
-
             // Make My Day section
             Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // Title with icon
-                  Container(
-                    margin: const EdgeInsets.only(bottom: 16),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.auto_awesome,
-                          size: 32,
-                          color: colorScheme.primary,
-                        ),
-                        const SizedBox(width: 12),
-                        Text(
-                          'Make My Day',
-                          style: TextStyle(
-                            fontSize: 32,
-                            fontWeight: FontWeight.w800,
-                            color: colorScheme.onBackground,
-                            fontFamily: 'Poppins',
-                            letterSpacing: 0.5,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  // Wheel container
-                  SizedBox(
-                    width: 250,
-                    height: 270,
-                    child: Stack(
-                      clipBehavior: Clip.none,
-                      alignment: Alignment.center,
-                      children: [
-                        // Spinning wheel
-                        AnimatedBuilder(
-                          animation: Listenable.merge([_spinAnimation, _bounceAnimation]),
-                          builder: (context, child) {
-                            return Transform.rotate(
-                              angle: _spinAnimation.value * (2 * pi * 5) + _bounceAnimation.value,
-                              child: Container(
-                                width: 250,
-                                height: 250,
-                                decoration: BoxDecoration(
-                                  color: colorScheme.surface,
-                                  shape: BoxShape.circle,
-                                  boxShadow: isDark ? null : [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.1),
-                                      blurRadius: 10,
-                                      offset: const Offset(0, 4),
-                                    ),
-                                  ],
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(10.0),
-                                  child: PieChart(
-                                    PieChartData(
-                                      sectionsSpace: 2,
-                                      centerSpaceRadius: 50,
-                                      sections: List.generate(
-                                        numSegments,
-                                        (i) => PieChartSectionData(
-                                          color: pieColors[i % pieColors.length],
-                                          value: 1,
-                                          title: '',
-                                          radius: 90,
-                                          showTitle: false,
-                                        ),
-                                      ),
-                                      borderData: FlBorderData(show: false),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                        // Center circle with icon
-                        Container(
-                          width: 80,
-                          height: 80,
-                          decoration: BoxDecoration(
-                            color: colorScheme.surface,
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: isDark ? Colors.white24 : Colors.black12,
-                              width: 2,
-                            ),
-                          ),
-                          child: Center(
-                            child: Icon(
-                              Icons.stars_rounded,
-                              color: colorScheme.primary,
-                              size: 36,
-                            ),
-                          ),
-                        ),
-                        // Selector triangle
-                        Positioned(
-                          top: -10,
-                          child: Container(
-                            width: 20,
-                            height: 20,
-                            decoration: BoxDecoration(
-                              color: colorScheme.primary,
-                              shape: BoxShape.circle,
-                              boxShadow: isDark ? null : [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
-                                  blurRadius: 4,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  const SizedBox(height: 32),
-
-                  // Selected activity display
-                  if (_selectedActivity != null && !_isSpinning)
+              child: Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: Column(
+                  children: [
+                    // Title with icon
                     Container(
-                      padding: const EdgeInsets.all(24),
-                      margin: const EdgeInsets.symmetric(horizontal: 16),
-                      decoration: BoxDecoration(
-                        color: colorScheme.surface,
-                        borderRadius: BorderRadius.circular(16),
-                        border: isDark ? null : Border.all(color: Colors.black12),
-                      ),
-                      child: Column(
+                      margin: const EdgeInsets.only(bottom: 16),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(
-                            'Today\'s Challenge',
-                            style: TextStyle(
-                              color: colorScheme.onSurface,
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
+                          Icon(
+                            Icons.auto_awesome,
+                            size: 32,
+                            color: colorScheme.primary,
                           ),
-                          const SizedBox(height: 16),
+                          const SizedBox(width: 12),
                           Text(
-                            _selectedActivity!,
-                            textAlign: TextAlign.center,
+                            'Make My Day',
                             style: TextStyle(
-                              color: colorScheme.onSurface,
-                              fontSize: 24,
-                              fontWeight: FontWeight.w500,
+                              fontSize: 32,
+                              fontWeight: FontWeight.w800,
+                              color: colorScheme.onBackground,
+                              fontFamily: 'Poppins',
+                              letterSpacing: 0.5,
                             ),
                           ),
                         ],
                       ),
                     ),
 
-                  const SizedBox(height: 32),
+                    // Wheel container
+                    SizedBox(
+                      width: 250,
+                      height: 270,
+                      child: Stack(
+                        clipBehavior: Clip.none,
+                        alignment: Alignment.center,
+                        children: [
+                          // Spinning wheel
+                          AnimatedBuilder(
+                            animation: Listenable.merge([_spinAnimation, _bounceAnimation]),
+                            builder: (context, child) {
+                              return Transform.rotate(
+                                angle: _spinAnimation.value * (2 * pi * 5) + _bounceAnimation.value,
+                                child: Container(
+                                  width: 250,
+                                  height: 250,
+                                  decoration: BoxDecoration(
+                                    color: colorScheme.surface,
+                                    shape: BoxShape.circle,
+                                    boxShadow: isDark ? null : [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.1),
+                                        blurRadius: 10,
+                                        offset: const Offset(0, 4),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(10.0),
+                                    child: PieChart(
+                                      PieChartData(
+                                        sectionsSpace: 2,
+                                        centerSpaceRadius: 50,
+                                        sections: List.generate(
+                                          numSegments,
+                                          (i) => PieChartSectionData(
+                                            color: pieColors[i % pieColors.length],
+                                            value: 1,
+                                            title: '',
+                                            radius: 90,
+                                            showTitle: false,
+                                          ),
+                                        ),
+                                        borderData: FlBorderData(show: false),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                          // Center circle with icon
+                          Container(
+                            width: 80,
+                            height: 80,
+                            decoration: BoxDecoration(
+                              color: colorScheme.surface,
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: isDark ? Colors.white24 : Colors.black12,
+                                width: 2,
+                              ),
+                            ),
+                            child: Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                Icon(
+                                  Icons.auto_awesome_motion,
+                                  color: colorScheme.primary.withOpacity(0.3),
+                                  size: 42,
+                                ),
+                                Icon(
+                                  Icons.casino,
+                                  color: colorScheme.primary,
+                                  size: 32,
+                                ),
+                              ],
+                            ),
+                          ),
+                          // Selector triangle
+                          Positioned(
+                            top: -10,
+                            child: Container(
+                              width: 20,
+                              height: 20,
+                              decoration: BoxDecoration(
+                                color: colorScheme.primary,
+                                shape: BoxShape.circle,
+                                boxShadow: isDark ? null : [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.1),
+                                    blurRadius: 4,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
 
-                  // Spin button
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 32),
-                    child: ElevatedButton(
-                      onPressed: _isSpinning ? null : _spinWheel,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: colorScheme.primary,
-                        foregroundColor: colorScheme.onPrimary,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 32,
-                          vertical: 16,
+                    const Spacer(),
+
+                    // Selected activity display
+                    if (_selectedActivity != null && !_isSpinning)
+                      Container(
+                        padding: const EdgeInsets.all(24),
+                        margin: const EdgeInsets.symmetric(horizontal: 16),
+                        decoration: BoxDecoration(
+                          color: colorScheme.surface,
+                          borderRadius: BorderRadius.circular(16),
+                          border: isDark ? null : Border.all(color: Colors.black12),
                         ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
+                        child: Column(
+                          children: [
+                            Text(
+                              'Today\'s Challenge',
+                              style: TextStyle(
+                                color: colorScheme.onSurface,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              _selectedActivity!,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: colorScheme.onSurface,
+                                fontSize: 24,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      child: Text(
-                        _isSpinning ? 'Spinning...' : 'Spin the Wheel',
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
+
+                    const SizedBox(height: 24),
+
+                    // Spin button
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                      child: ElevatedButton(
+                        onPressed: _isSpinning ? null : _spinWheel,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: colorScheme.primary,
+                          foregroundColor: colorScheme.onPrimary,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 32,
+                            vertical: 16,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                        ),
+                        child: Text(
+                          _isSpinning ? 'Spinning...' : 'Spin the Wheel',
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ],
