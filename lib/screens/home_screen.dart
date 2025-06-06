@@ -608,7 +608,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       ),
                     ),
 
-                    const Spacer(),
+                    // Fixed height spacer to maintain consistent button position
+                    const SizedBox(height: 32),
 
                     // Spin button
                     ElevatedButton(
@@ -632,6 +633,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         ),
                       ),
                     ),
+
+                    // Flexible spacer that expands only if no challenge is displayed
+                    if (_selectedActivity == null)
+                      const Spacer(),
 
                     // Daily challenge display
                     _buildDailyChallengeSection(),
