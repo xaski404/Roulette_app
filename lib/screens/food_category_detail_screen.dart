@@ -132,6 +132,14 @@ class _FoodCategoryDetailScreenState extends State<FoodCategoryDetailScreen> wit
       setState(() {
         _isSpinning = false;
         _currentPassingMeal = null;
+        if (_meals.isNotEmpty) {
+          final random = Random();
+          String newMeal;
+          do {
+            newMeal = _meals[random.nextInt(_meals.length)];
+          } while (_meals.length > 1 && newMeal == _selectedMeal);
+          _selectedMeal = newMeal;
+        }
       });
     }
   }
@@ -159,13 +167,8 @@ class _FoodCategoryDetailScreenState extends State<FoodCategoryDetailScreen> wit
     
     setState(() {
       _isSpinning = true;
-      final random = Random();
-      String newMeal;
-      do {
-        newMeal = _meals[random.nextInt(_meals.length)];
-      } while (_meals.length > 1 && newMeal == _selectedMeal);
-      _selectedMeal = newMeal;
-
+      _selectedMeal = null;
+      
       // Reset and start animations
       _spinController.reset();
       _spinController.forward();
@@ -324,55 +327,39 @@ class _FoodCategoryDetailScreenState extends State<FoodCategoryDetailScreen> wit
 
                     // Selected meal display with action buttons
                     if (_selectedMeal != null && !_isSpinning)
-                      Column(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 32),
-                            child: Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.all(24),
-                              decoration: BoxDecoration(
-                                color: colorScheme.primary,
-                                borderRadius: BorderRadius.circular(16),
-                                boxShadow: isDark ? null : [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.1),
-                                    blurRadius: 8,
-                                    offset: const Offset(0, 2),
-                                  ),
-                                ],
-                              ),
-                              child: Column(
-                                children: [
-                                  const Text(
-                                    'Wylosowany posiłek:',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 12),
-                                  Text(
-                                    _selectedMeal!,
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 24,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ],
+                      Container(
+                        padding: const EdgeInsets.all(24),
+                        margin: const EdgeInsets.symmetric(horizontal: 16),
+                        decoration: BoxDecoration(
+                          color: colorScheme.surface,
+                          borderRadius: BorderRadius.circular(16),
+                          border: isDark ? null : Border.all(color: Colors.black12),
+                        ),
+                        child: Column(
+                          children: [
+                            Text(
+                              'Selected Meal',
+                              style: TextStyle(
+                                color: colorScheme.onSurface,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
-                          ),
-                          const SizedBox(height: 16),
-                          // Action buttons
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 32),
-                            child: Row(
+                            const SizedBox(height: 16),
+                            Text(
+                              _selectedMeal!,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: colorScheme.onSurface,
+                                fontSize: 24,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            const SizedBox(height: 24),
+                            Row(
                               children: [
                                 Expanded(
-                                  child: ElevatedButton(
+                                  child: ElevatedButton.icon(
                                     onPressed: () {
                                       final recipe = RecipeService.getRecipe(_selectedMeal!);
                                       setState(() {
@@ -381,40 +368,37 @@ class _FoodCategoryDetailScreenState extends State<FoodCategoryDetailScreen> wit
                                       if (recipe == null) {
                                         ScaffoldMessenger.of(context).showSnackBar(
                                           const SnackBar(
-                                            content: Text('Przepis nie jest jeszcze dostępny'),
+                                            content: Text('Recipe not available yet'),
                                             duration: Duration(seconds: 2),
                                           ),
                                         );
                                       }
                                     },
+                                    icon: const Icon(Icons.restaurant_menu),
+                                    label: const Text('Eat at Home'),
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: colorScheme.secondary.withOpacity(0.8),
+                                      backgroundColor: colorScheme.primaryContainer,
+                                      foregroundColor: colorScheme.onPrimaryContainer,
                                       padding: const EdgeInsets.symmetric(
+                                        horizontal: 24,
                                         vertical: 12,
                                       ),
                                       shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                    ),
-                                    child: const Text(
-                                      'Zjem w domu',
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
+                                        borderRadius: BorderRadius.circular(30),
                                       ),
                                     ),
                                   ),
                                 ),
                                 const SizedBox(width: 12),
                                 Expanded(
-                                  child: ElevatedButton(
+                                  child: ElevatedButton.icon(
                                     onPressed: () async {
                                       final location = await PlacesService.getCurrentLocation();
                                       if (location == null) {
                                         if (mounted) {
                                           ScaffoldMessenger.of(context).showSnackBar(
                                             const SnackBar(
-                                              content: Text('Nie udało się uzyskać lokalizacji. Sprawdź uprawnienia.'),
+                                              content: Text('Could not get location. Check permissions.'),
                                             ),
                                           );
                                         }
@@ -433,29 +417,28 @@ class _FoodCategoryDetailScreenState extends State<FoodCategoryDetailScreen> wit
                                         );
                                       }
                                     },
+                                    icon: const Icon(Icons.restaurant),
+                                    label: const Text('Eat Out'),
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: colorScheme.tertiary.withOpacity(0.8),
+                                      backgroundColor: colorScheme.primaryContainer,
+                                      foregroundColor: colorScheme.onPrimaryContainer,
                                       padding: const EdgeInsets.symmetric(
+                                        horizontal: 24,
                                         vertical: 12,
                                       ),
                                       shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                    ),
-                                    child: const Text(
-                                      'Zjem na mieście',
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
+                                        borderRadius: BorderRadius.circular(30),
                                       ),
                                     ),
                                   ),
                                 ),
                               ],
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
+
+                    const SizedBox(height: 32),
 
                     // Recipe display
                     if (_selectedRecipe != null)
@@ -514,36 +497,29 @@ class _FoodCategoryDetailScreenState extends State<FoodCategoryDetailScreen> wit
 
                     const SizedBox(height: 40),
 
-                    // Random selection button
+                    // Spin button
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 32),
                       child: ElevatedButton(
                         onPressed: _meals.isEmpty || _isSpinning ? null : _selectRandomMeal,
                         style: ElevatedButton.styleFrom(
+                          backgroundColor: colorScheme.primary,
+                          foregroundColor: colorScheme.onPrimary,
                           padding: const EdgeInsets.symmetric(
-                            horizontal: 48,
+                            horizontal: 32,
                             vertical: 16,
                           ),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(24),
+                            borderRadius: BorderRadius.circular(30),
                           ),
                         ),
-                        child: _isSpinning
-                            ? const SizedBox(
-                                width: 24,
-                                height: 24,
-                                child: CircularProgressIndicator(
-                                  color: Colors.white,
-                                  strokeWidth: 2,
-                                ),
-                              )
-                            : const Text(
-                                'LOSUJ',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
+                        child: Text(
+                          _isSpinning ? 'Spinning...' : 'Spin the Wheel',
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
                     ),
                   ],
