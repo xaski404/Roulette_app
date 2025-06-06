@@ -109,23 +109,6 @@ class UserMenuPanel extends StatelessWidget {
                   // Menu Items
                   ListTile(
                     leading: Icon(
-                      Icons.settings,
-                      color: colorScheme.onSurface.withOpacity(0.7),
-                    ),
-                    title: Text(
-                      'Settings',
-                      style: TextStyle(
-                        color: colorScheme.onSurface,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    onTap: () {
-                      // TODO: Implement settings navigation
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                  ListTile(
-                    leading: Icon(
                       Icons.logout,
                       color: colorScheme.error,
                     ),
