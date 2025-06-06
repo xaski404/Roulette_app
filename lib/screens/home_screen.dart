@@ -13,6 +13,7 @@ import '../services/auth_service.dart';
 import '../widgets/streak_calendar.dart';
 import '../services/streak_service.dart';
 import '../widgets/user_menu_panel.dart';
+import '../widgets/triangle_painter.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -160,6 +161,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     setState(() {
       _canSpin = spinStatus['canSpin'];
       _nextSpinTime = spinStatus['nextSpinTime'];
+      _selectedActivity = spinStatus['dailyChallenge'];
     });
     if (_nextSpinTime != null) {
       _updateTimeUntilNextSpin();
@@ -218,7 +220,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   Future<void> _recordDailyActivity() async {
-    await _streakService.recordActivity();
+    if (_selectedActivity == null) return;
+    await _streakService.recordDailyActivity(_selectedActivity!);
+    _checkSpinAvailability();
   }
 
   void _showStreakCalendar() {
@@ -291,6 +295,52 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildDailyChallengeSection() {
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDark = colorScheme.brightness == Brightness.dark;
+
+    if (_selectedActivity == null) {
+      return const SizedBox.shrink();
+    }
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: colorScheme.surface,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: isDark ? null : [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Your challenge for today:',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: colorScheme.primary,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            _selectedActivity!,
+            style: TextStyle(
+              fontSize: 18,
+              color: colorScheme.onSurface,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -432,6 +482,20 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       ),
                     ),
 
+                    // Countdown timer when spin is not available
+                    if (!_canSpin && _timeUntilNextSpin.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 16),
+                        child: Text(
+                          'Next spin available in: $_timeUntilNextSpin',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: colorScheme.primary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+
                     // Wheel container
                     SizedBox(
                       width: 250,
@@ -460,80 +524,28 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                       ),
                                     ],
                                   ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(10.0),
-                                    child: PieChart(
-                                      PieChartData(
-                                        sectionsSpace: 2,
-                                        centerSpaceRadius: 50,
-                                        sections: List.generate(
-                                          numSegments,
-                                          (i) => PieChartSectionData(
-                                            color: !_canSpin 
-                                              ? pieColors[i % pieColors.length].withOpacity(0.3)
-                                              : pieColors[i % pieColors.length],
-                                            value: 1,
-                                            title: '',
-                                            radius: 90,
-                                            showTitle: false,
-                                          ),
-                                        ),
-                                        borderData: FlBorderData(show: false),
-                                      ),
-                                    ),
-                                  ),
+                                  child: child,
                                 ),
                               );
                             },
-                          ),
-                          // Center circle with icon
-                          Container(
-                            width: 80,
-                            height: 80,
-                            decoration: BoxDecoration(
-                              color: colorScheme.surface,
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: isDark ? Colors.white24 : Colors.black12,
-                                width: 2,
-                              ),
-                            ),
-                            child: Stack(
-                              alignment: Alignment.center,
-                              children: [
-                                Icon(
-                                  Icons.auto_awesome_motion,
-                                  color: (_canSpin ? colorScheme.primary : colorScheme.onSurface)
-                                      .withOpacity(0.3),
-                                  size: 42,
-                                ),
-                                Icon(
-                                  Icons.casino,
-                                  color: _canSpin ? colorScheme.primary : colorScheme.onSurface.withOpacity(0.5),
-                                  size: 32,
-                                ),
-                              ],
-                            ),
-                          ),
-                          // Selector triangle
-                          Positioned(
-                            top: -10,
-                            child: Container(
-                              width: 20,
-                              height: 20,
-                              decoration: BoxDecoration(
-                                color: _canSpin ? colorScheme.primary : colorScheme.onSurface.withOpacity(0.5),
-                                shape: BoxShape.circle,
-                                boxShadow: isDark ? null : [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.1),
-                                    blurRadius: 4,
-                                    offset: const Offset(0, 2),
+                            child: PieChart(
+                              PieChartData(
+                                sectionsSpace: 0,
+                                centerSpaceRadius: 38,
+                                sections: List.generate(
+                                  dailyActivities.length,
+                                  (i) => PieChartSectionData(
+                                    color: pieColors[i % pieColors.length],
+                                    value: 1,
+                                    title: '',
+                                    radius: 80,
                                   ),
-                                ],
+                                ),
+                                borderData: FlBorderData(show: false),
                               ),
                             ),
                           ),
+
                           // Overlay message when spin is not available
                           if (!_canSpin)
                             Container(
@@ -578,89 +590,51 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                 ),
                               ),
                             ),
-                        ],
-                      ),
-                    ),
 
-                    const Spacer(),
-
-                    // Selected activity display
-                    if (_selectedActivity != null && !_isSpinning)
-                      Container(
-                        padding: const EdgeInsets.all(24),
-                        margin: const EdgeInsets.symmetric(horizontal: 16),
-                        decoration: BoxDecoration(
-                          color: colorScheme.surface,
-                          borderRadius: BorderRadius.circular(16),
-                          border: isDark ? null : Border.all(color: Colors.black12),
-                        ),
-                        child: Column(
-                          children: [
-                            Text(
-                              'Today\'s Challenge',
-                              style: TextStyle(
-                                color: colorScheme.onSurface,
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-                            Text(
-                              _selectedActivity!,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: colorScheme.onSurface,
-                                fontSize: 24,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-
-                    const SizedBox(height: 24),
-
-                    // Spin button
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                      child: Column(
-                        children: [
-                          if (_timeUntilNextSpin.isNotEmpty)
-                            Padding(
-                              padding: const EdgeInsets.only(bottom: 8),
-                              child: Text(
-                                'Next spin available in: $_timeUntilNextSpin',
-                                style: TextStyle(
-                                  color: colorScheme.onBackground.withOpacity(0.7),
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
+                          // Selector triangle
+                          Positioned(
+                            top: -10,
+                            child: SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CustomPaint(
+                                painter: TrianglePainter(
+                                  color: colorScheme.primary,
                                 ),
-                              ),
-                            ),
-                          ElevatedButton(
-                            onPressed: _canSpin && !_isSpinning ? _spinWheel : null,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: _canSpin ? colorScheme.primary : colorScheme.surface,
-                              foregroundColor: _canSpin ? colorScheme.onPrimary : colorScheme.onSurface.withOpacity(0.38),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 32,
-                                vertical: 16,
-                              ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-                            ),
-                            child: Text(
-                              _isSpinning ? 'Spinning...' : (_canSpin ? 'Spin the Wheel' : 'Come back tomorrow'),
-                              style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
                               ),
                             ),
                           ),
                         ],
                       ),
                     ),
+
+                    const Spacer(),
+
+                    // Spin button
+                    ElevatedButton(
+                      onPressed: _canSpin && !_isSpinning ? _spinWheel : null,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: _canSpin ? colorScheme.primary : colorScheme.surface,
+                        foregroundColor: _canSpin ? colorScheme.onPrimary : colorScheme.onSurface.withOpacity(0.38),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 32,
+                          vertical: 16,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                      ),
+                      child: Text(
+                        _isSpinning ? 'Spinning...' : (_canSpin ? 'Spin the Wheel' : 'Come back tomorrow'),
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+
+                    // Daily challenge display
+                    _buildDailyChallengeSection(),
                   ],
                 ),
               ),

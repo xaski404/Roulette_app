@@ -25,10 +25,31 @@ class StreakService {
     });
   }
 
-  // Check if user has used their daily spin and get next available time
+  // Record user activity for the current day with a challenge
+  Future<void> recordDailyActivity(String challenge) async {
+    final userId = _auth.currentUser?.uid;
+    if (userId == null) return;
+
+    final today = DateTime.now();
+    final dateString = '${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}';
+
+    await _firestore
+        .collection('users')
+        .doc(userId)
+        .collection('activity')
+        .doc(dateString)
+        .set({
+      'timestamp': FieldValue.serverTimestamp(),
+      'date': dateString,
+      'lastSpinTime': FieldValue.serverTimestamp(),
+      'dailyChallenge': challenge,
+    });
+  }
+
+  // Check if user has used their daily spin and get next available time and current challenge
   Future<Map<String, dynamic>> checkDailySpin() async {
     final userId = _auth.currentUser?.uid;
-    if (userId == null) return {'canSpin': false, 'nextSpinTime': null};
+    if (userId == null) return {'canSpin': false, 'nextSpinTime': null, 'dailyChallenge': null};
 
     final today = DateTime.now();
     final dateString = '${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}';
@@ -41,12 +62,14 @@ class StreakService {
         .get();
 
     if (!doc.exists) {
-      return {'canSpin': true, 'nextSpinTime': null};
+      return {'canSpin': true, 'nextSpinTime': null, 'dailyChallenge': null};
     }
 
     final lastSpinTime = doc.data()?['lastSpinTime'] as Timestamp?;
+    final dailyChallenge = doc.data()?['dailyChallenge'] as String?;
+    
     if (lastSpinTime == null) {
-      return {'canSpin': true, 'nextSpinTime': null};
+      return {'canSpin': true, 'nextSpinTime': null, 'dailyChallenge': dailyChallenge};
     }
 
     final lastSpinDateTime = lastSpinTime.toDate();
@@ -59,6 +82,7 @@ class StreakService {
     return {
       'canSpin': today.isAfter(nextAvailableTime),
       'nextSpinTime': nextAvailableTime,
+      'dailyChallenge': dailyChallenge,
     };
   }
 
