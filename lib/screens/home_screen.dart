@@ -32,6 +32,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   String? _selectedActivity;
   bool _isSpinning = false;
+  bool _canSpin = true;
+  DateTime? _nextSpinTime;
+  String _timeUntilNextSpin = '';
   late AnimationController _spinController;
   late AnimationController _bounceController;
   late Animation<double> _spinAnimation;
@@ -81,7 +84,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
     _spinAnimation.addListener(_updatePassingActivity);
     _spinAnimation.addStatusListener(_handleSpinStatus);
-    _recordDailyActivity();
+    _checkSpinAvailability();
+    _startTimer();
   }
 
   void _updatePassingActivity() {
@@ -114,11 +118,56 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         final selectedIndex = (normalizedAngle / segmentAngle).floor() % dailyActivities.length;
         _selectedActivity = dailyActivities[selectedIndex];
       });
+      _recordDailyActivity();
+      _checkSpinAvailability();
+    }
+  }
+
+  void _startTimer() {
+    Future.doWhile(() async {
+      if (!mounted) return false;
+      await _updateTimeUntilNextSpin();
+      await Future.delayed(const Duration(seconds: 1));
+      return true;
+    });
+  }
+
+  Future<void> _updateTimeUntilNextSpin() async {
+    if (_nextSpinTime == null) return;
+    
+    final now = DateTime.now();
+    if (now.isAfter(_nextSpinTime!)) {
+      setState(() {
+        _canSpin = true;
+        _nextSpinTime = null;
+        _timeUntilNextSpin = '';
+      });
+      return;
+    }
+
+    final difference = _nextSpinTime!.difference(now);
+    final hours = difference.inHours;
+    final minutes = difference.inMinutes % 60;
+    final seconds = difference.inSeconds % 60;
+
+    setState(() {
+      _timeUntilNextSpin = '${hours}h ${minutes}m ${seconds}s';
+    });
+  }
+
+  Future<void> _checkSpinAvailability() async {
+    final spinStatus = await _streakService.checkDailySpin();
+    setState(() {
+      _canSpin = spinStatus['canSpin'];
+      _nextSpinTime = spinStatus['nextSpinTime'];
+    });
+    if (_nextSpinTime != null) {
+      _updateTimeUntilNextSpin();
     }
   }
 
   void _spinWheel() {
-    if (_isSpinning) return;
+    if (_isSpinning || !_canSpin) return;
     
     setState(() {
       _isSpinning = true;
@@ -527,26 +576,42 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     // Spin button
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                      child: ElevatedButton(
-                        onPressed: _isSpinning ? null : _spinWheel,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: colorScheme.primary,
-                          foregroundColor: colorScheme.onPrimary,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 32,
-                            vertical: 16,
+                      child: Column(
+                        children: [
+                          if (_timeUntilNextSpin.isNotEmpty)
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 8),
+                              child: Text(
+                                'Next spin available in: $_timeUntilNextSpin',
+                                style: TextStyle(
+                                  color: colorScheme.onBackground.withOpacity(0.7),
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ElevatedButton(
+                            onPressed: _canSpin && !_isSpinning ? _spinWheel : null,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: _canSpin ? colorScheme.primary : colorScheme.surface,
+                              foregroundColor: _canSpin ? colorScheme.onPrimary : colorScheme.onSurface.withOpacity(0.38),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 32,
+                                vertical: 16,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                            ),
+                            child: Text(
+                              _isSpinning ? 'Spinning...' : (_canSpin ? 'Spin the Wheel' : 'Come back tomorrow'),
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                        ),
-                        child: Text(
-                          _isSpinning ? 'Spinning...' : 'Spin the Wheel',
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                        ],
                       ),
                     ),
                   ],
