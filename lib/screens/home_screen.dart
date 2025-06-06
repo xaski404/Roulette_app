@@ -356,87 +356,160 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.wb_sunny,
-                        size: 32,
-                        color: colorScheme.primary,
-                      ),
-                      const SizedBox(width: 12),
-                      Text(
-                        'Make My Day',
-                        style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                          color: colorScheme.onBackground,
+                  // Title with icon
+                  Container(
+                    margin: const EdgeInsets.only(bottom: 16),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.auto_awesome,
+                          size: 32,
+                          color: colorScheme.primary,
                         ),
-                      ),
-                    ],
+                        const SizedBox(width: 12),
+                        Text(
+                          'Make My Day',
+                          style: TextStyle(
+                            fontSize: 32,
+                            fontWeight: FontWeight.w800,
+                            color: colorScheme.onBackground,
+                            fontFamily: 'Poppins',
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
 
-                  const SizedBox(height: 32),
-
-                  // Wheel
-                  AnimatedBuilder(
-                    animation: Listenable.merge([_spinAnimation, _bounceAnimation]),
-                    builder: (context, child) {
-                      return Transform.rotate(
-                        angle: _spinAnimation.value,
-                        child: Container(
-                          width: 250,
-                          height: 250,
+                  // Wheel container
+                  SizedBox(
+                    width: 250,
+                    height: 270,
+                    child: Stack(
+                      clipBehavior: Clip.none,
+                      alignment: Alignment.center,
+                      children: [
+                        // Spinning wheel
+                        AnimatedBuilder(
+                          animation: Listenable.merge([_spinAnimation, _bounceAnimation]),
+                          builder: (context, child) {
+                            return Transform.rotate(
+                              angle: _spinAnimation.value * (2 * pi * 5) + _bounceAnimation.value,
+                              child: Container(
+                                width: 250,
+                                height: 250,
+                                decoration: BoxDecoration(
+                                  color: colorScheme.surface,
+                                  shape: BoxShape.circle,
+                                  boxShadow: isDark ? null : [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.1),
+                                      blurRadius: 10,
+                                      offset: const Offset(0, 4),
+                                    ),
+                                  ],
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(10.0),
+                                  child: PieChart(
+                                    PieChartData(
+                                      sectionsSpace: 2,
+                                      centerSpaceRadius: 50,
+                                      sections: List.generate(
+                                        numSegments,
+                                        (i) => PieChartSectionData(
+                                          color: pieColors[i % pieColors.length],
+                                          value: 1,
+                                          title: '',
+                                          radius: 90,
+                                          showTitle: false,
+                                        ),
+                                      ),
+                                      borderData: FlBorderData(show: false),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                        // Center circle with icon
+                        Container(
+                          width: 80,
+                          height: 80,
                           decoration: BoxDecoration(
                             color: colorScheme.surface,
                             shape: BoxShape.circle,
-                            boxShadow: isDark ? null : [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
-                                blurRadius: 10,
-                                offset: const Offset(0, 4),
-                              ),
-                            ],
+                            border: Border.all(
+                              color: isDark ? Colors.white24 : Colors.black12,
+                              width: 2,
+                            ),
                           ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: PieChart(
-                              PieChartData(
-                                sectionsSpace: 0,
-                                centerSpaceRadius: 50,
-                                sections: List.generate(
-                                  numSegments,
-                                  (i) => PieChartSectionData(
-                                    color: pieColors[i % pieColors.length],
-                                    value: 1,
-                                    title: '',
-                                    radius: 90,
-                                    showTitle: false,
-                                  ),
-                                ),
-                                borderData: FlBorderData(show: false),
-                              ),
+                          child: Center(
+                            child: Icon(
+                              Icons.stars_rounded,
+                              color: colorScheme.primary,
+                              size: 36,
                             ),
                           ),
                         ),
-                      );
-                    },
+                        // Selector triangle
+                        Positioned(
+                          top: -10,
+                          child: Container(
+                            width: 20,
+                            height: 20,
+                            decoration: BoxDecoration(
+                              color: colorScheme.primary,
+                              shape: BoxShape.circle,
+                              boxShadow: isDark ? null : [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.1),
+                                  blurRadius: 4,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
 
                   const SizedBox(height: 32),
 
                   // Selected activity display
                   if (_selectedActivity != null && !_isSpinning)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 32),
-                      child: Text(
-                        _selectedActivity!,
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w500,
-                          color: colorScheme.onBackground,
-                        ),
-                        textAlign: TextAlign.center,
+                    Container(
+                      padding: const EdgeInsets.all(24),
+                      margin: const EdgeInsets.symmetric(horizontal: 16),
+                      decoration: BoxDecoration(
+                        color: colorScheme.surface,
+                        borderRadius: BorderRadius.circular(16),
+                        border: isDark ? null : Border.all(color: Colors.black12),
+                      ),
+                      child: Column(
+                        children: [
+                          Text(
+                            'Today\'s Challenge',
+                            style: TextStyle(
+                              color: colorScheme.onSurface,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            _selectedActivity!,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: colorScheme.onSurface,
+                              fontSize: 24,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
 
@@ -450,29 +523,21 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: colorScheme.primary,
                         foregroundColor: colorScheme.onPrimary,
-                        minimumSize: const Size(200, 56),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(28),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 32,
+                          vertical: 16,
                         ),
-                        padding: const EdgeInsets.symmetric(horizontal: 32),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
                       ),
-                      child: _isSpinning
-                          ? const SizedBox(
-                              width: 24,
-                              height: 24,
-                              child: CircularProgressIndicator(
-                                color: Colors.white,
-                                strokeWidth: 3,
-                              ),
-                            )
-                          : const Text(
-                              'SPIN',
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                letterSpacing: 1.2,
-                              ),
-                            ),
+                      child: Text(
+                        _isSpinning ? 'Spinning...' : 'Spin the Wheel',
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                   ),
                 ],
