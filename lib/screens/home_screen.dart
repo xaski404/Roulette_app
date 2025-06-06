@@ -32,6 +32,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   String? _selectedActivity;
   bool _isSpinning = false;
+  bool _canSpin = true;
+  DateTime? _nextSpinTime;
+  String _timeUntilNextSpin = '';
   late AnimationController _spinController;
   late AnimationController _bounceController;
   late Animation<double> _spinAnimation;
@@ -81,7 +84,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
     _spinAnimation.addListener(_updatePassingActivity);
     _spinAnimation.addStatusListener(_handleSpinStatus);
-    _recordDailyActivity();
+    _checkSpinAvailability();
+    _startTimer();
   }
 
   void _updatePassingActivity() {
@@ -114,11 +118,56 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         final selectedIndex = (normalizedAngle / segmentAngle).floor() % dailyActivities.length;
         _selectedActivity = dailyActivities[selectedIndex];
       });
+      _recordDailyActivity();
+      _checkSpinAvailability();
+    }
+  }
+
+  void _startTimer() {
+    Future.doWhile(() async {
+      if (!mounted) return false;
+      await _updateTimeUntilNextSpin();
+      await Future.delayed(const Duration(seconds: 1));
+      return true;
+    });
+  }
+
+  Future<void> _updateTimeUntilNextSpin() async {
+    if (_nextSpinTime == null) return;
+    
+    final now = DateTime.now();
+    if (now.isAfter(_nextSpinTime!)) {
+      setState(() {
+        _canSpin = true;
+        _nextSpinTime = null;
+        _timeUntilNextSpin = '';
+      });
+      return;
+    }
+
+    final difference = _nextSpinTime!.difference(now);
+    final hours = difference.inHours;
+    final minutes = difference.inMinutes % 60;
+    final seconds = difference.inSeconds % 60;
+
+    setState(() {
+      _timeUntilNextSpin = '${hours}h ${minutes}m ${seconds}s';
+    });
+  }
+
+  Future<void> _checkSpinAvailability() async {
+    final spinStatus = await _streakService.checkDailySpin();
+    setState(() {
+      _canSpin = spinStatus['canSpin'];
+      _nextSpinTime = spinStatus['nextSpinTime'];
+    });
+    if (_nextSpinTime != null) {
+      _updateTimeUntilNextSpin();
     }
   }
 
   void _spinWheel() {
-    if (_isSpinning) return;
+    if (_isSpinning || !_canSpin) return;
     
     setState(() {
       _isSpinning = true;
@@ -349,133 +398,271 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               ),
             ),
 
-            const SizedBox(height: 24),
+            const SizedBox(height: 16),  // Add subtle spacing after navigation
 
             // Make My Day section
             Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.wb_sunny,
-                        size: 32,
-                        color: colorScheme.primary,
-                      ),
-                      const SizedBox(width: 12),
-                      Text(
-                        'Make My Day',
-                        style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                          color: colorScheme.onBackground,
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 32),
-
-                  // Wheel
-                  AnimatedBuilder(
-                    animation: Listenable.merge([_spinAnimation, _bounceAnimation]),
-                    builder: (context, child) {
-                      return Transform.rotate(
-                        angle: _spinAnimation.value,
-                        child: Container(
-                          width: 250,
-                          height: 250,
-                          decoration: BoxDecoration(
-                            color: colorScheme.surface,
-                            shape: BoxShape.circle,
-                            boxShadow: isDark ? null : [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
-                                blurRadius: 10,
-                                offset: const Offset(0, 4),
-                              ),
-                            ],
+              child: Padding(
+                padding: const EdgeInsets.only(top: 16),  // Adjusted from 8 to 16
+                child: Column(
+                  children: [
+                    // Title with icon
+                    Container(
+                      margin: const EdgeInsets.only(bottom: 20),  // Adjusted from 16 to 20
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.auto_awesome,
+                            size: 32,
+                            color: colorScheme.primary,
                           ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: PieChart(
-                              PieChartData(
-                                sectionsSpace: 0,
-                                centerSpaceRadius: 50,
-                                sections: List.generate(
-                                  numSegments,
-                                  (i) => PieChartSectionData(
-                                    color: pieColors[i % pieColors.length],
-                                    value: 1,
-                                    title: '',
-                                    radius: 90,
-                                    showTitle: false,
+                          const SizedBox(width: 12),
+                          Text(
+                            'Make My Day',
+                            style: TextStyle(
+                              fontSize: 32,
+                              fontWeight: FontWeight.w800,
+                              color: colorScheme.onBackground,
+                              fontFamily: 'Poppins',
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    // Wheel container
+                    SizedBox(
+                      width: 250,
+                      height: 270,
+                      child: Stack(
+                        clipBehavior: Clip.none,
+                        alignment: Alignment.center,
+                        children: [
+                          // Spinning wheel
+                          AnimatedBuilder(
+                            animation: Listenable.merge([_spinAnimation, _bounceAnimation]),
+                            builder: (context, child) {
+                              return Transform.rotate(
+                                angle: _spinAnimation.value * (2 * pi * 5) + _bounceAnimation.value,
+                                child: Container(
+                                  width: 250,
+                                  height: 250,
+                                  decoration: BoxDecoration(
+                                    color: colorScheme.surface,
+                                    shape: BoxShape.circle,
+                                    boxShadow: isDark ? null : [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.1),
+                                        blurRadius: 10,
+                                        offset: const Offset(0, 4),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(10.0),
+                                    child: PieChart(
+                                      PieChartData(
+                                        sectionsSpace: 2,
+                                        centerSpaceRadius: 50,
+                                        sections: List.generate(
+                                          numSegments,
+                                          (i) => PieChartSectionData(
+                                            color: !_canSpin 
+                                              ? pieColors[i % pieColors.length].withOpacity(0.3)
+                                              : pieColors[i % pieColors.length],
+                                            value: 1,
+                                            title: '',
+                                            radius: 90,
+                                            showTitle: false,
+                                          ),
+                                        ),
+                                        borderData: FlBorderData(show: false),
+                                      ),
+                                    ),
                                   ),
                                 ),
-                                borderData: FlBorderData(show: false),
+                              );
+                            },
+                          ),
+                          // Center circle with icon
+                          Container(
+                            width: 80,
+                            height: 80,
+                            decoration: BoxDecoration(
+                              color: colorScheme.surface,
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: isDark ? Colors.white24 : Colors.black12,
+                                width: 2,
+                              ),
+                            ),
+                            child: Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                Icon(
+                                  Icons.auto_awesome_motion,
+                                  color: (_canSpin ? colorScheme.primary : colorScheme.onSurface)
+                                      .withOpacity(0.3),
+                                  size: 42,
+                                ),
+                                Icon(
+                                  Icons.casino,
+                                  color: _canSpin ? colorScheme.primary : colorScheme.onSurface.withOpacity(0.5),
+                                  size: 32,
+                                ),
+                              ],
+                            ),
+                          ),
+                          // Selector triangle
+                          Positioned(
+                            top: -10,
+                            child: Container(
+                              width: 20,
+                              height: 20,
+                              decoration: BoxDecoration(
+                                color: _canSpin ? colorScheme.primary : colorScheme.onSurface.withOpacity(0.5),
+                                shape: BoxShape.circle,
+                                boxShadow: isDark ? null : [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.1),
+                                    blurRadius: 4,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],
                               ),
                             ),
                           ),
-                        ),
-                      );
-                    },
-                  ),
-
-                  const SizedBox(height: 32),
-
-                  // Selected activity display
-                  if (_selectedActivity != null && !_isSpinning)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 32),
-                      child: Text(
-                        _selectedActivity!,
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w500,
-                          color: colorScheme.onBackground,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-
-                  const SizedBox(height: 32),
-
-                  // Spin button
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 32),
-                    child: ElevatedButton(
-                      onPressed: _isSpinning ? null : _spinWheel,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: colorScheme.primary,
-                        foregroundColor: colorScheme.onPrimary,
-                        minimumSize: const Size(200, 56),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(28),
-                        ),
-                        padding: const EdgeInsets.symmetric(horizontal: 32),
-                      ),
-                      child: _isSpinning
-                          ? const SizedBox(
-                              width: 24,
-                              height: 24,
-                              child: CircularProgressIndicator(
-                                color: Colors.white,
-                                strokeWidth: 3,
+                          // Overlay message when spin is not available
+                          if (!_canSpin)
+                            Container(
+                              width: 250,
+                              height: 250,
+                              decoration: BoxDecoration(
+                                color: colorScheme.surface.withOpacity(0.9),
+                                shape: BoxShape.circle,
                               ),
-                            )
-                          : const Text(
-                              'SPIN',
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                letterSpacing: 1.2,
+                              child: Center(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        Icons.check_circle_outline,
+                                        color: colorScheme.primary,
+                                        size: 40,
+                                      ),
+                                      const SizedBox(height: 16),
+                                      Text(
+                                        "We've already made your day!",
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          color: colorScheme.onSurface,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Text(
+                                        "Feel free to explore other activities using the buttons above.",
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          color: colorScheme.onSurface.withOpacity(0.7),
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
                               ),
                             ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+
+                    const Spacer(),
+
+                    // Selected activity display
+                    if (_selectedActivity != null && !_isSpinning)
+                      Container(
+                        padding: const EdgeInsets.all(24),
+                        margin: const EdgeInsets.symmetric(horizontal: 16),
+                        decoration: BoxDecoration(
+                          color: colorScheme.surface,
+                          borderRadius: BorderRadius.circular(16),
+                          border: isDark ? null : Border.all(color: Colors.black12),
+                        ),
+                        child: Column(
+                          children: [
+                            Text(
+                              'Today\'s Challenge',
+                              style: TextStyle(
+                                color: colorScheme.onSurface,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              _selectedActivity!,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: colorScheme.onSurface,
+                                fontSize: 24,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                    const SizedBox(height: 24),
+
+                    // Spin button
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                      child: Column(
+                        children: [
+                          if (_timeUntilNextSpin.isNotEmpty)
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 8),
+                              child: Text(
+                                'Next spin available in: $_timeUntilNextSpin',
+                                style: TextStyle(
+                                  color: colorScheme.onBackground.withOpacity(0.7),
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ElevatedButton(
+                            onPressed: _canSpin && !_isSpinning ? _spinWheel : null,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: _canSpin ? colorScheme.primary : colorScheme.surface,
+                              foregroundColor: _canSpin ? colorScheme.onPrimary : colorScheme.onSurface.withOpacity(0.38),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 32,
+                                vertical: 16,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                            ),
+                            child: Text(
+                              _isSpinning ? 'Spinning...' : (_canSpin ? 'Spin the Wheel' : 'Come back tomorrow'),
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ],

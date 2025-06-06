@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:math';
 import '../services/workout_service.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'training_plan_screen.dart';
 
 class WorkoutCategoryDetailScreen extends StatefulWidget {
   final String category;
@@ -82,6 +83,14 @@ class _WorkoutCategoryDetailScreenState extends State<WorkoutCategoryDetailScree
       setState(() {
         _isSpinning = false;
         _currentPassingWorkout = null;
+        if (_workouts.isNotEmpty) {
+          final random = Random();
+          String newWorkout;
+          do {
+            newWorkout = _workouts[random.nextInt(_workouts.length)];
+          } while (_workouts.length > 1 && newWorkout == _selectedWorkout);
+          _selectedWorkout = newWorkout;
+        }
       });
     }
   }
@@ -109,13 +118,8 @@ class _WorkoutCategoryDetailScreenState extends State<WorkoutCategoryDetailScree
     
     setState(() {
       _isSpinning = true;
-      final random = Random();
-      String newWorkout;
-      do {
-        newWorkout = _workouts[random.nextInt(_workouts.length)];
-      } while (_workouts.length > 1 && newWorkout == _selectedWorkout);
-      _selectedWorkout = newWorkout;
-
+      _selectedWorkout = null;
+      
       // Reset and start animations
       _spinController.reset();
       _spinController.forward();
@@ -234,8 +238,8 @@ class _WorkoutCategoryDetailScreenState extends State<WorkoutCategoryDetailScree
                       ),
                     ),
                     const SizedBox(height: 32),
-                    // Selected workout display
-                    if (_selectedWorkout != null) ...[
+                    // Show selected workout only after spinning completes
+                    if (!_isSpinning && _selectedWorkout != null) ...[
                       Container(
                         padding: const EdgeInsets.all(24),
                         margin: const EdgeInsets.symmetric(horizontal: 16),
@@ -262,6 +266,34 @@ class _WorkoutCategoryDetailScreenState extends State<WorkoutCategoryDetailScree
                                 color: colorScheme.onSurface,
                                 fontSize: 24,
                                 fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            const SizedBox(height: 24),
+                            // Training Plan button
+                            ElevatedButton.icon(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => TrainingPlanScreen(
+                                      category: widget.category,
+                                      workoutName: _selectedWorkout!,
+                                    ),
+                                  ),
+                                );
+                              },
+                              icon: const Icon(Icons.format_list_bulleted),
+                              label: const Text('View Training Plan'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: colorScheme.primaryContainer,
+                                foregroundColor: colorScheme.onPrimaryContainer,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 24,
+                                  vertical: 12,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
                               ),
                             ),
                           ],

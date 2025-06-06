@@ -75,9 +75,7 @@ class _TravelScreenState extends State<TravelScreen> with TickerProviderStateMix
       ),
     );
 
-    // Add listeners for animation updates
-    _spinAnimation.addListener(_updatePassingDestination);
-    _spinAnimation.addStatusListener(_handleSpinStatus);
+    _spinController.addStatusListener(_handleSpinStatus);
   }
 
   @override
@@ -125,6 +123,7 @@ class _TravelScreenState extends State<TravelScreen> with TickerProviderStateMix
     if (status == AnimationStatus.completed) {
       setState(() {
         _isSpinning = false;
+        _currentPassingDestination = null;
         final destinations = TravelService.destinations[_selectedCategory] ?? [];
         final random = Random();
         String newDestination;
@@ -147,27 +146,8 @@ class _TravelScreenState extends State<TravelScreen> with TickerProviderStateMix
       _selectedDestination = null;
     });
 
-    // Generate a random number of full rotations (between 3 and 5)
-    final random = Random();
-    final fullRotations = 3 + random.nextInt(3);
-    
-    // Generate a random final position
-    final randomIndex = random.nextInt(destinations.length);
-    final segmentAngle = 2 * pi / destinations.length;
-    final targetAngle = randomIndex * segmentAngle + (segmentAngle / 2);
-    
-    // Calculate the total rotation needed
-    final totalRotation = (fullRotations * 2 * pi) + targetAngle;
-    
-    // Create a new animation with the random target
-    _spinAnimation = Tween<double>(begin: 0, end: totalRotation).animate(
-      CurvedAnimation(
-        parent: _spinController,
-        curve: Curves.easeOutCubic,
-      ),
-    );
-
-    _spinController.forward(from: 0);
+    _spinController.reset();
+    _spinController.forward();
   }
 
   void _showDestinationDetails(Destination destination) {
@@ -266,6 +246,7 @@ class _TravelScreenState extends State<TravelScreen> with TickerProviderStateMix
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final isDark = colorScheme.brightness == Brightness.dark;
     final destinations = TravelService.destinations[_selectedCategory] ?? [];
 
     return Scaffold(
@@ -317,7 +298,26 @@ class _TravelScreenState extends State<TravelScreen> with TickerProviderStateMix
                         );
                       },
                     ),
-
+                    // Center circle
+                    Container(
+                      width: 80,
+                      height: 80,
+                      decoration: BoxDecoration(
+                        color: colorScheme.surface,
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: isDark ? Colors.white24 : Colors.black12,
+                          width: 2,
+                        ),
+                      ),
+                      child: Center(
+                        child: Icon(
+                          Icons.place,
+                          color: colorScheme.primary,
+                          size: 32,
+                        ),
+                      ),
+                    ),
                     // Selector triangle
                     Positioned(
                       top: -10,
@@ -336,86 +336,37 @@ class _TravelScreenState extends State<TravelScreen> with TickerProviderStateMix
               ),
               const SizedBox(height: 16),
 
-              // Passing destinations display
-              SizedBox(
-                height: 40,
-                child: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 200),
-                  transitionBuilder: (Widget child, Animation<double> animation) {
-                    return FadeTransition(
-                      opacity: animation,
-                      child: child,
-                    );
-                  },
-                  child: _isSpinning && _currentPassingDestination != null
-                      ? Container(
-                          key: ValueKey(_currentPassingDestination),
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 8,
-                            horizontal: 32,
-                          ),
-                          child: Text(
-                            _currentPassingDestination!,
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: colorScheme.onBackground.withOpacity(0.7),
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        )
-                      : Container(
-                          key: const ValueKey('empty'),
-                          height: 40,
-                        ),
-                ),
-              ),
-              const SizedBox(height: 32),
-
-              // Spin button
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 32),
-                child: ElevatedButton(
-                  onPressed: _isSpinning ? null : _spinWheel,
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: const Size.fromHeight(50),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: Text(
-                    _isSpinning ? 'Spinning...' : 'Spin the Wheel',
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-
               // Selected destination display and details button
               if (_selectedDestination != null && !_isSpinning)
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 32),
+                Container(
+                  padding: const EdgeInsets.all(24),
+                  margin: const EdgeInsets.symmetric(horizontal: 16),
+                  decoration: BoxDecoration(
+                    color: colorScheme.surface,
+                    borderRadius: BorderRadius.circular(16),
+                    border: isDark ? null : Border.all(color: Colors.black12),
+                  ),
                   child: Column(
                     children: [
                       Text(
-                        'Selected Destination:',
+                        'Selected Destination',
                         style: TextStyle(
-                          fontSize: 16,
-                          color: colorScheme.onBackground.withOpacity(0.7),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        _selectedDestination!,
-                        style: const TextStyle(
-                          fontSize: 24,
+                          color: colorScheme.onSurface,
+                          fontSize: 20,
                           fontWeight: FontWeight.bold,
                         ),
-                        textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 16),
+                      Text(
+                        _selectedDestination!,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: colorScheme.onSurface,
+                          fontSize: 24,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 24),
                       Row(
                         children: [
                           Expanded(
@@ -437,9 +388,14 @@ class _TravelScreenState extends State<TravelScreen> with TickerProviderStateMix
                               icon: const Icon(Icons.attractions),
                               label: const Text('Attractions'),
                               style: ElevatedButton.styleFrom(
-                                minimumSize: const Size(0, 50),
+                                backgroundColor: colorScheme.primaryContainer,
+                                foregroundColor: colorScheme.onPrimaryContainer,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 24,
+                                  vertical: 12,
+                                ),
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
+                                  borderRadius: BorderRadius.circular(30),
                                 ),
                               ),
                             ),
@@ -456,9 +412,14 @@ class _TravelScreenState extends State<TravelScreen> with TickerProviderStateMix
                               icon: const Icon(Icons.navigation),
                               label: const Text('Navigate'),
                               style: ElevatedButton.styleFrom(
-                                minimumSize: const Size(0, 50),
+                                backgroundColor: colorScheme.primaryContainer,
+                                foregroundColor: colorScheme.onPrimaryContainer,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 24,
+                                  vertical: 12,
+                                ),
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
+                                  borderRadius: BorderRadius.circular(30),
                                 ),
                               ),
                             ),
@@ -468,6 +429,34 @@ class _TravelScreenState extends State<TravelScreen> with TickerProviderStateMix
                     ],
                   ),
                 ),
+
+              const SizedBox(height: 32),
+
+              // Spin button
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 32),
+                child: ElevatedButton(
+                  onPressed: _isSpinning ? null : _spinWheel,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: colorScheme.primary,
+                    foregroundColor: colorScheme.onPrimary,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 32,
+                      vertical: 16,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                  ),
+                  child: Text(
+                    _isSpinning ? 'Spinning...' : 'Spin the Wheel',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
         ),

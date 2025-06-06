@@ -21,7 +21,45 @@ class StreakService {
         .set({
       'timestamp': FieldValue.serverTimestamp(),
       'date': dateString,
+      'lastSpinTime': FieldValue.serverTimestamp(),
     });
+  }
+
+  // Check if user has used their daily spin and get next available time
+  Future<Map<String, dynamic>> checkDailySpin() async {
+    final userId = _auth.currentUser?.uid;
+    if (userId == null) return {'canSpin': false, 'nextSpinTime': null};
+
+    final today = DateTime.now();
+    final dateString = '${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}';
+
+    final doc = await _firestore
+        .collection('users')
+        .doc(userId)
+        .collection('activity')
+        .doc(dateString)
+        .get();
+
+    if (!doc.exists) {
+      return {'canSpin': true, 'nextSpinTime': null};
+    }
+
+    final lastSpinTime = doc.data()?['lastSpinTime'] as Timestamp?;
+    if (lastSpinTime == null) {
+      return {'canSpin': true, 'nextSpinTime': null};
+    }
+
+    final lastSpinDateTime = lastSpinTime.toDate();
+    final nextAvailableTime = DateTime(
+      lastSpinDateTime.year,
+      lastSpinDateTime.month,
+      lastSpinDateTime.day + 1,
+    );
+
+    return {
+      'canSpin': today.isAfter(nextAvailableTime),
+      'nextSpinTime': nextAvailableTime,
+    };
   }
 
   // Get user's activity for a specific month
