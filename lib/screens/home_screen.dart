@@ -349,15 +349,17 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               ),
             ),
 
+            const SizedBox(height: 16),  // Add subtle spacing after navigation
+
             // Make My Day section
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.only(top: 8),
+                padding: const EdgeInsets.only(top: 16),  // Adjusted from 8 to 16
                 child: Column(
                   children: [
                     // Title with icon
                     Container(
-                      margin: const EdgeInsets.only(bottom: 16),
+                      margin: const EdgeInsets.only(bottom: 20),  // Adjusted from 16 to 20
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
