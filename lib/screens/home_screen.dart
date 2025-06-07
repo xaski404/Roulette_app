@@ -308,7 +308,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     }
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+      margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: colorScheme.surface,
@@ -332,11 +332,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               color: colorScheme.primary,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 4),
           Text(
             _selectedActivity!,
             style: TextStyle(
-              fontSize: 18,
+              fontSize: 12,
               color: colorScheme.onSurface,
             ),
           ),
@@ -358,7 +358,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           children: [
             // Header with app name and controls
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -400,7 +400,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
             // Category navigation
             Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(8),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -430,7 +430,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   ),
                   _buildCategoryButton(
                     icon: Icons.fitness_center,
-                    label: 'Workouts',
+                    label: 'Workout',
                     onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(builder: (_) => const WorkoutCategoriesScreen()),
@@ -448,17 +448,17 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               ),
             ),
 
-            const SizedBox(height: 16),  // Add subtle spacing after navigation
+            const SizedBox(height: 8),  // Changed from 16 to 8
 
             // Make My Day section
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.only(top: 16),  // Adjusted from 8 to 16
+                padding: const EdgeInsets.only(top: 4),  // Changed from 8 to 4
                 child: Column(
                   children: [
                     // Title with icon
                     Container(
-                      margin: const EdgeInsets.only(bottom: 20),  // Adjusted from 16 to 20
+                      margin: const EdgeInsets.only(bottom: 10),  // Changed from 20 to 10
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -485,7 +485,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     // Countdown timer when spin is not available
                     if (!_canSpin && _timeUntilNextSpin.isNotEmpty)
                       Padding(
-                        padding: const EdgeInsets.only(bottom: 16),
+                        padding: const EdgeInsets.only(bottom: 8),
                         child: Text(
                           'Next spin available in: $_timeUntilNextSpin',
                           style: TextStyle(
@@ -609,7 +609,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     ),
 
                     // Fixed height spacer to maintain consistent button position
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 8),
 
                     // Spin button
                     ElevatedButton(
@@ -619,7 +619,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         foregroundColor: _canSpin ? colorScheme.onPrimary : colorScheme.onSurface.withOpacity(0.38),
                         padding: const EdgeInsets.symmetric(
                           horizontal: 32,
-                          vertical: 16,
+                          vertical: 10,
                         ),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30),
