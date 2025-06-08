@@ -2122,975 +2122,1026 @@ Preparation:
 
     'Hummus with vegetables': '''
 Ingredients:
-- 2 cups chickpeas
-- 1/4 cup tahini
+- 1 can chickpeas
+- 2 tbsp tahini
 - 2 cloves garlic
-- Lemon juice
-- Olive oil
-- Fresh vegetables
-- Pita bread
+- 1 lemon
+- 3 tbsp olive oil
+- Salt to taste
+- Assorted vegetables (carrots, cucumber, bell peppers)
 
 Preparation:
-1. Blend chickpeas
-2. Add tahini
-3. Season
-4. Drizzle oil
-5. Cut vegetables
-6. Serve with pita''',
+1. Drain and rinse chickpeas
+2. Blend chickpeas, tahini, garlic, and lemon juice
+3. Add olive oil gradually
+4. Season with salt
+5. Serve with fresh vegetables
+6. Drizzle with olive oil''',
 
-    'Mix of nuts': '''
+    'Nut mix': '''
 Ingredients:
 - Almonds
 - Walnuts
 - Cashews
-- Pecans
-- Hazelnuts
-- Dried fruits
-- Dark chocolate
+- Pumpkin seeds
+- Sunflower seeds
+- Dried fruits (optional)
+- Dark chocolate chips (optional)
 
 Preparation:
-1. Roast nuts
-2. Cool
-3. Mix varieties
-4. Add fruits
-5. Add chocolate
-6. Store airtight''',
+1. Mix all nuts and seeds
+2. Add dried fruits if desired
+3. Add chocolate chips if desired
+4. Store in an airtight container
+5. Serve in small portions
+6. Can be toasted for extra flavor''',
 
-    'Smoothie bowl': '''
+    'Fruit smoothie': '''
 Ingredients:
-- Frozen fruits
-- Banana
-- Yogurt
-- Honey
-- Granola
-- Berries
-- Coconut flakes
+- 1 banana
+- 1 cup mixed berries
+- 1 cup milk or yogurt
+- 1 tbsp honey
+- Ice cubes
+- Optional: protein powder
 
 Preparation:
-1. Blend fruits
-2. Add yogurt
-3. Sweeten
-4. Pour in bowl
-5. Add toppings
+1. Add all ingredients to blender
+2. Blend until smooth
+3. Add more liquid if too thick
+4. Taste and adjust sweetness
+5. Pour into a glass
 6. Serve immediately''',
 
-    'Avocado toast': '''
+    'Egg salad sandwich': '''
 Ingredients:
-- Sourdough bread
-- Ripe avocado
-- Eggs
-- Salt
-- Pepper
-- Red pepper flakes
+- 4 hard-boiled eggs
+- 2 tbsp mayonnaise
+- 1 tsp mustard
+- Salt and pepper
+- Fresh herbs
+- Bread slices
+
+Preparation:
+1. Chop hard-boiled eggs
+2. Mix with mayonnaise and mustard
+3. Season with salt and pepper
+4. Add chopped herbs
+5. Spread on bread
+6. Cut and serve''',
+
+    'Seasonal fruits': '''
+Ingredients:
+- Assorted seasonal fruits
+- Mint leaves
+- Honey (optional)
+- Lime juice (optional)
+
+Preparation:
+1. Wash and cut fruits
+2. Arrange in a bowl
+3. Add mint leaves
+4. Drizzle with honey if desired
+5. Add lime juice if desired
+6. Serve chilled''',
+
+    // Date night recipes
+    'Steak with fries': '''
+Ingredients:
+- 2 beef steaks
+- 4 large potatoes
+- 2 tbsp olive oil
+- Salt and pepper
+- Fresh herbs
+- Garlic butter
+
+Preparation:
+1. Season steaks with salt and pepper
+2. Cut potatoes into fries
+3. Heat oil in a pan
+4. Cook steaks to desired doneness
+5. Fry potatoes until crispy
+6. Serve with garlic butter''',
+
+    'Shrimp risotto': '''
+Ingredients:
+- 1 cup Arborio rice
+- 200g shrimp
+- 1 onion
+- 2 cloves garlic
+- 1/2 cup white wine
+- 4 cups chicken stock
+- Parmesan cheese
+- Fresh herbs
+
+Preparation:
+1. Sauté onion and garlic
+2. Add rice and toast
+3. Pour in wine
+4. Add hot stock gradually
+5. Cook shrimp separately
+6. Finish with cheese and herbs''',
+
+    'Pasta carbonara': '''
+Ingredients:
+- 400g spaghetti
+- 200g pancetta
+- 4 egg yolks
+- 1 cup Parmesan
+- Black pepper
+- Fresh parsley
+
+Preparation:
+1. Cook pasta
+2. Fry pancetta until crispy
+3. Mix egg yolks and cheese
+4. Combine hot pasta with egg mixture
+5. Add pancetta and pepper
+6. Garnish with parsley''',
+
+    'Sushi': '''
+Ingredients:
+- 2 cups sushi rice
+- Nori sheets
+- Fresh fish
+- Cucumber
+- Avocado
+- Soy sauce
+- Wasabi
+
+Preparation:
+1. Cook and season rice
+2. Prepare fish and vegetables
+3. Place nori on bamboo mat
+4. Spread rice evenly
+5. Add fillings
+6. Roll and slice''',
+
+    'Cheese fondue': '''
+Ingredients:
+- 400g mixed cheeses
+- 1 clove garlic
+- 1 cup white wine
+- 1 tbsp cornstarch
+- Bread cubes
+- Vegetables
+
+Preparation:
+1. Rub pot with garlic
+2. Heat wine
+3. Add cheese gradually
+4. Thicken with cornstarch
+5. Keep warm
+6. Serve with dippers''',
+
+    'Tapas': '''
+Ingredients:
+- Olives
+- Manchego cheese
+- Chorizo
+- Patatas bravas
+- Garlic shrimp
+- Bread
+
+Preparation:
+1. Prepare each component
+2. Arrange on small plates
+3. Serve at room temperature
+4. Include bread
+5. Add wine pairing
+6. Enjoy sharing style''',
+
+    'Duck in orange sauce': '''
+Ingredients:
+- 2 duck breasts
+- 2 oranges
+- 1 cup chicken stock
+- 2 tbsp honey
+- Fresh herbs
+- Salt and pepper
+
+Preparation:
+1. Score duck skin
+2. Cook skin-side down
+3. Make orange sauce
+4. Rest duck
+5. Slice and serve
+6. Pour sauce over''',
+
+    'Seafood in wine': '''
+Ingredients:
+- Mixed seafood
+- 1 cup white wine
+- 2 cloves garlic
+- Fresh herbs
+- Butter
+- Lemon
+
+Preparation:
+1. Clean seafood
+2. Sauté garlic
+3. Add wine
+4. Cook seafood
+5. Add butter
+6. Finish with herbs''',
+
+    'Truffle ravioli': '''
+Ingredients:
+- Fresh pasta sheets
+- Truffle
+- Ricotta cheese
+- Egg
+- Butter
+- Parmesan
+
+Preparation:
+1. Make pasta dough
+2. Prepare filling
+3. Form ravioli
+4. Cook in boiling water
+5. Toss with butter
+6. Garnish with truffle''',
+
+    'Beef tartare': '''
+Ingredients:
+- 400g beef fillet
+- 1 shallot
+- Capers
+- Dijon mustard
+- Egg yolk
+- Toast
+
+Preparation:
+1. Finely chop beef
+2. Mix with seasonings
+3. Shape into patties
+4. Top with egg yolk
+5. Serve with toast
+6. Add condiments''',
+
+    'Shrimp tempura': '''
+Ingredients:
+- 500g shrimp
+- Tempura batter
+- Vegetable oil
+- Dipping sauce
+- Green onions
+- Sesame seeds
+
+Preparation:
+1. Clean shrimp
+2. Make batter
+3. Heat oil
+4. Fry until crispy
+5. Drain well
+6. Serve with sauce''',
+
+    'Duck breast': '''
+Ingredients:
+- 2 duck breasts
+- Salt and pepper
+- Fresh herbs
+- 1 cup red wine
+- 2 tbsp honey
+- Orange
+
+Preparation:
+1. Score skin
+2. Season well
+3. Cook skin-side down
+4. Make sauce
+5. Rest meat
+6. Slice and serve''',
+
+    'Grilled lobster': '''
+Ingredients:
+- 2 live lobsters
+- Butter
+- Garlic
+- Lemon
+- Fresh herbs
+- Salt and pepper
+
+Preparation:
+1. Clean lobsters
+2. Split in half
+3. Season well
+4. Grill flesh-side down
+5. Baste with butter
+6. Serve with lemon''',
+
+    'Saffron risotto': '''
+Ingredients:
+- 1 cup Arborio rice
+- Pinch of saffron
+- 1 onion
+- 4 cups stock
+- 1/2 cup white wine
+- Parmesan
+
+Preparation:
+1. Toast rice
+2. Add wine
+3. Infuse saffron
+4. Add hot stock
+5. Finish with cheese
+6. Rest before serving''',
+
+    'Beef carpaccio': '''
+Ingredients:
+- 400g beef fillet
+- Olive oil
 - Lemon juice
+- Parmesan
+- Arugula
+- Truffle oil
+
+Preparation:
+1. Freeze beef
+2. Slice very thin
+3. Arrange on plate
+4. Drizzle with oil
+5. Add shaved cheese
+6. Garnish with arugula''',
+
+    'Mussels in wine sauce': '''
+Ingredients:
+- 1kg mussels
+- 1 cup white wine
+- 2 shallots
+- Garlic
+- Fresh herbs
+- Butter
+
+Preparation:
+1. Clean mussels
+2. Sauté aromatics
+3. Add wine
+4. Steam mussels
+5. Add butter
+6. Serve with bread''',
+
+    'Beef wellington': '''
+Ingredients:
+- 1 beef fillet
+- Puff pastry
+- Mushroom duxelles
+- Prosciutto
+- Egg wash
+- Fresh herbs
+
+Preparation:
+1. Sear beef
+2. Make duxelles
+3. Wrap in prosciutto
+4. Encase in pastry
+5. Egg wash
+6. Bake until golden''',
+
+    'Tagliata with arugula': '''
+Ingredients:
+- 2 beef steaks
+- Arugula
+- Parmesan
+- Balsamic
+- Olive oil
+- Cherry tomatoes
+
+Preparation:
+1. Cook steaks
+2. Slice against grain
+3. Arrange on arugula
+4. Add shaved cheese
+5. Drizzle with oil
+6. Add balsamic''',
+
+    'Oysters': '''
+Ingredients:
+- 12 fresh oysters
+- Mignonette sauce
+- Lemon
+- Tabasco
+- Fresh herbs
+- Ice
+
+Preparation:
+1. Clean oysters
+2. Prepare sauce
+3. Shuck carefully
+4. Arrange on ice
+5. Add condiments
+6. Serve immediately''',
+
+    'Gnocchi with sage': '''
+Ingredients:
+- 500g gnocchi
+- Fresh sage
+- Butter
+- Parmesan
+- Nutmeg
+- Salt and pepper
+
+Preparation:
+1. Cook gnocchi
+2. Brown butter
+3. Add sage
+4. Toss gnocchi
+5. Add cheese
+6. Season well''',
+
+    'Grilled octopus': '''
+Ingredients:
+- 1 octopus
+- Olive oil
+- Garlic
+- Lemon
+- Fresh herbs
+- Potatoes
+
+Preparation:
+1. Tenderize octopus
+2. Cook until tender
+3. Grill until charred
+4. Slice tentacles
+5. Serve with potatoes
+6. Drizzle with oil''',
+
+    'Tomahawk steak': '''
+Ingredients:
+- 1 tomahawk steak
+- Salt and pepper
+- Garlic
+- Butter
+- Fresh herbs
+- Olive oil
+
+Preparation:
+1. Season well
+2. Bring to room temperature
+3. Sear all sides
+4. Add aromatics
+5. Rest properly
+6. Slice and serve''',
+
+    'Seafood linguine': '''
+Ingredients:
+- 400g linguine
+- Mixed seafood
+- Garlic
+- White wine
+- Fresh herbs
+- Cherry tomatoes
+
+Preparation:
+1. Cook pasta
+2. Sauté seafood
+3. Add wine
+4. Combine with pasta
+5. Add herbs
+6. Finish with oil''',
+
+    'Tuna tartare': '''
+Ingredients:
+- 400g tuna
+- Avocado
+- Soy sauce
+- Sesame oil
+- Green onions
+- Wonton crisps
+
+Preparation:
+1. Dice tuna
+2. Mix with seasonings
+3. Prepare avocado
+4. Layer ingredients
+5. Add garnishes
+6. Serve with crisps''',
+
+    'Foie gras': '''
+Ingredients:
+- 200g foie gras
+- Balsamic reduction
+- Fresh figs
+- Toast
+- Salt and pepper
+- Honey
+
+Preparation:
+1. Score foie gras
+2. Season well
+3. Sear quickly
+4. Rest briefly
+5. Slice and serve
+6. Add accompaniments''',
+
+    'Seafood paella': '''
+Ingredients:
+- 2 cups rice
+- Mixed seafood
+- Saffron
+- Peas
+- Bell peppers
+- Fish stock
+
+Preparation:
+1. Toast rice
+2. Add saffron
+3. Add hot stock
+4. Add seafood
+5. Add vegetables
+6. Rest before serving''',
+
+    'BBQ ribs': '''
+Ingredients:
+- 2 racks ribs
+- BBQ sauce
+- Spice rub
+- Apple juice
+- Garlic
+- Fresh herbs
+
+Preparation:
+1. Apply rub
+2. Slow cook
+3. Baste with sauce
+4. Add juice
+5. Finish on grill
+6. Rest and serve''',
+
+    'Sashimi mix': '''
+Ingredients:
+- Fresh fish
+- Soy sauce
+- Wasabi
+- Pickled ginger
+- Green onions
+- Sesame seeds
+
+Preparation:
+1. Slice fish
+2. Arrange on plate
+3. Add garnishes
+4. Serve with soy
+5. Add wasabi
+6. Include ginger''',
+
+    'Beef bourguignon': '''
+Ingredients:
+- 1kg beef
+- Red wine
+- Pearl onions
+- Mushrooms
+- Bacon
+- Fresh herbs
+
+Preparation:
+1. Brown beef
+2. Add wine
+3. Slow cook
+4. Add vegetables
+5. Reduce sauce
+6. Serve with potatoes''',
+
+    'Shrimp tempura': '''
+Ingredients:
+- 500g shrimp
+- Tempura batter
+- Vegetable oil
+- Dipping sauce
+- Green onions
+- Sesame seeds
+
+Preparation:
+1. Clean shrimp
+2. Make batter
+3. Heat oil
+4. Fry until crispy
+5. Drain well
+6. Serve with sauce''',
+
+    'Vegetable chips': '''
+Ingredients:
+- Assorted vegetables (carrots, zucchini, sweet potatoes)
+- Olive oil
+- Salt and pepper
+- Herbs (optional)
+- Garlic powder (optional)
+
+Preparation:
+1. Slice vegetables thinly
+2. Toss with olive oil
+3. Season with salt and pepper
+4. Add herbs if desired
+5. Bake until crispy
+6. Let cool before serving''',
+
+    'Guacamole with nachos': '''
+Ingredients:
+- 2 ripe avocados
+- 1 lime
+- 1 small onion
+- 1 tomato
+- Fresh cilantro
+- Tortilla chips
+- Salt and pepper
+
+Preparation:
+1. Mash avocados
+2. Dice onion and tomato
+3. Mix with lime juice
+4. Add chopped cilantro
+5. Season to taste
+6. Serve with nachos''',
+
+    'Yogurt with granola': '''
+Ingredients:
+- Greek yogurt
+- Homemade granola
+- Honey
+- Fresh fruits
+- Nuts (optional)
+- Cinnamon (optional)
+
+Preparation:
+1. Spoon yogurt into bowl
+2. Add granola
+3. Drizzle with honey
+4. Top with fruits
+5. Add nuts if desired
+6. Sprinkle with cinnamon''',
+
+    'Dried fruits': '''
+Ingredients:
+- Assorted dried fruits
+- Nuts (optional)
+- Dark chocolate (optional)
+- Coconut flakes (optional)
+- Cinnamon (optional)
+
+Preparation:
+1. Mix dried fruits
+2. Add nuts if desired
+3. Add chocolate if desired
+4. Add coconut if desired
+5. Sprinkle with cinnamon
+6. Store in airtight container''',
+
+    'Avocado sandwich': '''
+Ingredients:
+- 2 slices bread
+- 1 ripe avocado
+- Lemon juice
+- Salt and pepper
+- Microgreens
+- Olive oil
 
 Preparation:
 1. Toast bread
 2. Mash avocado
-3. Season
-4. Spread on toast
-5. Add eggs
-6. Garnish''',
+3. Add lemon juice
+4. Season to taste
+5. Spread on bread
+6. Top with microgreens''',
 
-    'Energy balls': '''
+    'Energy bars': '''
 Ingredients:
-- Dates
 - Oats
-- Nuts
-- Cocoa
-- Coconut
+- Nuts and seeds
+- Dried fruits
 - Honey
-- Vanilla
+- Nut butter
+- Dark chocolate
 
 Preparation:
-1. Process dates
-2. Mix ingredients
-3. Form balls
-4. Roll in coconut
-5. Chill
-6. Store''',
-
-    'Greek yogurt with honey': '''
-Ingredients:
-- Greek yogurt
-- Honey
-- Nuts
-- Berries
-- Cinnamon
-- Granola
-- Mint
-
-Preparation:
-1. Spoon yogurt
-2. Drizzle honey
-3. Add nuts
-4. Add berries
-5. Sprinkle cinnamon
-6. Garnish''',
-
-    'Vegetable chips': '''
-Ingredients:
-- Sweet potatoes
-- Beets
-- Zucchini
-- Olive oil
-- Salt
-- Herbs
-- Pepper
-
-Preparation:
-1. Slice vegetables
-2. Season
-3. Arrange on tray
-4. Bake
-5. Cool
-6. Store airtight''',
+1. Mix dry ingredients
+2. Heat honey and nut butter
+3. Combine mixtures
+4. Press into pan
+5. Add chocolate
+6. Refrigerate until set''',
 
     'Fruit salad': '''
 Ingredients:
-- Mixed fruits
+- Seasonal fruits
+- Mint leaves
 - Honey
-- Mint
 - Lime juice
-- Coconut
-- Nuts
-- Yogurt
+- Fresh berries
+- Coconut flakes
 
 Preparation:
 1. Cut fruits
 2. Mix in bowl
-3. Add honey
-4. Add lime
-5. Top with nuts
-6. Serve chilled''',
-
-    'Popcorn with spices': '''
-Ingredients:
-- Popcorn kernels
-- Butter
-- Salt
-- Paprika
-- Garlic powder
-- Cayenne
-- Herbs
-
-Preparation:
-1. Pop corn
-2. Melt butter
-3. Add spices
-4. Toss
-5. Season
-6. Serve warm''',
-
-    'Rice cakes with toppings': '''
-Ingredients:
-- Rice cakes
-- Avocado
-- Hummus
-- Nut butter
-- Bananas
-- Berries
-- Honey
-
-Preparation:
-1. Choose base
-2. Add spread
-3. Add toppings
-4. Drizzle honey
-5. Stack
-6. Serve''',
-
-    'Trail mix': '''
-Ingredients:
-- Nuts
-- Seeds
-- Dried fruits
-- Dark chocolate
-- Coconut
-- Granola
-- Spices
-
-Preparation:
-1. Mix nuts
-2. Add seeds
-3. Add fruits
-4. Add chocolate
-5. Season
-6. Store''',
-
-    'Cucumber rolls': '''
-Ingredients:
-- Cucumber
-- Cream cheese
-- Smoked salmon
-- Dill
-- Lemon
-- Salt
-- Pepper
-
-Preparation:
-1. Slice cucumber
-2. Spread cheese
-3. Add salmon
-4. Roll
-5. Season
-6. Serve chilled''',
-
-    'Apple with peanut butter': '''
-Ingredients:
-- Apple
-- Peanut butter
-- Honey
-- Cinnamon
-- Nuts
-- Raisins
-- Granola
-
-Preparation:
-1. Slice apple
-2. Spread butter
-3. Drizzle honey
-4. Add toppings
-5. Sprinkle cinnamon
-6. Serve''',
-
-    'Carrot sticks with dip': '''
-Ingredients:
-- Carrots
-- Greek yogurt
-- Herbs
-- Garlic
-- Lemon
-- Salt
-- Pepper
-
-Preparation:
-1. Cut carrots
-2. Mix dip
-3. Season
-4. Chill
-5. Arrange
-6. Serve''',
-
-    'Dark chocolate with nuts': '''
-Ingredients:
-- Dark chocolate
-- Mixed nuts
-- Sea salt
-- Dried fruits
-- Coconut
-- Vanilla
-- Cinnamon
-
-Preparation:
-1. Melt chocolate
-2. Add nuts
-3. Add fruits
-4. Season
-5. Pour
-6. Chill''',
-
-    'Banana with cinnamon': '''
-Ingredients:
-- Banana
-- Cinnamon
-- Honey
-- Nuts
-- Yogurt
-- Berries
-- Granola
-
-Preparation:
-1. Slice banana
-2. Sprinkle cinnamon
-3. Drizzle honey
-4. Add nuts
-5. Add yogurt
+3. Add mint
+4. Drizzle with honey
+5. Add lime juice
 6. Top with berries''',
 
-    'Cottage cheese with fruits': '''
+    'Homemade popcorn': '''
 Ingredients:
-- Cottage cheese
-- Mixed berries
-- Honey
-- Nuts
-- Cinnamon
-- Mint
-- Granola
-
-Preparation:
-1. Spoon cheese
-2. Add fruits
-3. Drizzle honey
-4. Add nuts
-5. Season
-6. Garnish''',
-
-    'Celery with cream cheese': '''
-Ingredients:
-- Celery stalks
-- Cream cheese
-- Raisins
-- Nuts
-- Salt
-- Pepper
-- Herbs
-
-Preparation:
-1. Cut celery
-2. Fill with cheese
-3. Add raisins
-4. Add nuts
-5. Season
-6. Serve''',
-
-    'Rice paper rolls': '''
-Ingredients:
-- Rice paper
-- Vegetables
-- Rice noodles
-- Herbs
-- Peanut sauce
-- Mint
-- Lime
-
-Preparation:
-1. Soak paper
-2. Fill with ingredients
-3. Roll
-4. Cut
-5. Make sauce
-6. Serve''',
-
-    'Baked chickpeas': '''
-Ingredients:
-- Chickpeas
+- Popcorn kernels
 - Olive oil
-- Spices
 - Salt
-- Garlic
-- Herbs
-- Lemon
+- Butter (optional)
+- Herbs (optional)
+- Nutritional yeast (optional)
 
 Preparation:
-1. Drain chickpeas
-2. Season
-3. Bake
-4. Toss
-5. Cool
-6. Store''',
+1. Heat oil in pan
+2. Add kernels
+3. Cover and shake
+4. Season with salt
+5. Add butter if desired
+6. Add toppings''',
 
-    'Fruit kebabs': '''
+    'Mini vegetable wraps': '''
 Ingredients:
-- Mixed fruits
-- Honey
-- Yogurt
-- Mint
-- Coconut
-- Nuts
-- Cinnamon
-
-Preparation:
-1. Cut fruits
-2. Thread on skewers
-3. Drizzle honey
-4. Add yogurt
-5. Garnish
-6. Serve''',
-
-    'Avocado dip': '''
-Ingredients:
-- Avocado
-- Greek yogurt
-- Lime
-- Garlic
-- Herbs
-- Salt
-- Pepper
-
-Preparation:
-1. Mash avocado
-2. Mix yogurt
-3. Add lime
-4. Season
-5. Chill
-6. Serve''',
-
-    'Nut butter on crackers': '''
-Ingredients:
-- Crackers
-- Nut butter
-- Honey
-- Bananas
-- Berries
-- Cinnamon
-- Nuts
-
-Preparation:
-1. Spread butter
-2. Add fruit
-3. Drizzle honey
-4. Add nuts
-5. Season
-6. Serve''',
-
-    'Vegetable sticks with hummus': '''
-Ingredients:
-- Mixed vegetables
+- Tortillas
 - Hummus
-- Olive oil
-- Herbs
-- Salt
-- Pepper
-- Lemon
+- Fresh vegetables
+- Avocado
+- Sprouts
+- Lemon juice
 
 Preparation:
-1. Cut vegetables
-2. Make hummus
-3. Season
-4. Arrange
-5. Drizzle oil
-6. Serve''',
+1. Spread hummus
+2. Add vegetables
+3. Add avocado
+4. Add sprouts
+5. Roll tightly
+6. Cut into pieces''',
 
-    'Fruit and nut bars': '''
+    'Protein shake': '''
 Ingredients:
-- Dates
-- Nuts
-- Seeds
-- Dried fruits
-- Honey
-- Vanilla
-- Cinnamon
+- Protein powder
+- Milk or water
+- Banana
+- Berries
+- Nut butter
+- Ice cubes
 
 Preparation:
-1. Process dates
-2. Mix ingredients
-3. Press in pan
-4. Chill
-5. Cut
-6. Store''',
-
-    'Cucumber sandwiches': '''
-Ingredients:
-- Cucumber
-- Bread
-- Cream cheese
-- Dill
-- Salt
-- Pepper
-- Lemon
-
-Preparation:
-1. Slice cucumber
-2. Spread cheese
-3. Layer
-4. Season
-5. Cut
-6. Serve''',
+1. Add liquid to blender
+2. Add protein powder
+3. Add fruits
+4. Add nut butter
+5. Add ice
+6. Blend until smooth''',
 
     'Apple chips': '''
 Ingredients:
 - Apples
 - Cinnamon
-- Sugar
-- Lemon
+- Sugar (optional)
+- Lemon juice
+- Nutmeg (optional)
 - Salt
-- Nutmeg
-- Vanilla
 
 Preparation:
-1. Slice apples
-2. Season
-3. Arrange
-4. Bake
-5. Cool
-6. Store''',
+1. Slice apples thinly
+2. Toss with lemon juice
+3. Add cinnamon
+4. Add sugar if desired
+5. Bake until crispy
+6. Let cool''',
 
-    'Steak with fries': '''
+    'Student mix': '''
 Ingredients:
-- Ribeye steak
-- Potatoes
+- Cereal
+- Pretzels
+- Nuts
+- Dried fruits
+- Chocolate chips
+- Seeds
+
+Preparation:
+1. Mix all ingredients
+2. Store in container
+3. Portion as needed
+4. Can be customized
+5. Keep in cool place
+6. Enjoy as snack''',
+
+    'Cheese crackers': '''
+Ingredients:
+- Cheese
+- Flour
 - Butter
-- Garlic
 - Herbs
 - Salt
 - Pepper
 
 Preparation:
-1. Season steak
-2. Cut potatoes
-3. Heat pan
-4. Cook steak
-5. Make fries
-6. Rest and serve''',
+1. Mix ingredients
+2. Roll out dough
+3. Cut into shapes
+4. Bake until golden
+5. Let cool
+6. Store in container''',
 
-    'Shrimp risotto': '''
+    'Smoothie bowl': '''
 Ingredients:
-- Arborio rice
-- Shrimp
-- White wine
-- Onion
-- Parmesan
-- Butter
-- Herbs
-
-Preparation:
-1. Sauté onion
-2. Toast rice
-3. Add wine
-4. Add stock
-5. Add shrimp
-6. Finish with cheese''',
-
-    'Chocolate fondue': '''
-Ingredients:
-- Dark chocolate
-- Heavy cream
-- Butter
-- Vanilla
-- Fruits
-- Marshmallows
-- Cookies
-
-Preparation:
-1. Heat cream
-2. Melt chocolate
-3. Add butter
-4. Add vanilla
-5. Prepare dippers
-6. Serve warm''',
-
-    'Wine and cheese board': '''
-Ingredients:
-- Assorted cheeses
-- Red wine
-- Crackers
-- Fruits
-- Nuts
-- Honey
-- Herbs
-
-Preparation:
-1. Select cheeses
-2. Choose wine
-3. Arrange board
-4. Add accompaniments
-5. Garnish
-6. Serve at room temperature''',
-
-    'Candlelit dinner': '''
-Ingredients:
-- Main course
-- Side dishes
-- Wine
-- Candles
-- Flowers
-- Music
-- Dessert
-
-Preparation:
-1. Set table
-2. Light candles
-3. Prepare food
-4. Pour wine
-5. Add music
-6. Enjoy together''',
-
-    'Romantic picnic': '''
-Ingredients:
-- Sandwiches
-- Wine
-- Cheese
-- Fruits
-- Chocolate
-- Blanket
-- Flowers
-
-Preparation:
-1. Pack food
-2. Choose location
-3. Set blanket
-4. Arrange food
-5. Add flowers
-6. Enjoy outdoors''',
-
-    'Homemade pizza': '''
-Ingredients:
-- Pizza dough
-- Tomato sauce
-- Mozzarella
+- Frozen fruits
+- Milk or yogurt
 - Toppings
-- Herbs
-- Olive oil
+- Honey
+- Nuts
+- Seeds
+
+Preparation:
+1. Blend fruits
+2. Add liquid
+3. Pour into bowl
+4. Add toppings
+5. Drizzle honey
+6. Add nuts and seeds''',
+
+    'Chickpea spread': '''
+Ingredients:
+- Chickpeas
+- Tahini
 - Garlic
+- Lemon
+- Olive oil
+- Herbs
 
 Preparation:
-1. Make dough
-2. Prepare sauce
-3. Add toppings
-4. Bake
-5. Garnish
-6. Serve hot''',
+1. Blend chickpeas
+2. Add tahini
+3. Add garlic
+4. Add lemon
+5. Add oil
+6. Season with herbs''',
 
-    'Sushi night': '''
+    'Honey nuts': '''
 Ingredients:
-- Sushi rice
-- Nori
-- Fish
+- Mixed nuts
+- Honey
+- Cinnamon
+- Salt
+- Vanilla
+- Butter
+
+Preparation:
+1. Toast nuts
+2. Heat honey
+3. Add spices
+4. Coat nuts
+5. Let cool
+6. Break into pieces''',
+
+    'Vegetables with dip': '''
+Ingredients:
+- Assorted vegetables
+- Greek yogurt
+- Herbs
+- Garlic
+- Lemon
+- Salt and pepper
+
+Preparation:
+1. Cut vegetables
+2. Mix yogurt
+3. Add herbs
+4. Add garlic
+5. Add lemon
+6. Season to taste''',
+
+    'Energy balls': '''
+Ingredients:
+- Dates
+- Nuts
+- Oats
+- Cocoa powder
+- Coconut
+- Seeds
+
+Preparation:
+1. Process dates
+2. Add nuts
+3. Add oats
+4. Add cocoa
+5. Roll into balls
+6. Coat with coconut''',
+
+    'Hummus toast': '''
+Ingredients:
+- Bread
+- Hummus
 - Vegetables
-- Soy sauce
-- Wasabi
-- Ginger
+- Olive oil
+- Herbs
+- Seeds
 
 Preparation:
-1. Cook rice
-2. Prepare fillings
-3. Roll sushi
-4. Cut pieces
-5. Arrange
-6. Serve with condiments''',
+1. Toast bread
+2. Spread hummus
+3. Add vegetables
+4. Drizzle oil
+5. Add herbs
+6. Top with seeds''',
 
-    'Tapas evening': '''
+    'Banana chips': '''
 Ingredients:
-- Olives
-- Cheese
-- Ham
-- Bread
-- Wine
+- Bananas
+- Lemon juice
+- Cinnamon
+- Honey
+- Salt
+- Oil
+
+Preparation:
+1. Slice bananas
+2. Toss with lemon
+3. Add cinnamon
+4. Add honey
+5. Bake until crispy
+6. Let cool''',
+
+    'Quinoa salad': '''
+Ingredients:
+- Cooked quinoa
+- Vegetables
+- Herbs
+- Lemon
+- Olive oil
 - Nuts
-- Fruits
 
 Preparation:
-1. Select tapas
-2. Arrange plates
-3. Pour wine
-4. Set table
-5. Add music
-6. Enjoy together''',
+1. Cook quinoa
+2. Add vegetables
+3. Add herbs
+4. Add lemon
+5. Add oil
+6. Top with nuts''',
 
-    'Cooking together': '''
+    'Savory muffins': '''
 Ingredients:
-- Recipe ingredients
-- Wine
-- Music
-- Candles
-- Flowers
-- Dessert
-- Love
-
-Preparation:
-1. Choose recipe
-2. Set mood
-3. Cook together
-4. Share wine
-5. Enjoy meal
-6. Clean up together''',
-
-    'Wine tasting': '''
-Ingredients:
-- Red wines
-- White wines
+- Flour
 - Cheese
-- Bread
-- Chocolate
-- Fruits
-- Notes
+- Vegetables
+- Eggs
+- Milk
+- Herbs
 
 Preparation:
-1. Select wines
-2. Prepare food
-3. Set glasses
-4. Take notes
-5. Discuss
-6. Enjoy together''',
+1. Mix dry ingredients
+2. Add wet ingredients
+3. Add vegetables
+4. Add cheese
+5. Bake until done
+6. Let cool''',
 
-    'Chocolate tasting': '''
+    'Tortilla rolls': '''
 Ingredients:
+- Tortillas
+- Cream cheese
+- Vegetables
+- Herbs
+- Salt
+- Pepper
+
+Preparation:
+1. Spread cream cheese
+2. Add vegetables
+3. Add herbs
+4. Roll tightly
+5. Cut into pieces
+6. Serve immediately''',
+
+    'Chocolate-covered dried fruits': '''
+Ingredients:
+- Dried fruits
 - Dark chocolate
-- Milk chocolate
-- White chocolate
-- Wine
-- Coffee
-- Nuts
-- Fruits
+- Nuts (optional)
+- Sea salt
+- Coconut (optional)
+- Vanilla
 
 Preparation:
-1. Select chocolates
-2. Prepare pairings
-3. Set plates
-4. Take notes
-5. Discuss
-6. Enjoy together''',
+1. Melt chocolate
+2. Dip fruits
+3. Add toppings
+4. Add salt
+5. Let set
+6. Store properly''',
 
-    'Movie night': '''
+    'Mini sandwiches': '''
 Ingredients:
-- Popcorn
-- Wine
-- Chocolate
-- Blanket
-- Movie
-- Snacks
-- Candles
+- Bread
+- Various fillings
+- Butter
+- Herbs
+- Vegetables
+- Cheese
 
 Preparation:
-1. Choose movie
-2. Make popcorn
-3. Pour wine
-4. Set mood
-5. Get cozy
-6. Enjoy together''',
-
-    'Game night': '''
-Ingredients:
-- Board games
-- Wine
-- Snacks
-- Music
-- Candles
-- Dessert
-- Fun
-
-Preparation:
-1. Select games
-2. Prepare snacks
-3. Pour wine
-4. Set mood
-5. Play games
-6. Enjoy together''',
-
-    'Dance night': '''
-Ingredients:
-- Music
-- Wine
-- Snacks
-- Candles
-- Flowers
-- Dessert
-- Love
-
-Preparation:
-1. Choose music
-2. Set mood
-3. Pour wine
-4. Light candles
-5. Dance
-6. Enjoy together''',
-
-    'Stargazing': '''
-Ingredients:
-- Blanket
-- Wine
-- Snacks
-- Telescope
-- Music
-- Chocolate
-- Love
-
-Preparation:
-1. Find location
-2. Set blanket
-3. Pour wine
-4. Set telescope
-5. Add music
-6. Enjoy together''',
-
-    'Beach date': '''
-Ingredients:
-- Picnic basket
-- Wine
-- Sandwiches
-- Fruits
-- Blanket
-- Music
-- Love
-
-Preparation:
-1. Pack basket
-2. Choose spot
-3. Set blanket
-4. Pour wine
-5. Add music
-6. Enjoy together''',
-
-    'Hiking date': '''
-Ingredients:
-- Trail mix
-- Water
-- Sandwiches
-- Fruits
-- Camera
-- Map
-- Love
-
-Preparation:
-1. Choose trail
-2. Pack food
-3. Check weather
-4. Start hike
-5. Take photos
-6. Enjoy together''',
-
-    'Museum date': '''
-Ingredients:
-- Tickets
-- Guide
-- Camera
-- Snacks
-- Water
-- Map
-- Love
-
-Preparation:
-1. Choose museum
-2. Buy tickets
-3. Get guide
-4. Take photos
-5. Discuss art
-6. Enjoy together''',
-
-    'Concert date': '''
-Ingredients:
-- Tickets
-- Wine
-- Snacks
-- Camera
-- Program
-- Flowers
-- Love
-
-Preparation:
-1. Choose concert
-2. Buy tickets
-3. Dress up
-4. Arrive early
-5. Enjoy music
-6. Celebrate together''',
-
-    'Theater date': '''
-Ingredients:
-- Tickets
-- Wine
-- Snacks
-- Program
-- Flowers
-- Camera
-- Love
-
-Preparation:
-1. Choose show
-2. Buy tickets
-3. Dress up
-4. Arrive early
-5. Enjoy show
-6. Discuss together''',
-
-    'Cooking class': '''
-Ingredients:
-- Recipe
-- Ingredients
-- Wine
-- Aprons
-- Music
-- Camera
-- Love
-
-Preparation:
-1. Choose class
-2. Book spots
-3. Dress up
-4. Learn together
-5. Cook together
-6. Enjoy meal''',
-
-    'Wine tour': '''
-Ingredients:
-- Tour tickets
-- Camera
-- Snacks
-- Water
-- Map
-- Notes
-- Love
-
-Preparation:
-1. Choose winery
-2. Book tour
-3. Dress up
-4. Take photos
-5. Taste wine
-6. Enjoy together''',
-
-    'Boat ride': '''
-Ingredients:
-- Tickets
-- Wine
-- Snacks
-- Camera
-- Map
-- Sunscreen
-- Love
-
-Preparation:
-1. Choose route
-2. Buy tickets
-3. Pack food
-4. Take photos
-5. Enjoy ride
-6. Celebrate together''',
-
-    'Hot air balloon': '''
-Ingredients:
-- Tickets
-- Camera
-- Snacks
-- Water
-- Map
-- Jacket
-- Love
-
-Preparation:
-1. Book flight
-2. Dress warmly
-3. Take photos
-4. Enjoy view
-5. Celebrate
-6. Toast together''',
-
-    'Spa day': '''
-Ingredients:
-- Spa package
-- Robes
-- Wine
-- Snacks
-- Music
-- Candles
-- Love
-
-Preparation:
-1. Book spa
-2. Dress comfortably
-3. Relax together
-4. Enjoy treatments
-5. Share wine
-6. Celebrate together''',
-
-    'Sunset dinner': '''
-Ingredients:
-- Main course
-- Wine
-- Candles
-- Flowers
-- Music
-- Dessert
-- Love
-
-Preparation:
-1. Choose location
-2. Set table
-3. Prepare food
-4. Pour wine
-5. Watch sunset
-6. Enjoy together''',
+1. Cut bread
+2. Add fillings
+3. Add vegetables
+4. Add cheese
+5. Cut into pieces
+6. Arrange on plate''',
   };
 
   // Get recipe for a specific meal
