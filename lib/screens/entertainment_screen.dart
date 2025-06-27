@@ -272,31 +272,31 @@ class _EntertainmentScreenState extends State<EntertainmentScreen>
                   ),
                 ),
                 const SizedBox(height: 24),
-                // Navigate button
-                ElevatedButton.icon(
-                  onPressed: () async {
-                    final lat = place['location'].latitude;
-                    final lng = place['location'].longitude;
-                    final url = 'https://www.google.com/maps/dir/?api=1&destination=$lat,$lng';
-                    if (await canLaunch(url)) {
-                      await launch(url);
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Could not launch Google Maps.')),
-                      );
-                    }
-                  },
-                  icon: const Icon(Icons.navigation),
-                  label: const Text('Navigate'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.primary,
-                    foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
+                // Navigate button (use mapsQuery if present)
+                if (place['mapsQuery'] != null || place['name'] != null)
+                  ElevatedButton.icon(
+                    onPressed: () async {
+                      final query = place['mapsQuery'] ?? place['name'];
+                      final url = 'https://www.google.com/maps/search/?api=1&query=${Uri.encodeComponent(query)}';
+                      if (await canLaunch(url)) {
+                        await launch(url);
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Could not launch Google Maps.')),
+                        );
+                      }
+                    },
+                    icon: const Icon(Icons.navigation),
+                    label: const Text('Navigate'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
                     ),
                   ),
-                ),
               ],
             ),
           );
