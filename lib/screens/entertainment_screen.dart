@@ -3,6 +3,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'dart:math';
 import '../services/entertainment_service.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class EntertainmentScreen extends StatefulWidget {
   final String category;
@@ -270,6 +271,32 @@ class _EntertainmentScreenState extends State<EntertainmentScreen>
                     ),
                   ),
                 ),
+                const SizedBox(height: 24),
+                // Navigate button
+                ElevatedButton.icon(
+                  onPressed: () async {
+                    final lat = place['location'].latitude;
+                    final lng = place['location'].longitude;
+                    final url = 'https://www.google.com/maps/dir/?api=1&destination=$lat,$lng';
+                    if (await canLaunch(url)) {
+                      await launch(url);
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Could not launch Google Maps.')),
+                      );
+                    }
+                  },
+                  icon: const Icon(Icons.navigation),
+                  label: const Text('Navigate'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                  ),
+                ),
               ],
             ),
           );
@@ -463,7 +490,9 @@ class _EntertainmentScreenState extends State<EntertainmentScreen>
                               child: Icon(
                                 widget.category == EntertainmentService.GAME ? Icons.sports_esports :
                                 widget.category == EntertainmentService.MOVIE ? Icons.movie :
-                                Icons.tv,  // TV Series
+                                widget.category == EntertainmentService.TV_SERIES ? Icons.tv :
+                                widget.category == EntertainmentService.OUTDOOR ? Icons.park :
+                                Icons.games,
                                 color: colorScheme.primary,
                                 size: 32,
                               ),
