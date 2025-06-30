@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/training_plan_service.dart';
+import 'exercise_detail_screen.dart';
 
 class TrainingPlanScreen extends StatefulWidget {
   final String category;
@@ -110,12 +111,45 @@ class _TrainingPlanScreenState extends State<TrainingPlanScreen> {
             ),
           ),
         ),
-        title: Text(
-          exercise.name,
-          style: TextStyle(
-            color: colorScheme.onSurface,
-            fontWeight: FontWeight.w500,
-          ),
+        title: Row(
+          children: [
+            Expanded(
+              child: Text(
+                exercise.name,
+                style: TextStyle(
+                  color: colorScheme.onSurface,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+            if (exercise.hasVideo)
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: colorScheme.primary.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.play_circle_outline,
+                      size: 16,
+                      color: colorScheme.primary,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      'Video',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: colorScheme.primary,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+          ],
         ),
         children: [
           Padding(
@@ -140,6 +174,36 @@ class _TrainingPlanScreenState extends State<TrainingPlanScreen> {
                   'Rest between sets',
                   _formatDuration(exercise.restBetweenSets),
                 ),
+                if (exercise.hasVideo) ...[
+                  const SizedBox(height: 16),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ExerciseDetailScreen(
+                              exercise: exercise,
+                              exerciseIndex: index,
+                              workoutName: widget.workoutName,
+                            ),
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.play_circle_outline),
+                      label: const Text('Watch Exercise Video'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: colorScheme.primary,
+                        foregroundColor: colorScheme.onPrimary,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ],
             ),
           ),
@@ -181,6 +245,31 @@ class _TrainingPlanScreenState extends State<TrainingPlanScreen> {
         title: const Text('Training Plan'),
         backgroundColor: Colors.transparent,
         elevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: () async {
+              setState(() => _isLoading = true);
+              try {
+                await _trainingPlanService.resetAndInitializeTrainingPlans();
+                await _loadTrainingPlans();
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Training plans updated with videos!')),
+                  );
+                }
+              } catch (e) {
+                setState(() => _isLoading = false);
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Error updating training plans: $e')),
+                  );
+                }
+              }
+            },
+            tooltip: 'Update with videos',
+          ),
+        ],
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())

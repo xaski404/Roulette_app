@@ -7,12 +7,18 @@ class Exercise {
   final int sets;
   final int reps;
   final int restBetweenSets; // in seconds
+  final String? youtubeVideoUrl; // YouTube video URL for exercise demonstration
+  final String? videoTitle; // Optional title for the video
+  final String? videoDescription; // Optional description for the video
   
   Exercise({
     required this.name,
     required this.sets,
     required this.reps,
     required this.restBetweenSets,
+    this.youtubeVideoUrl,
+    this.videoTitle,
+    this.videoDescription,
   });
 
   Map<String, dynamic> toMap() {
@@ -21,6 +27,9 @@ class Exercise {
       'sets': sets,
       'reps': reps,
       'restBetweenSets': restBetweenSets,
+      'youtubeVideoUrl': youtubeVideoUrl,
+      'videoTitle': videoTitle,
+      'videoDescription': videoDescription,
     };
   }
 
@@ -30,8 +39,36 @@ class Exercise {
       sets: map['sets'],
       reps: map['reps'],
       restBetweenSets: map['restBetweenSets'],
+      youtubeVideoUrl: map['youtubeVideoUrl'],
+      videoTitle: map['videoTitle'],
+      videoDescription: map['videoDescription'],
     );
   }
+
+  /// Extracts YouTube video ID from various YouTube URL formats
+  String? get youtubeVideoId {
+    if (youtubeVideoUrl == null || youtubeVideoUrl!.isEmpty) return null;
+    
+    final url = youtubeVideoUrl!;
+    
+    // Handle different YouTube URL formats
+    final patterns = [
+      RegExp(r'(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})'),
+      RegExp(r'youtube\.com\/watch\?.*v=([a-zA-Z0-9_-]{11})'),
+    ];
+    
+    for (final pattern in patterns) {
+      final match = pattern.firstMatch(url);
+      if (match != null) {
+        return match.group(1);
+      }
+    }
+    
+    return null;
+  }
+
+  /// Checks if the exercise has a valid YouTube video
+  bool get hasVideo => youtubeVideoId != null;
 }
 
 // Training plan structure
@@ -76,14 +113,78 @@ class TrainingPlanService {
         TrainingPlan(
           name: 'Full Body Strength',
           exercises: [
-            Exercise(name: 'Barbell Back Squats', sets: 4, reps: 8, restBetweenSets: 90),
-            Exercise(name: 'Bench Press', sets: 4, reps: 8, restBetweenSets: 90),
-            Exercise(name: 'Deadlifts', sets: 4, reps: 8, restBetweenSets: 120),
-            Exercise(name: 'Pull-ups', sets: 3, reps: 10, restBetweenSets: 90),
-            Exercise(name: 'Overhead Press', sets: 3, reps: 10, restBetweenSets: 90),
-            Exercise(name: 'Barbell Rows', sets: 3, reps: 10, restBetweenSets: 90),
-            Exercise(name: 'Dips', sets: 3, reps: 12, restBetweenSets: 60),
-            Exercise(name: 'Plank', sets: 3, reps: 45, restBetweenSets: 45), // reps in seconds
+            Exercise(
+              name: 'Barbell Back Squats',
+              sets: 4,
+              reps: 8,
+              restBetweenSets: 90,
+              youtubeVideoUrl: 'https://www.youtube.com/watch?v=SW_C1A-rejs',
+              videoTitle: 'Proper Barbell Back Squat Form',
+              videoDescription: 'Learn the correct form for barbell back squats with proper depth and technique.',
+            ),
+            Exercise(
+              name: 'Bench Press',
+              sets: 4,
+              reps: 8,
+              restBetweenSets: 90,
+              youtubeVideoUrl: 'https://www.youtube.com/watch?v=rT7DgCr-3pg',
+              videoTitle: 'Bench Press Tutorial',
+              videoDescription: 'Master the bench press with proper form and breathing technique.',
+            ),
+            Exercise(
+              name: 'Deadlifts',
+              sets: 4,
+              reps: 8,
+              restBetweenSets: 120,
+              youtubeVideoUrl: 'https://www.youtube.com/watch?v=1ZXobu7JvvE',
+              videoTitle: 'Deadlift Form Guide',
+              videoDescription: 'Learn proper deadlift form to prevent injury and maximize strength gains.',
+            ),
+            Exercise(
+              name: 'Pull-ups',
+              sets: 3,
+              reps: 10,
+              restBetweenSets: 90,
+              youtubeVideoUrl: 'https://www.youtube.com/watch?v=eGo4IYlbE5g',
+              videoTitle: 'Pull-up Progression',
+              videoDescription: 'Master pull-ups with proper form and progression techniques.',
+            ),
+            Exercise(
+              name: 'Overhead Press',
+              sets: 3,
+              reps: 10,
+              restBetweenSets: 90,
+              youtubeVideoUrl: 'https://www.youtube.com/watch?v=2yjwXTZQDDg',
+              videoTitle: 'Overhead Press Tutorial',
+              videoDescription: 'Learn the military press with proper form and breathing.',
+            ),
+            Exercise(
+              name: 'Barbell Rows',
+              sets: 3,
+              reps: 10,
+              restBetweenSets: 90,
+              youtubeVideoUrl: 'https://www.youtube.com/watch?v=G8l_8chR5BE',
+              videoTitle: 'Barbell Row Form',
+              videoDescription: 'Master the barbell row for a strong back and proper posture.',
+            ),
+            Exercise(
+              name: 'Dips',
+              sets: 3,
+              reps: 12,
+              restBetweenSets: 60,
+              youtubeVideoUrl: 'https://www.youtube.com/watch?v=2z8JmcrW-As',
+              videoTitle: 'Dips Tutorial',
+              videoDescription: 'Learn proper dip form for chest and tricep development.',
+            ),
+            Exercise(
+              name: 'Plank',
+              sets: 3,
+              reps: 45,
+              restBetweenSets: 45,
+              youtubeVideoUrl: 'https://www.youtube.com/watch?v=ASdvN_XEl_c',
+              videoTitle: 'Perfect Plank Form',
+              videoDescription: 'Master the plank for core strength and stability.',
+            ),
           ],
           restBetweenExercises: 120,
         ),
@@ -238,14 +339,78 @@ class TrainingPlanService {
         TrainingPlan(
           name: 'Bodyweight Intensity',
           exercises: [
-            Exercise(name: 'Diamond Push-ups', sets: 4, reps: 12, restBetweenSets: 60),
-            Exercise(name: 'Jump Squats', sets: 4, reps: 15, restBetweenSets: 60),
-            Exercise(name: 'Pull-ups', sets: 3, reps: 8, restBetweenSets: 90),
-            Exercise(name: 'Pike Push-ups', sets: 3, reps: 12, restBetweenSets: 60),
-            Exercise(name: 'Pistol Squats', sets: 3, reps: 8, restBetweenSets: 90),
-            Exercise(name: 'Burpees', sets: 3, reps: 15, restBetweenSets: 60),
-            Exercise(name: 'L-Sits', sets: 3, reps: 20, restBetweenSets: 60), // reps in seconds
-            Exercise(name: 'Mountain Climbers', sets: 3, reps: 30, restBetweenSets: 45),
+            Exercise(
+              name: 'Diamond Push-ups',
+              sets: 4,
+              reps: 12,
+              restBetweenSets: 60,
+              youtubeVideoUrl: 'https://www.youtube.com/watch?v=J0DnG1_S92I',
+              videoTitle: 'Diamond Push-ups Tutorial',
+              videoDescription: 'Jak poprawnie wykonać Diamond Push-ups – technika i wskazówki.',
+            ),
+            Exercise(
+              name: 'Jump Squats',
+              sets: 4,
+              reps: 15,
+              restBetweenSets: 60,
+              youtubeVideoUrl: 'https://www.youtube.com/watch?v=U4s4mEQ5VqU',
+              videoTitle: 'Jump Squats Tutorial',
+              videoDescription: 'Technika wykonywania Jump Squats – ćwiczenie na moc i dynamikę.',
+            ),
+            Exercise(
+              name: 'Pull-ups',
+              sets: 3,
+              reps: 8,
+              restBetweenSets: 90,
+              youtubeVideoUrl: 'https://www.youtube.com/watch?v=eGo4IYlbE5g',
+              videoTitle: 'Pull-ups Tutorial',
+              videoDescription: 'Jak poprawnie wykonać podciągnięcia na drążku.',
+            ),
+            Exercise(
+              name: 'Pike Push-ups',
+              sets: 3,
+              reps: 12,
+              restBetweenSets: 60,
+              youtubeVideoUrl: 'https://www.youtube.com/watch?v=F3QY5vMz_6I',
+              videoTitle: 'Pike Push-ups Tutorial',
+              videoDescription: 'Pike Push-ups – instrukcja i najczęstsze błędy.',
+            ),
+            Exercise(
+              name: 'Pistol Squats',
+              sets: 3,
+              reps: 8,
+              restBetweenSets: 90,
+              youtubeVideoUrl: 'https://www.youtube.com/watch?v=U3HlEF_E9fo',
+              videoTitle: 'Pistol Squats Tutorial',
+              videoDescription: 'Jak nauczyć się i poprawnie wykonać Pistol Squat.',
+            ),
+            Exercise(
+              name: 'Burpees',
+              sets: 3,
+              reps: 15,
+              restBetweenSets: 60,
+              youtubeVideoUrl: 'https://www.youtube.com/watch?v=TU8QYVW0gDU',
+              videoTitle: 'Burpees Tutorial',
+              videoDescription: 'Burpees – pełna technika i wskazówki.',
+            ),
+            Exercise(
+              name: 'L-Sits',
+              sets: 3,
+              reps: 20,
+              restBetweenSets: 60,
+              youtubeVideoUrl: 'https://www.youtube.com/watch?v=Qn5P9M_Dl5w',
+              videoTitle: 'L-Sit Tutorial',
+              videoDescription: 'Jak wykonać L-Sit na podłodze lub poręczach.',
+            ),
+            Exercise(
+              name: 'Mountain Climbers',
+              sets: 3,
+              reps: 30,
+              restBetweenSets: 45,
+              youtubeVideoUrl: 'https://www.youtube.com/watch?v=nmwgirgXLYM',
+              videoTitle: 'Mountain Climbers Tutorial',
+              videoDescription: 'Mountain Climbers – poprawna technika i warianty.',
+            ),
           ],
           restBetweenExercises: 90,
         ),
@@ -1383,6 +1548,31 @@ class TrainingPlanService {
     final snapshot = await userTrainingPlansRef.limit(1).get();
     if (snapshot.docs.isNotEmpty) return;
 
+    await _initializeTrainingPlansData(userTrainingPlansRef);
+  }
+
+  // Reset and reinitialize training plans (for updating with videos)
+  Future<void> resetAndInitializeTrainingPlans() async {
+    final userId = _auth.currentUser?.uid;
+    if (userId == null) return;
+
+    final userTrainingPlansRef = _firestore
+        .collection('users')
+        .doc(userId)
+        .collection('workout_training_plans');
+    
+    // Delete existing data
+    final snapshot = await userTrainingPlansRef.get();
+    for (var doc in snapshot.docs) {
+      await doc.reference.delete();
+    }
+
+    // Reinitialize with new data including videos
+    await _initializeTrainingPlansData(userTrainingPlansRef);
+  }
+
+  // Helper method to initialize training plans data
+  Future<void> _initializeTrainingPlansData(CollectionReference userTrainingPlansRef) async {
     // Initialize default training plans for each category and workout
     for (var categoryEntry in workoutSpecificPlans.entries) {
       final category = categoryEntry.key;
