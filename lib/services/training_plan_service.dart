@@ -193,14 +193,78 @@ class TrainingPlanService {
         TrainingPlan(
           name: 'Upper Body Power',
           exercises: [
-            Exercise(name: 'Incline Bench Press', sets: 4, reps: 8, restBetweenSets: 90),
-            Exercise(name: 'Weighted Pull-ups', sets: 4, reps: 8, restBetweenSets: 90),
-            Exercise(name: 'Standing Military Press', sets: 4, reps: 8, restBetweenSets: 90),
-            Exercise(name: 'Barbell Rows', sets: 4, reps: 10, restBetweenSets: 90),
-            Exercise(name: 'Lateral Raises', sets: 3, reps: 12, restBetweenSets: 60),
-            Exercise(name: 'Face Pulls', sets: 3, reps: 15, restBetweenSets: 60),
-            Exercise(name: 'Skull Crushers', sets: 3, reps: 12, restBetweenSets: 60),
-            Exercise(name: 'Hammer Curls', sets: 3, reps: 12, restBetweenSets: 60),
+            Exercise(
+              name: 'Incline Bench Press',
+              sets: 4,
+              reps: 8,
+              restBetweenSets: 90,
+              youtubeVideoUrl: 'https://www.youtube.com/watch?v=SrqOu55lrYU',
+              videoTitle: 'Incline Bench Press Tutorial',
+              videoDescription: 'Learn how to perform the incline bench press with proper form.',
+            ),
+            Exercise(
+              name: 'Weighted Pull-ups',
+              sets: 4,
+              reps: 8,
+              restBetweenSets: 90,
+              youtubeVideoUrl: 'https://www.youtube.com/watch?v=ivg_Yc-YDYo',
+              videoTitle: 'Weighted Pull-ups Guide',
+              videoDescription: 'How to do weighted pull-ups safely and effectively.',
+            ),
+            Exercise(
+              name: 'Standing Military Press',
+              sets: 4,
+              reps: 8,
+              restBetweenSets: 90,
+              youtubeVideoUrl: 'https://www.youtube.com/watch?v=B-aVuyhvLHU',
+              videoTitle: 'Standing Military Press Tutorial',
+              videoDescription: 'Proper technique for the standing military press.',
+            ),
+            Exercise(
+              name: 'Barbell Rows',
+              sets: 4,
+              reps: 10,
+              restBetweenSets: 90,
+              youtubeVideoUrl: 'https://www.youtube.com/watch?v=G8l_8chR5BE',
+              videoTitle: 'Barbell Row Form',
+              videoDescription: 'Master the barbell row for a strong back and proper posture.',
+            ),
+            Exercise(
+              name: 'Lateral Raises',
+              sets: 3,
+              reps: 12,
+              restBetweenSets: 60,
+              youtubeVideoUrl: 'https://www.youtube.com/watch?v=3VcKaXpzqRo',
+              videoTitle: 'Lateral Raises Tutorial',
+              videoDescription: 'How to do lateral raises for shoulder development.',
+            ),
+            Exercise(
+              name: 'Face Pulls',
+              sets: 3,
+              reps: 15,
+              restBetweenSets: 60,
+              youtubeVideoUrl: 'https://www.youtube.com/watch?v=rep-qVOkqgk',
+              videoTitle: 'Face Pulls Tutorial',
+              videoDescription: 'Face pulls for healthy shoulders and posture.',
+            ),
+            Exercise(
+              name: 'Skull Crushers',
+              sets: 3,
+              reps: 12,
+              restBetweenSets: 60,
+              youtubeVideoUrl: 'https://www.youtube.com/watch?v=d_KZxkY_0cM',
+              videoTitle: 'Skull Crushers Tutorial',
+              videoDescription: 'How to perform skull crushers for triceps.',
+            ),
+            Exercise(
+              name: 'Hammer Curls',
+              sets: 3,
+              reps: 12,
+              restBetweenSets: 60,
+              youtubeVideoUrl: 'https://www.youtube.com/watch?v=zC3nLlEvin4',
+              videoTitle: 'Hammer Curls Tutorial',
+              videoDescription: 'Hammer curls for forearm and biceps strength.',
+            ),
           ],
           restBetweenExercises: 90,
         ),
@@ -1563,9 +1627,11 @@ class TrainingPlanService {
     
     // Delete existing data
     final snapshot = await userTrainingPlansRef.get();
-    for (var doc in snapshot.docs) {
-      await doc.reference.delete();
+    final batch = _firestore.batch();
+    for (final doc in snapshot.docs) {
+      batch.delete(doc.reference);
     }
+    await batch.commit();
 
     // Reinitialize with new data including videos
     await _initializeTrainingPlansData(userTrainingPlansRef);

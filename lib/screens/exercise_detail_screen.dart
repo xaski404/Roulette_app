@@ -275,26 +275,39 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
           ),
         ),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
               Icons.video_library_outlined,
               size: 48,
-              color: colorScheme.onSurface.withOpacity(0.5),
+              color: colorScheme.primary,
             ),
             const SizedBox(height: 16),
             Text(
-              'No Video Available',
+              'No instructional video available for this exercise.',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                color: colorScheme.onSurface.withOpacity(0.7),
+                color: colorScheme.onSurface,
+                fontWeight: FontWeight.bold,
               ),
+              textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
             Text(
-              'Video demonstration for this exercise is not available.',
+              'You can try refreshing the video data.',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: colorScheme.onSurface.withOpacity(0.5),
+                color: colorScheme.onSurface.withOpacity(0.7),
               ),
               textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton.icon(
+              onPressed: _fetchFirestoreVideo,
+              icon: const Icon(Icons.refresh),
+              label: const Text('Refresh Video Data'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: colorScheme.primary,
+                foregroundColor: colorScheme.onPrimary,
+              ),
             ),
           ],
         ),

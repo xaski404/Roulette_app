@@ -5,7 +5,27 @@ import 'package:google_sign_in/google_sign_in.dart';
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
+  final GoogleSignIn _googleSignIn = GoogleSignIn.instance;
+  bool _isGoogleSignInInitialized = false;
+
+  AuthService() {
+    _initializeGoogleSignIn();
+  }
+
+  Future<void> _initializeGoogleSignIn() async {
+    try {
+      await _googleSignIn.initialize();
+      _isGoogleSignInInitialized = true;
+    } catch (e) {
+      print('Failed to initialize Google Sign-In: $e');
+    }
+  }
+
+  Future<void> _ensureGoogleSignInInitialized() async {
+    if (!_isGoogleSignInInitialized) {
+      await _initializeGoogleSignIn();
+    }
+  }
 
   // Get current user
   User? get currentUser => _auth.currentUser;
@@ -37,25 +57,20 @@ class AuthService {
   // Sign in with Google
   Future<UserCredential> signInWithGoogle() async {
     try {
-      // Trigger the authentication flow
-      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-
-      if (googleUser == null) {
-        throw 'Anulowano logowanie przez Google';
-      }
-
-      // Obtain the auth details from the request
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-
-      // Create a new credential
+      await _ensureGoogleSignInInitialized();
+      // Authenticate with Google
+      final GoogleSignInAccount googleUser = await _googleSignIn.authenticate(scopeHint: ['email']);
+      // Get authorization for Firebase scopes if needed
+      final authClient = _googleSignIn.authorizationClient;
+      final authorization = await authClient.authorizationForScopes(['email']);
+      // Get authentication tokens (now synchronous)
+      final GoogleSignInAuthentication googleAuth = googleUser.authentication;
       final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
+        accessToken: authorization?.accessToken,
         idToken: googleAuth.idToken,
       );
-
       // Sign in to Firebase with the Google credential
       final UserCredential userCredential = await _auth.signInWithCredential(credential);
-
       // Check if this is a new user
       if (userCredential.additionalUserInfo?.isNewUser ?? false) {
         // Create user document in Firestore for new users
@@ -66,8 +81,10 @@ class AuthService {
           'createdAt': FieldValue.serverTimestamp(),
         });
       }
-
       return userCredential;
+    } on GoogleSignInException catch (e) {
+      print('Google Sign In error: code: \\${e.code.name} description: \\${e.description} details: \\${e.details}');
+      rethrow;
     } catch (e) {
       rethrow;
     }

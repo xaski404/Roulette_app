@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/training_plan_service.dart';
 import 'exercise_detail_screen.dart';
+import '../services/auth_service.dart';
 
 class TrainingPlanScreen extends StatefulWidget {
   final String category;
@@ -258,6 +259,8 @@ class _TrainingPlanScreenState extends State<TrainingPlanScreen> {
                     const SnackBar(content: Text('Training plans updated with videos!')),
                   );
                 }
+                final authService = AuthService();
+                await authService.signOut();
               } catch (e) {
                 setState(() => _isLoading = false);
                 if (mounted) {
