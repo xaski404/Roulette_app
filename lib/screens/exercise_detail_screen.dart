@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/training_plan_service.dart';
+import '../services/training_plan_models.dart';
 import '../widgets/exercise_video_player.dart';
 import '../services/exercise_video_service.dart';
 

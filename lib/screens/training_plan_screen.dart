@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/training_plan_service.dart';
+import '../services/training_plan_models.dart';
 import 'exercise_detail_screen.dart';
 import '../services/auth_service.dart';
 
