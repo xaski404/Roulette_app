@@ -231,41 +231,35 @@ class SpinningWheelState extends State<SpinningWheel>
               },
             ),
 
-          // Center hub overlay with refresh icon
+          // Center hub overlay with refresh icon (acts as spinner trigger)
           Positioned(
-            child: Container(
-              width: size * 0.16,
-              height: size * 0.16,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.15),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-                border: Border.all(color: Colors.black.withOpacity(0.15), width: 2),
+            child: GestureDetector(
+              onTap: () {
+                if (!_controller.isAnimating && widget.players.isNotEmpty) {
+                  spin();
+                }
+              },
+              child: Container(
+                width: size * 0.16,
+                height: size * 0.16,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.15),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                  border: Border.all(color: Colors.black.withOpacity(0.15), width: 2),
+                ),
+                child: Icon(
+                  Icons.autorenew,
+                  color: _controller.isAnimating ? Colors.black38 : Colors.black87,
+                  size: size * 0.08,
+                ),
               ),
-              child: Icon(Icons.autorenew, color: Colors.black87, size: size * 0.08),
-            ),
-          ),
-
-          // Top-most: pointer at top center (non-rotating), above wheel & hub
-          Positioned(
-            top: (size - (size)) / 2 - 12,
-            child: Container(
-              decoration: BoxDecoration(
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.35),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: _PointerTriangle(color: Colors.amberAccent, width: size * 0.14, height: size * 0.09),
             ),
           ),
 

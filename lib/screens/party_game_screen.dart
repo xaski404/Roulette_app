@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import '../widgets/spinning_wheel.dart';
+import '../widgets/roulette_wheel.dart';
 import '../services/party/party_service.dart';
 import '../services/party/party_item.dart';
 import 'package:confetti/confetti.dart';
@@ -19,6 +20,7 @@ class _PartyGameScreenState extends State<PartyGameScreen> {
   final GlobalKey<SpinningWheelState> _wheelKey = GlobalKey<SpinningWheelState>();
   final PartyService _partyService = PartyService();
   late final ConfettiController _confetti;
+  final RouletteController _rouletteController = RouletteController();
 
   List<String> players = [];
   bool _isBusy = false;
@@ -58,9 +60,10 @@ class _PartyGameScreenState extends State<PartyGameScreen> {
 
     try {
       HapticFeedback.selectionClick();
-      // 1) Spin wheel and await winner (single source of truth)
-      final winnerName = await _wheelKey.currentState!.spin();
-      _lastWinnerName = winnerName;
+      // 1) Spin roulette wheel with ball (deterministic index)
+      final int idx = (players.isEmpty) ? 0 : (players.length == 1 ? 0 : DateTime.now().millisecondsSinceEpoch % players.length);
+      await _rouletteController.spinTo(idx);
+      _lastWinnerName = players[idx];
 
       // 2) Fetch Firestore item for chosen category and type
       final PartyItem? item = await _partyService.getRandomItem(
@@ -171,12 +174,29 @@ class _PartyGameScreenState extends State<PartyGameScreen> {
                     ),
                   ),
                 ] else ...[
-                  SpinningWheel(
-                    key: _wheelKey,
-                    players: players,
-                    size: 300,
-                    showCenterButton: false,
-                    showWinnerLabel: true,
+                  SizedBox(
+                    width: 300,
+                    height: 300,
+                    child: RouletteWheel(
+                      segments: List.generate(
+                        players.length,
+                        (i) => RouletteSegment(
+                          label: players[i],
+                          color: [
+                            Colors.cyan,
+                            Colors.pinkAccent,
+                            Colors.amber,
+                            Colors.redAccent,
+                            Colors.deepPurpleAccent,
+                            Colors.tealAccent,
+                          ][i % 6],
+                        ),
+                      ),
+                      controller: _rouletteController,
+                      onCompleted: (i) {
+                        setState(() => _lastWinnerName = players[i]);
+                      },
+                    ),
                   ),
                   const SizedBox(height: 24),
                   Row(
