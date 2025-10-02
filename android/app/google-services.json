@@ -1,26 +1,44 @@
 {
   "project_info": {
-    "project_number": "735106227800",
-    "project_id": "spinroulette-41cea",
-    "storage_bucket": "spinroulette-41cea.firebasestorage.app"
+    "project_number": "475606015669",
+    "project_id": "roullette-app",
+    "storage_bucket": "roullette-app.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:735106227800:android:7e6dc7c753d00372f0342d",
+        "mobilesdk_app_id": "1:475606015669:android:5603a6e04cd4eee6cfe8fc",
         "android_client_info": {
           "package_name": "com.example.roulette_new"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "475606015669-196ip3ig2jlbrjq1ge5kmj3t99du235a.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.roulette_new",
+            "certificate_hash": "680c3ac45ef5c02cab433ab6c57dca0a79aa4234"
+          }
+        },
+        {
+          "client_id": "475606015669-bc7b56if8hhjragbtvmml9f4s71nmc5a.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyCTAT9cQGsBZOxZAfQ55GcA1AStJk4edG8"
+          "current_key": "AIzaSyA8WikCjefQmF9AuVM9GIe1siAa3WIIKng"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "475606015669-bc7b56if8hhjragbtvmml9f4s71nmc5a.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
