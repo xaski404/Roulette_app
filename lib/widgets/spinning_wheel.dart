@@ -231,23 +231,6 @@ class SpinningWheelState extends State<SpinningWheel>
               },
             ),
 
-          // Middle layer: pointer at top center (non-rotating)
-          Positioned(
-            top: (size - (size)) / 2 - 10,
-            child: Container(
-              decoration: BoxDecoration(
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.25),
-                    blurRadius: 8,
-                    offset: const Offset(0, 3),
-                  ),
-                ],
-              ),
-              child: _PointerTriangle(color: Colors.amberAccent),
-            ),
-          ),
-
           // Center hub overlay with refresh icon
           Positioned(
             child: Container(
@@ -269,6 +252,23 @@ class SpinningWheelState extends State<SpinningWheel>
             ),
           ),
 
+          // Top-most: pointer at top center (non-rotating), above wheel & hub
+          Positioned(
+            top: (size - (size)) / 2 - 12,
+            child: Container(
+              decoration: BoxDecoration(
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.35),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: _PointerTriangle(color: Colors.amberAccent, width: size * 0.14, height: size * 0.09),
+            ),
+          ),
+
           // Top layer: spin button in center
           if (widget.showCenterButton)
             Positioned(
@@ -285,45 +285,57 @@ class SpinningWheelState extends State<SpinningWheel>
           if (widget.showWinnerLabel)
             Positioned(
               bottom: 0,
-              child: Column(
-                children: [
-                  if (_winner == null)
-                    Text(
+              child: _winner == null
+                  ? Text(
                       'Tap SPIN to choose',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: colorScheme.onBackground,
                       ),
                     )
-                  else ...[
-                    Text(
-                      'Winner',
-                      style: TextStyle(
-                        color: colorScheme.onBackground.withOpacity(0.8),
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
+                  : Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.35),
+                        borderRadius: BorderRadius.circular(24),
+                        border: Border.all(color: Colors.white.withOpacity(0.15), width: 1),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.2),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            'Winner',
+                            style: TextStyle(
+                              color: Colors.white.withOpacity(0.9),
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          TweenAnimationBuilder<double>(
+                            tween: Tween(begin: 0.85, end: 1.0),
+                            duration: const Duration(milliseconds: 280),
+                            curve: Curves.easeOut,
+                            builder: (context, scale, child) => Transform.scale(scale: scale, child: child),
+                            child: Text(
+                              _winner!,
+                              style: TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.w800,
+                                color: _wheelColors[_winnerIndex!.clamp(0, _wheelColors.length - 1) % _wheelColors.length],
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    const SizedBox(height: 2),
-                    TweenAnimationBuilder<double>(
-                      tween: Tween(begin: 0.85, end: 1.0),
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.easeOut,
-                      builder: (context, scale, child) => Transform.scale(scale: scale, child: child),
-                      child: Text(
-                        _winner!,
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.w800,
-                          color: _winnerIndex == null
-                              ? Colors.amberAccent
-                              : _wheelColors[_winnerIndex!.clamp(0, _wheelColors.length - 1) % _wheelColors.length],
-                        ),
-                      ),
-                    ),
-                  ],
-                ],
-              ),
             ),
         ],
       ),
@@ -334,12 +346,14 @@ class SpinningWheelState extends State<SpinningWheel>
 /// Draws a triangle that points downward (used as the fixed pointer at top).
 class _PointerTriangle extends StatelessWidget {
   final Color color;
-  const _PointerTriangle({required this.color});
+  final double width;
+  final double height;
+  const _PointerTriangle({required this.color, this.width = 22, this.height = 14});
 
   @override
   Widget build(BuildContext context) {
     return CustomPaint(
-      size: const Size(22, 14),
+      size: Size(width, height),
       painter: _TrianglePainter(color: color),
     );
   }
@@ -395,6 +409,22 @@ class WheelPainter extends CustomPainter {
       ..color = backgroundColor
       ..style = PaintingStyle.fill;
     canvas.drawCircle(center, radius - outerRing.strokeWidth, bgPaint);
+
+    // Studs (small dots) around the outer ring for premium look
+    final int studs = 28;
+    final double studsRadius = (radius - outerRing.strokeWidth / 2) - (outerRing.strokeWidth * 0.25);
+    final double studSize = radius * 0.015;
+    final studFill = Paint()..color = Colors.white.withOpacity(0.9);
+    final studBorder = Paint()
+      ..color = Colors.black.withOpacity(0.15)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1;
+    for (int i = 0; i < studs; i++) {
+      final double a = (2 * pi * i) / studs;
+      final Offset p = Offset(center.dx + studsRadius * cos(a), center.dy + studsRadius * sin(a));
+      canvas.drawCircle(p, studSize, studFill);
+      canvas.drawCircle(p, studSize, studBorder);
+    }
 
     if (players.isEmpty) return;
 

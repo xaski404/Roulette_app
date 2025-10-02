@@ -176,6 +176,7 @@ class _PartyGameScreenState extends State<PartyGameScreen> {
                     players: players,
                     size: 300,
                     showCenterButton: false,
+                    showWinnerLabel: true,
                   ),
                   const SizedBox(height: 24),
                   Row(
