@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/workout_service.dart';
 import 'workout_category_detail_screen.dart';
+import 'exercise_video_manager_screen.dart';
 
 class WorkoutCategoriesScreen extends StatefulWidget {
   const WorkoutCategoriesScreen({super.key});
@@ -59,6 +60,20 @@ class _WorkoutCategoriesScreenState extends State<WorkoutCategoriesScreen> {
         title: const Text('Workout Categories'),
         backgroundColor: Colors.transparent,
         elevation: 0,
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const ExerciseVideoManagerScreen(),
+                ),
+              );
+            },
+            icon: const Icon(Icons.video_library),
+            tooltip: 'Manage Exercise Videos',
+          ),
+        ],
       ),
       body: GridView.builder(
         padding: const EdgeInsets.all(16),

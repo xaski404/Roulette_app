@@ -51,11 +51,11 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyCTAT9cQGsBZOxZAfQ55GcA1AStJk4edG8',
-    appId: '1:735106227800:android:7e6dc7c753d00372f0342d',
-    messagingSenderId: '735106227800',
-    projectId: 'spinroulette-41cea',
-    storageBucket: 'spinroulette-41cea.firebasestorage.app',
+    apiKey: 'AIzaSyA8WikCjefQmF9AuVM9GIe1siAa3WIIKng',
+    appId: '1:475606015669:android:5603a6e04cd4eee6cfe8fc',
+    messagingSenderId: '475606015669',
+    projectId: 'roullette-app',
+    storageBucket: 'roullette-app.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
