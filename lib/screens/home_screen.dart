@@ -6,6 +6,7 @@ import 'travel_categories_screen.dart';
 import 'entertainment_categories_screen.dart';
 import 'workout_categories_screen.dart';
 import 'music_categories_screen.dart';
+import 'party_mode_selection_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:provider/provider.dart';
 import '../main.dart';  // For ThemeProvider
@@ -426,6 +427,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(builder: (_) => const EntertainmentCategoriesScreen()),
+                    ),
+                  ),
+                  _buildCategoryButton(
+                    icon: Icons.celebration,
+                    label: 'Party',
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const PartyModeSelectionScreen()),
                     ),
                   ),
                   _buildCategoryButton(
