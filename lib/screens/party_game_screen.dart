@@ -4,6 +4,7 @@ import 'dart:math';
 import '../widgets/spinning_wheel.dart';
 import '../widgets/roulette_wheel.dart';
 import '../widgets/winner_banner.dart';
+import '../widgets/challenge_dialog.dart';
 import '../services/party/party_service.dart';
 import '../services/party/party_item.dart';
 import 'package:confetti/confetti.dart';
@@ -28,6 +29,7 @@ class _PartyGameScreenState extends State<PartyGameScreen> {
   bool _isBusy = false;
   String? _lastWinnerName;
   int? _lastWinnerIndex;
+  Color? _winnerAccentColor;
 
   // Lokalna pula pytań/wyzwań (fallback/offline)
   static final Map<String, Map<String, List<String>>> _localPartyItems = {
@@ -209,29 +211,12 @@ class _PartyGameScreenState extends State<PartyGameScreen> {
       if (!mounted) return;
       HapticFeedback.lightImpact();
       _confetti.play();
-      await showDialog(
+      await showChallengeDialog(
         context: context,
-        builder: (context) {
-          final cs = Theme.of(context).colorScheme;
-          return AlertDialog(
-            title: Text(
-              type == 'pytanie' ? 'Pytanie dla: ${_lastWinnerName!}' : 'Wyzwanie dla: ${_lastWinnerName!}',
-            ),
-            content: SingleChildScrollView(
-              child: _buildEmojifiedContent(
-                text: local ?? 'Brak zadań dla wybranych kryteriów.',
-                type: type,
-                cs: cs,
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text('OK'),
-              ),
-            ],
-          );
-        },
+        winnerName: _lastWinnerName!,
+        challengeText: local ?? 'Brak zadań dla wybranych kryteriów.',
+        accentColor: _winnerAccentColor ?? const Color(0xFF00BFA5),
+        icon: type == 'pytanie' ? Icons.help_outline_rounded : Icons.local_fire_department_rounded,
       );
     } finally {
       if (mounted) setState(() => _isBusy = false);
@@ -344,7 +329,7 @@ class _PartyGameScreenState extends State<PartyGameScreen> {
                         players.length,
                         (i) => RouletteSegment(
                           label: players[i],
-                          color: [
+                          color: const [
                             Colors.cyan,
                             Colors.pinkAccent,
                             Colors.amber,
@@ -356,12 +341,23 @@ class _PartyGameScreenState extends State<PartyGameScreen> {
                       ),
                       controller: _rouletteController,
                       onCompleted: (i) {
-                        setState(() => _lastWinnerName = players[i]);
+                        const palette = [
+                          Colors.cyan,
+                          Colors.pinkAccent,
+                          Colors.amber,
+                          Colors.redAccent,
+                          Colors.deepPurpleAccent,
+                          Colors.tealAccent,
+                        ];
+                        setState(() {
+                          _lastWinnerName = players[i];
+                          _winnerAccentColor = palette[i % palette.length];
+                        });
                       },
                     ),
                   ),
                   // Banner wyniku – tuż pod kołem, nad przyciskami
-                  WinnerBanner(winnerName: _lastWinnerName),
+                  WinnerBanner(winnerName: _lastWinnerName, accentColor: _winnerAccentColor),
                   const SizedBox(height: 24),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,

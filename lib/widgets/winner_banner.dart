@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 
 class WinnerBanner extends StatelessWidget {
   final String? winnerName;
+  final Color? accentColor;
 
-  const WinnerBanner({super.key, required this.winnerName});
+  const WinnerBanner({super.key, required this.winnerName, this.accentColor});
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +42,7 @@ class WinnerBanner extends StatelessWidget {
             name,
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: colorScheme.primary,
+              color: accentColor ?? colorScheme.primary,
               fontSize: 22,
               fontWeight: FontWeight.w800,
             ),
@@ -57,8 +58,8 @@ class WinnerBanner extends StatelessWidget {
         color: background,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: isDark ? Colors.white.withOpacity(0.1) : Colors.black12,
-          width: 1,
+          color: (accentColor ?? (isDark ? Colors.white.withOpacity(0.2) : Colors.black12)).withOpacity(0.6),
+          width: 1.2,
         ),
         boxShadow: isDark
             ? []
