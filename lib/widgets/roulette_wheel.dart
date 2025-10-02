@@ -49,6 +49,8 @@ class _RouletteWheelState extends State<RouletteWheel> with TickerProviderStateM
   late Animation<double> _wheelAngle;
   late Animation<double> _ballAngle;
   int? _winningIndex;
+  static const double _pointerAngle = -pi / 2; // top of the wheel
+  bool _ballLanded = false;
 
   @override
   void initState() {
@@ -73,10 +75,14 @@ class _RouletteWheelState extends State<RouletteWheel> with TickerProviderStateM
     final int n = widget.segments.length;
     final double sweep = 2 * pi / n;
     _winningIndex = index % n;
+    _ballLanded = false;
 
     // Choose large spins for wheel and opposite direction for ball
     final double wheelSpins = 6 * 2 * pi; // multiple full spins
-    final double targetWheelAngle = wheelSpins + (_winningIndex! * sweep + sweep / 2);
+    final double centerAngle = _winningIndex! * sweep + sweep / 2;
+    // We want: (centerAngle + rotation) == pointerAngle (mod 2pi)
+    final double alignRotation = _pointerAngle - centerAngle;
+    final double targetWheelAngle = wheelSpins + alignRotation;
 
     final double ballSpins = 8 * 2 * pi; // more spins, opposite direction
     final double targetBallAngle = -ballSpins; // ends at 0; will stick later
@@ -85,17 +91,15 @@ class _RouletteWheelState extends State<RouletteWheel> with TickerProviderStateM
     _ballAngle = Tween<double>(begin: 0, end: targetBallAngle).animate(CurvedAnimation(parent: _ballCtrl, curve: widget.ballCurve));
 
     // When ball finishes, "stick" to wheel by syncing listeners
-    _ballCtrl.addStatusListener((status) {
-      if (status == AnimationStatus.completed) {
-        // ball stops orbiting; now ride with wheel using wheelAngle
-        setState(() {});
+    final ballFuture = _ballCtrl.forward(from: 0).whenComplete(() {
+      if (mounted) {
+        setState(() {
+          _ballLanded = true;
+        });
       }
     });
-
-    await Future.wait([
-      _ballCtrl.forward(from: 0),
-      _wheelCtrl.forward(from: 0),
-    ]);
+    final wheelFuture = _wheelCtrl.forward(from: 0);
+    await Future.wait([ballFuture, wheelFuture]);
 
     if (widget.onCompleted != null && _winningIndex != null) {
       widget.onCompleted!(_winningIndex!);
@@ -123,11 +127,11 @@ class _RouletteWheelState extends State<RouletteWheel> with TickerProviderStateM
                 ),
               ),
               // Ball: phase 1 orbit (when _ballCtrl not completed): opposite direction
-              if (_ballCtrl.status != AnimationStatus.completed)
-                _buildBall(size: size, radiusFactor: 0.45, angle: _ballAngle.value)
+              if (!_ballLanded)
+                _buildBall(size: size, radiusFactor: 0.45, angle: _ballAngle.value, angleOffset: _pointerAngle)
               else
                 // Phase 2: "stuck" ball riding with wheel near outer track at the winning slice center
-                _buildBall(size: size, radiusFactor: 0.40, angle: 0),
+                _buildBall(size: size, radiusFactor: 0.40, angle: 0, angleOffset: _pointerAngle),
             ],
           );
         },
@@ -135,11 +139,12 @@ class _RouletteWheelState extends State<RouletteWheel> with TickerProviderStateM
     );
   }
 
-  Widget _buildBall({required double size, required double radiusFactor, required double angle}) {
+  Widget _buildBall({required double size, required double radiusFactor, required double angle, required double angleOffset}) {
     final double r = size * radiusFactor;
     final Offset center = Offset(size / 2, size / 2);
-    final double x = center.dx + r * cos(angle);
-    final double y = center.dy + r * sin(angle);
+    final double a = angle + angleOffset;
+    final double x = center.dx + r * cos(a);
+    final double y = center.dy + r * sin(a);
     return Positioned(
       left: x - 8,
       top: y - 8,

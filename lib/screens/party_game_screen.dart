@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import '../widgets/spinning_wheel.dart';
 import '../widgets/roulette_wheel.dart';
+import '../widgets/winner_banner.dart';
 import '../services/party/party_service.dart';
 import '../services/party/party_item.dart';
 import 'package:confetti/confetti.dart';
@@ -198,6 +199,8 @@ class _PartyGameScreenState extends State<PartyGameScreen> {
                       },
                     ),
                   ),
+                  // Banner wyniku – tuż pod kołem, nad przyciskami
+                  WinnerBanner(winnerName: _lastWinnerName),
                   const SizedBox(height: 24),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,

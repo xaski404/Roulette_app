@@ -111,7 +111,7 @@ class PlacesService {
     try {
       final response = await http.get(
         Uri.parse(
-          '$_baseUrl/nearbysearch/json?location=${location.latitude},${location.longitude}&radius=5000&type=tourist_attraction|point_of_interest|museum|park|church|landmark&language=en&key=$apiKey',
+          '$_baseUrl/nearbysearch/json?location=${location.latitude}2,${location.longitude}&radius=5000&type=tourist_attraction|point_of_interest|museum|park|church|landmark&language=en&key=$apiKey',
         ),
       );
 
