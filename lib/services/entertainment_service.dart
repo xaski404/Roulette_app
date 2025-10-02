@@ -132,54 +132,62 @@ class EntertainmentService {
     RANGE_10: [
       {
         'name': 'Silesia Park',
+        'mapsQuery': 'Park Śląski Chorzów',
         'description': 'Large recreational area with attractions, zoo, and amusement park',
         'location': const LatLng(50.2906, 19.0233),
         'activities': ['Walking trails', 'Zoo visit', 'Amusement rides', 'Rope park'],
       },
       {
         'name': 'Valley of Three Ponds',
+        'mapsQuery': 'Dolina Trzech Stawów Katowice',
         'description': 'Popular recreational area with beaches and water activities',
-        'location': const LatLng(50.2397, 19.0275),
+        'location': const LatLng(50.2385, 19.0373),
         'activities': ['Swimming', 'Beach relaxation', 'Water sports'],
       },
     ],
     RANGE_30: [
       {
         'name': 'Chorzów Amusement Park',
+        'mapsQuery': 'Legendia Śląskie Wesołe Miasteczko Chorzów',
         'description': 'Classic amusement park with various rides and attractions',
-        'location': const LatLng(50.2905, 18.9755),
+        'location': const LatLng(50.2871, 18.9956),
         'activities': ['Roller coasters', 'Family rides', 'Entertainment shows'],
       },
       {
         'name': 'Paprocany Lake',
+        'mapsQuery': 'Jezioro Paprocany Tychy',
         'description': 'Beautiful lake with recreational facilities',
-        'location': const LatLng(50.1422, 18.9993),
+        'location': const LatLng(50.1026, 18.9917),
         'activities': ['Water sports', 'Cycling', 'Beach activities'],
       },
     ],
     RANGE_50: [
       {
         'name': 'Eagle Valley Zoo',
+        'mapsQuery': 'Zoo w Dolinie Orlich Gniazd Ogrodzieniec',
         'description': 'Modern zoo with diverse animal species',
         'location': const LatLng(50.3717, 19.2347),
         'activities': ['Animal watching', 'Educational programs', 'Family activities'],
       },
       {
         'name': 'Dąbrowa Górnicza Pogoria III',
+        'mapsQuery': 'Pogoria III Dąbrowa Górnicza',
         'description': 'Popular recreational lake with beaches',
-        'location': const LatLng(50.3553, 19.2156),
+        'location': const LatLng(50.3367, 19.2186),
         'activities': ['Swimming', 'Sailing', 'Beach sports'],
       },
     ],
     RANGE_100: [
       {
         'name': 'Energylandia',
+        'mapsQuery': 'Energylandia Zator',
         'description': 'Largest amusement park in Poland',
-        'location': const LatLng(49.9771, 19.4023),
+        'location': const LatLng(49.9982, 19.4104),
         'activities': ['Roller coasters', 'Water park', 'Shows and entertainment'],
       },
       {
         'name': 'Kraków Old Town',
+        'mapsQuery': 'Stare Miasto Kraków',
         'description': 'Historic city center with entertainment options',
         'location': const LatLng(50.0617, 19.9373),
         'activities': ['Sightseeing', 'Street performances', 'Cultural events'],
