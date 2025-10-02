@@ -30,6 +30,38 @@ class PartyService {
     final doc = query.docs[idx];
     return PartyItem.fromDoc(doc);
   }
+
+  Future<void> addPartyItem({
+    required String content,
+    required String type, // "pytanie" | "wyzwanie"
+    required String gameCategory, // "klasyczna" | "dla par" | "imprezowa"
+    String language = 'pl',
+  }) async {
+    await _db.collection(collectionName).add({
+      'content': content,
+      'type': type,
+      'gameCategory': gameCategory,
+      'language': language,
+      'createdAt': FieldValue.serverTimestamp(),
+    });
+  }
+
+  Future<void> addPartyItemsBatch(List<Map<String, String>> items) async {
+    if (items.isEmpty) return;
+    final batch = _db.batch();
+    final col = _db.collection(collectionName);
+    for (final item in items) {
+      final docRef = col.doc();
+      batch.set(docRef, {
+        'content': item['content'] ?? '',
+        'type': item['type'] ?? 'pytanie',
+        'gameCategory': item['gameCategory'] ?? 'klasyczna',
+        'language': item['language'] ?? 'pl',
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+    }
+    await batch.commit();
+  }
 }
 
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
+import 'dart:math';
 import '../widgets/spinning_wheel.dart';
 import '../widgets/roulette_wheel.dart';
 import '../widgets/winner_banner.dart';
@@ -28,6 +29,75 @@ class _PartyGameScreenState extends State<PartyGameScreen> {
   String? _lastWinnerName;
   int? _lastWinnerIndex;
 
+  // Lokalna pula pytań/wyzwań (fallback/offline)
+  static final Map<String, Map<String, List<String>>> _localPartyItems = {
+    'klasyczna': {
+      'pytanie': [
+        'Co ostatnio sprawiło Ci największą radość?',
+        'Jaka była Twoja najlepsza decyzja w tym roku?',
+      ],
+      'wyzwanie': [
+        'Pokaż ostatnie zdjęcie ze swojej galerii i opowiedz o nim.',
+        'Zrób 10 przysiadów i uśmiechaj się do kamery.',
+      ],
+    },
+    'dla par': {
+      'pytanie': [
+        'Jaki macie wspólny rytuał, który najbardziej lubisz?',
+        'Za co dziś najbardziej cenisz swojego partnera/partnerkę?',
+      ],
+      'wyzwanie': [
+        'Weź do swojego chłopaka wszystkie misie którego od niego dostałaś.',
+        'Weź do swojego chłopaka wszystkie misie którego od niego dostałaś.',
+      ],
+    },
+    'imprezowa': {
+      'pytanie': [
+        'Jaka była najzabawniejsza sytuacja na imprezie, w której brałeś/aś udział?',
+      ],
+      'wyzwanie': [
+        'Zatańcz przez 15 sekund tak, jakby nikt nie patrzył.',
+        'Zrób selfie z 3 osobami obok Ciebie.',
+      ],
+    },
+  };
+
+  String? _getLocalRandom({required String type, required String category}) {
+    final list = _localPartyItems[category]?[type] ?? const [];
+    if (list.isEmpty) return null;
+    final idx = Random().nextInt(list.length);
+    return list[idx];
+  }
+
+  Widget _buildEmojifiedContent({required String text, required String type, required ColorScheme cs}) {
+    final String bullet = type == 'wyzwanie' ? '💪' : '❓';
+    // Prefer explicit line breaks, otherwise split into short sentences
+    final List<String> rawLines = text.contains('\n')
+        ? text.split('\n')
+        : text.split(RegExp(r'[\.\!\?]+')).map((s) => s.trim()).toList();
+    final lines = rawLines.where((s) => s.isNotEmpty).toList();
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        for (int i = 0; i < lines.length; i++) ...[
+          Text(
+            '$bullet  ${lines[i]}',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: cs.onSurface,
+              fontSize: 20,
+              fontWeight: FontWeight.w700,
+              height: 1.35,
+            ),
+          ),
+          if (i != lines.length - 1) const SizedBox(height: 6),
+        ],
+      ],
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -38,6 +108,73 @@ class _PartyGameScreenState extends State<PartyGameScreen> {
   void dispose() {
     _confetti.dispose();
     super.dispose();
+  }
+
+  Future<void> _seedSampleItems() async {
+    setState(() => _isBusy = true);
+    try {
+      await _partyService.addPartyItemsBatch([
+        {
+          'content': 'Opisz swój idealny dzień w trzech zdaniach.',
+          'type': 'pytanie',
+          'gameCategory': 'klasyczna',
+          'language': 'pl',
+        },
+        {
+          'content': 'Pokaż ostatnie zdjęcie ze swojej galerii i opowiedz o nim.',
+          'type': 'wyzwanie',
+          'gameCategory': 'klasyczna',
+          'language': 'pl',
+        },
+        {
+          'content': 'Zaśpiewaj refren pierwszej piosenki, która przyjdzie Ci do głowy.',
+          'type': 'wyzwanie',
+          'gameCategory': 'imprezowa',
+          'language': 'pl',
+        },
+        {
+          'content': 'Co ostatnio sprawiło Ci największą radość?',
+          'type': 'pytanie',
+          'gameCategory': 'klasyczna',
+          'language': 'pl',
+        },
+        {
+          'content': 'Weź do swojego chłopaka wszystkie misie którego od niego dostałaś.',
+          'type': 'pytanie',
+          'gameCategory': 'dla par',
+          'language': 'pl',
+        },
+        {
+          'content': 'Zatańcz przez 15 sekund tak, jakby nikt nie patrzył.',
+          'type': 'wyzwanie',
+          'gameCategory': 'imprezowa',
+          'language': 'pl',
+        },
+        {
+          'content': 'Weź do swojego chłopaka wszystkie misie którego od niego dostałaś.',
+          'type': 'wyzwanie',
+          'gameCategory': 'dla par',
+          'language': 'pl',
+        },
+        {
+          'content': 'Jaką najdziwniejszą rzecz kiedykolwiek zjadłeś/zjadłaś?',
+          'type': 'pytanie',
+          'gameCategory': 'klasyczna',
+          'language': 'pl',
+        },
+      ]);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Dodano przykładowe pytania i wyzwania.')),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Błąd dodawania: $e')),
+      );
+    } finally {
+      if (mounted) setState(() => _isBusy = false);
+    }
   }
 
   Future<void> _openPlayersConfigurator() async {
@@ -66,28 +203,35 @@ class _PartyGameScreenState extends State<PartyGameScreen> {
       await _rouletteController.spinTo(idx);
       _lastWinnerName = players[idx];
 
-      // 2) Fetch Firestore item for chosen category and type
-      final PartyItem? item = await _partyService.getRandomItem(
-        type: type,
-        gameCategory: widget.gameCategory,
-        language: 'pl',
-      );
+      // 2) Pobierz treść lokalnie (bez Firestore)
+      final String? local = _getLocalRandom(type: type, category: widget.gameCategory);
 
       if (!mounted) return;
       HapticFeedback.lightImpact();
       _confetti.play();
       await showDialog(
         context: context,
-        builder: (context) => AlertDialog(
-          title: Text(type == 'pytanie' ? 'Pytanie dla: ${_lastWinnerName!}' : 'Wyzwanie dla: ${_lastWinnerName!}'),
-          content: Text(item?.content ?? 'Brak zadań dla wybranych kryteriów.'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('OK'),
+        builder: (context) {
+          final cs = Theme.of(context).colorScheme;
+          return AlertDialog(
+            title: Text(
+              type == 'pytanie' ? 'Pytanie dla: ${_lastWinnerName!}' : 'Wyzwanie dla: ${_lastWinnerName!}',
             ),
-          ],
-        ),
+            content: SingleChildScrollView(
+              child: _buildEmojifiedContent(
+                text: local ?? 'Brak zadań dla wybranych kryteriów.',
+                type: type,
+                cs: cs,
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('OK'),
+              ),
+            ],
+          );
+        },
       );
     } finally {
       if (mounted) setState(() => _isBusy = false);
@@ -115,6 +259,13 @@ class _PartyGameScreenState extends State<PartyGameScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(modeTitle),
+        actions: [
+          IconButton(
+            tooltip: 'Dodaj przykładowe pytania/wyzwania',
+            icon: const Icon(Icons.cloud_upload),
+            onPressed: _isBusy ? null : _seedSampleItems,
+          ),
+        ],
       ),
       body: SafeArea(
         child: Stack(
