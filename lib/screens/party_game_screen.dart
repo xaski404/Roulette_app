@@ -126,14 +126,24 @@ class _PartyGameScreenState extends State<PartyGameScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 if (players.isEmpty) ...[
-                  // Decorative faint wheel background
+                  // Decorative faint wheel background (same visual as game wheel)
                   Opacity(
                     opacity: 0.12,
                     child: IgnorePointer(
-                      child: SpinningWheel(
-                        players: const ['A','B','C','D','E','F'],
-                        size: 260,
-                        showCenterButton: false,
+                      child: SizedBox(
+                        width: 260,
+                        height: 260,
+                        child: RouletteWheel(
+                          segments: const [
+                            RouletteSegment(label: 'A', color: Colors.cyan),
+                            RouletteSegment(label: 'B', color: Colors.pinkAccent),
+                            RouletteSegment(label: 'C', color: Colors.amber),
+                            RouletteSegment(label: 'D', color: Colors.redAccent),
+                            RouletteSegment(label: 'E', color: Colors.deepPurpleAccent),
+                            RouletteSegment(label: 'F', color: Colors.tealAccent),
+                          ],
+                          controller: RouletteController(),
+                        ),
                       ),
                     ),
                   ),
