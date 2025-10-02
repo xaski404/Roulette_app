@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'party_spin_bottle_screen.dart';
+import 'party_game_screen.dart';
 
 class PartyModeSelectionScreen extends StatelessWidget {
   const PartyModeSelectionScreen({super.key});
@@ -38,7 +39,7 @@ class PartyModeSelectionScreen extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => PartySpinBottleScreen(gameCategory: mode.value, title: mode.title),
+                  builder: (_) => PartyGameScreen(gameCategory: mode.value),
                 ),
               );
             },
