@@ -20,6 +20,8 @@ class SpinningWheel extends StatefulWidget {
   final double size;
   final Duration duration;
   final bool showCenterButton;
+  final bool showWinnerLabel;
+  final void Function(String name, int index)? onWinner;
 
   const SpinningWheel({
     super.key,
@@ -27,6 +29,8 @@ class SpinningWheel extends StatefulWidget {
     this.size = 280,
     this.duration = const Duration(seconds: 4),
     this.showCenterButton = false,
+    this.showWinnerLabel = false,
+    this.onWinner,
   });
 
   @override
@@ -118,6 +122,9 @@ class SpinningWheelState extends State<SpinningWheel>
           _currentRotation = end;
           _winnerIndex = winningIndex;
           _winner = widget.players[winningIndex];
+          if (widget.onWinner != null) {
+            widget.onWinner!(_winner!, _winnerIndex!);
+          }
           if (_spinCompleter != null && !_spinCompleter!.isCompleted) {
             _spinCompleter!.complete(_winner!);
           }
@@ -241,6 +248,27 @@ class SpinningWheelState extends State<SpinningWheel>
             ),
           ),
 
+          // Center hub overlay with refresh icon
+          Positioned(
+            child: Container(
+              width: size * 0.16,
+              height: size * 0.16,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.15),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+                border: Border.all(color: Colors.black.withOpacity(0.15), width: 2),
+              ),
+              child: Icon(Icons.autorenew, color: Colors.black87, size: size * 0.08),
+            ),
+          ),
+
           // Top layer: spin button in center
           if (widget.showCenterButton)
             Positioned(
@@ -254,49 +282,49 @@ class SpinningWheelState extends State<SpinningWheel>
               ),
             ),
 
-          // Winner label below the wheel
-          Positioned(
-            bottom: 0,
-            child: Column(
-              children: [
-                if (_winner == null)
-                  Text(
-                    'Tap SPIN to choose',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: colorScheme.onBackground,
-                    ),
-                  )
-                else ...[
-                  Text(
-                    'Winner',
-                    style: TextStyle(
-                      color: colorScheme.onBackground.withOpacity(0.8),
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  TweenAnimationBuilder<double>(
-                    tween: Tween(begin: 0.85, end: 1.0),
-                    duration: const Duration(milliseconds: 300),
-                    curve: Curves.easeOut,
-                    builder: (context, scale, child) => Transform.scale(scale: scale, child: child),
-                    child: Text(
-                      _winner!,
+          if (widget.showWinnerLabel)
+            Positioned(
+              bottom: 0,
+              child: Column(
+                children: [
+                  if (_winner == null)
+                    Text(
+                      'Tap SPIN to choose',
                       style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.w800,
-                        color: _winnerIndex == null
-                            ? Colors.amberAccent
-                            : _wheelColors[_winnerIndex!.clamp(0, _wheelColors.length - 1) % _wheelColors.length],
+                        fontWeight: FontWeight.bold,
+                        color: colorScheme.onBackground,
+                      ),
+                    )
+                  else ...[
+                    Text(
+                      'Winner',
+                      style: TextStyle(
+                        color: colorScheme.onBackground.withOpacity(0.8),
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
-                  ),
+                    const SizedBox(height: 2),
+                    TweenAnimationBuilder<double>(
+                      tween: Tween(begin: 0.85, end: 1.0),
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeOut,
+                      builder: (context, scale, child) => Transform.scale(scale: scale, child: child),
+                      child: Text(
+                        _winner!,
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w800,
+                          color: _winnerIndex == null
+                              ? Colors.amberAccent
+                              : _wheelColors[_winnerIndex!.clamp(0, _wheelColors.length - 1) % _wheelColors.length],
+                        ),
+                      ),
+                    ),
+                  ],
                 ],
-              ],
+              ),
             ),
-          ),
         ],
       ),
     );
@@ -355,11 +383,18 @@ class WheelPainter extends CustomPainter {
     final center = Offset(size.width / 2, size.height / 2);
     final radius = size.width / 2;
 
-    // Background circle for subtle border
+    // Outer ring (white border) for premium look
+    final outerRing = Paint()
+      ..color = Colors.white.withOpacity(0.9)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = radius * 0.04; // proportional ring
+    canvas.drawCircle(center, radius - outerRing.strokeWidth / 2, outerRing);
+
+    // Background circle underneath segments
     final bgPaint = Paint()
       ..color = backgroundColor
       ..style = PaintingStyle.fill;
-    canvas.drawCircle(center, radius, bgPaint);
+    canvas.drawCircle(center, radius - outerRing.strokeWidth, bgPaint);
 
     if (players.isEmpty) return;
 
@@ -383,7 +418,7 @@ class WheelPainter extends CustomPainter {
         ],
       ).createShader(Rect.fromCircle(center: center, radius: radius));
 
-      final rect = Rect.fromCircle(center: center, radius: radius);
+      final rect = Rect.fromCircle(center: center, radius: radius - outerRing.strokeWidth);
       canvas.drawArc(rect, startAngle, sweep, true, paint);
 
       // Segment separator
@@ -392,8 +427,8 @@ class WheelPainter extends CustomPainter {
         ..style = PaintingStyle.stroke
         ..strokeWidth = 1.2;
       final start = Offset(
-        center.dx + radius * cos(startAngle),
-        center.dy + radius * sin(startAngle),
+        center.dx + (radius - outerRing.strokeWidth) * cos(startAngle),
+        center.dy + (radius - outerRing.strokeWidth) * sin(startAngle),
       );
       canvas.drawLine(center, start, separatorPaint);
 
@@ -419,19 +454,19 @@ class WheelPainter extends CustomPainter {
         ellipsis: '…',
       )..layout(maxWidth: radius * 0.9);
 
-      final textOffset = Offset(radius * 0.65 - tp.width / 2, -tp.height / 2);
+      final textOffset = Offset((radius - outerRing.strokeWidth) * 0.65 - tp.width / 2, -tp.height / 2);
       tp.paint(canvas, textOffset);
       canvas.restore();
     }
 
     // Hub
     final hubPaint = Paint()
-      ..color = Colors.black.withOpacity(0.10)
+      ..color = Colors.white
       ..style = PaintingStyle.fill;
     canvas.drawCircle(center, radius * 0.1, hubPaint);
 
     final hubRing = Paint()
-      ..color = Colors.white.withOpacity(0.85)
+      ..color = Colors.black.withOpacity(0.15)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.5;
     canvas.drawCircle(center, radius * 0.1, hubRing);

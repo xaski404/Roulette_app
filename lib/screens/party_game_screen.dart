@@ -22,6 +22,8 @@ class _PartyGameScreenState extends State<PartyGameScreen> {
 
   List<String> players = [];
   bool _isBusy = false;
+  String? _lastWinnerName;
+  int? _lastWinnerIndex;
 
   @override
   void initState() {
@@ -56,8 +58,9 @@ class _PartyGameScreenState extends State<PartyGameScreen> {
 
     try {
       HapticFeedback.selectionClick();
-      // 1) Spin wheel and await winner
+      // 1) Spin wheel and await winner (single source of truth)
       final winnerName = await _wheelKey.currentState!.spin();
+      _lastWinnerName = winnerName;
 
       // 2) Fetch Firestore item for chosen category and type
       final PartyItem? item = await _partyService.getRandomItem(
@@ -72,7 +75,7 @@ class _PartyGameScreenState extends State<PartyGameScreen> {
       await showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          title: Text(type == 'pytanie' ? 'Pytanie dla: $winnerName' : 'Wyzwanie dla: $winnerName'),
+          title: Text(type == 'pytanie' ? 'Pytanie dla: ${_lastWinnerName!}' : 'Wyzwanie dla: ${_lastWinnerName!}'),
           content: Text(item?.content ?? 'Brak zadań dla wybranych kryteriów.'),
           actions: [
             TextButton(
@@ -131,31 +134,40 @@ class _PartyGameScreenState extends State<PartyGameScreen> {
                     ),
                   ),
                   const SizedBox(height: 24),
-                  Text(
-                    modeTitle,
-                    style: TextStyle(
-                      color: colorScheme.onBackground,
-                      fontSize: 22,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  ElevatedButton.icon(
-                    icon: const Icon(Icons.group_add),
-                    label: const Text('+ Skonfiguruj Graczy'),
-                    onPressed: _openPlayersConfigurator,
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Dodaj od 2 do 8 graczy, aby rozpocząć zabawę!',
-                    style: TextStyle(
-                      color: colorScheme.onBackground.withOpacity(0.7),
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
+                  Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          modeTitle,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: colorScheme.onBackground,
+                            fontSize: 22,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        ElevatedButton.icon(
+                          icon: const Icon(Icons.group_add),
+                          label: const Text('+ Skonfiguruj Graczy'),
+                          onPressed: _openPlayersConfigurator,
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          'Dodaj od 2 do 8 graczy, aby rozpocząć zabawę!',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: colorScheme.onBackground.withOpacity(0.7),
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ] else ...[
@@ -170,11 +182,25 @@ class _PartyGameScreenState extends State<PartyGameScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF00BFA5),
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                          elevation: 3,
+                          padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
+                        ),
                         onPressed: _isBusy ? null : () => _handleAction('pytanie'),
                         child: const Text('Pytanie'),
                       ),
                       const SizedBox(width: 16),
                       ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF00BFA5),
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                          elevation: 3,
+                          padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
+                        ),
                         onPressed: _isBusy ? null : () => _handleAction('wyzwanie'),
                         child: const Text('Wyzwanie'),
                       ),
@@ -183,8 +209,8 @@ class _PartyGameScreenState extends State<PartyGameScreen> {
                   const SizedBox(height: 12),
                   TextButton.icon(
                     onPressed: _isBusy ? null : _openPlayersConfigurator,
-                    icon: const Icon(Icons.edit),
-                    label: const Text('Edytuj graczy'),
+                    icon: const Icon(Icons.edit, color: Color(0xFF00BFA5)),
+                    label: const Text('Edytuj graczy', style: TextStyle(color: Color(0xFF00BFA5))),
                   ),
                 ],
               ],
