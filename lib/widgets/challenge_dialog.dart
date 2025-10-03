@@ -1,17 +1,27 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:confetti/confetti.dart';
+import 'package:flutter/services.dart';
+
+enum TaskType { question, challenge }
 
 Future<void> showChallengeDialog({
   required BuildContext context,
   required String winnerName,
   required String challengeText,
+  required TaskType taskType,
   Color? accentColor,
   IconData? icon,
+  bool autoClose = true,
+  Duration autoCloseAfter = const Duration(seconds: 3),
 }) async {
   final ColorScheme cs = Theme.of(context).colorScheme;
   final Color borderColor = accentColor ?? cs.primary;
-  final IconData usedIcon = icon ?? Icons.flash_on_rounded;
+  final IconData usedIcon = icon ??
+      (taskType == TaskType.question
+          ? Icons.question_mark_rounded
+          : Icons.local_fire_department_rounded);
+  final String labelText = taskType == TaskType.question ? 'Pytanie dla:' : 'Wyzwanie dla:';
 
   late final ConfettiController _confetti;
 
@@ -24,7 +34,17 @@ Future<void> showChallengeDialog({
     pageBuilder: (context, _, __) {
       _confetti = ConfettiController(duration: const Duration(milliseconds: 1200));
       // Fire on first frame
-      WidgetsBinding.instance.addPostFrameCallback((_) => _confetti.play());
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _confetti.play();
+        if (autoClose) {
+          Future.delayed(autoCloseAfter, () async {
+            if (Navigator.of(context).canPop()) {
+              HapticFeedback.lightImpact();
+              Navigator.of(context).maybePop();
+            }
+          });
+        }
+      });
 
       return Center(
         child: Padding(
@@ -38,7 +58,17 @@ Future<void> showChallengeDialog({
                   filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
                   child: Container(
                     decoration: BoxDecoration(
-                      color: cs.surface.withOpacity(0.75),
+                      // Glass + subtelny gradient zależny od akcentu
+                      gradient: RadialGradient(
+                        center: Alignment.topCenter,
+                        radius: 1.2,
+                        colors: [
+                          borderColor.withOpacity(0.18),
+                          borderColor.withOpacity(0.08),
+                          cs.surface.withOpacity(0.75),
+                        ],
+                        stops: const [0.0, 0.45, 1.0],
+                      ),
                       borderRadius: BorderRadius.circular(24),
                       border: Border.all(color: borderColor.withOpacity(0.6), width: 1),
                       boxShadow: [
@@ -50,15 +80,25 @@ Future<void> showChallengeDialog({
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
+                        // Dwupoziomowy nagłówek: etykieta + imię
                         Text(
-                          'Wyzwanie dla:',
-                          style: TextStyle(color: cs.onSurface.withOpacity(0.9), fontSize: 14, fontWeight: FontWeight.w600),
+                          labelText,
+                          style: TextStyle(
+                            color: cs.onSurface.withOpacity(0.9),
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: 0.2,
+                          ),
                         ),
-                        const SizedBox(height: 4),
+                        const SizedBox(height: 6),
                         Text(
                           winnerName,
                           textAlign: TextAlign.center,
-                          style: TextStyle(color: borderColor, fontSize: 22, fontWeight: FontWeight.w800),
+                          style: TextStyle(
+                            color: borderColor, // opcjonalnie akcent na imieniu
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         const SizedBox(height: 16),
                         Row(
@@ -77,7 +117,12 @@ Future<void> showChallengeDialog({
                               child: Text(
                                 challengeText,
                                 textAlign: TextAlign.left,
-                                style: TextStyle(color: cs.onSurface, fontSize: 18, fontWeight: FontWeight.w600, height: 1.35),
+                                style: TextStyle(
+                                  color: cs.onSurface, // wysoki kontrast
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                  height: 1.35,
+                                ),
                               ),
                             ),
                           ],

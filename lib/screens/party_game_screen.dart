@@ -215,8 +215,11 @@ class _PartyGameScreenState extends State<PartyGameScreen> {
         context: context,
         winnerName: _lastWinnerName!,
         challengeText: local ?? 'Brak zadań dla wybranych kryteriów.',
+        taskType: type == 'pytanie' ? TaskType.question : TaskType.challenge,
         accentColor: _winnerAccentColor ?? const Color(0xFF00BFA5),
         icon: type == 'pytanie' ? Icons.help_outline_rounded : Icons.local_fire_department_rounded,
+        autoClose: true,
+        autoCloseAfter: const Duration(seconds: 3),
       );
     } finally {
       if (mounted) setState(() => _isBusy = false);
