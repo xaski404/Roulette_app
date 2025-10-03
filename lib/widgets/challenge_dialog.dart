@@ -12,7 +12,7 @@ Future<void> showChallengeDialog({
   required TaskType taskType,
   Color? accentColor,
   IconData? icon,
-  bool autoClose = true,
+  bool autoClose = false,
   Duration autoCloseAfter = const Duration(seconds: 3),
 }) async {
   final ColorScheme cs = Theme.of(context).colorScheme;
@@ -34,17 +34,7 @@ Future<void> showChallengeDialog({
     pageBuilder: (context, _, __) {
       _confetti = ConfettiController(duration: const Duration(milliseconds: 1200));
       // Fire on first frame
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _confetti.play();
-        if (autoClose) {
-          Future.delayed(autoCloseAfter, () async {
-            if (Navigator.of(context).canPop()) {
-              HapticFeedback.lightImpact();
-              Navigator.of(context).maybePop();
-            }
-          });
-        }
-      });
+      WidgetsBinding.instance.addPostFrameCallback((_) => _confetti.play());
 
       return Center(
         child: Padding(
@@ -80,25 +70,32 @@ Future<void> showChallengeDialog({
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        // Dwupoziomowy nagłówek: etykieta + imię
-                        Text(
-                          labelText,
-                          style: TextStyle(
-                            color: cs.onSurface.withOpacity(0.9),
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                            letterSpacing: 0.2,
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          winnerName,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: borderColor, // opcjonalnie akcent na imieniu
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                          ),
+                        // Dwupoziomowy nagłówek: etykieta + imię (minimalistyczny)
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              labelText,
+                              style: TextStyle(
+                                color: cs.onSurface.withOpacity(0.8),
+                                fontSize: 15,
+                                fontWeight: FontWeight.w500,
+                                letterSpacing: 0.2,
+                                decoration: TextDecoration.none,
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            Text(
+                              winnerName,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: borderColor,
+                                fontSize: 26,
+                                fontWeight: FontWeight.w900,
+                                decoration: TextDecoration.none,
+                              ),
+                            ),
+                          ],
                         ),
                         const SizedBox(height: 16),
                         Row(
@@ -122,6 +119,7 @@ Future<void> showChallengeDialog({
                                   fontSize: 18,
                                   fontWeight: FontWeight.w600,
                                   height: 1.35,
+                                  decoration: TextDecoration.none,
                                 ),
                               ),
                             ),
